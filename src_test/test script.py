@@ -12,15 +12,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-
-
 if torch.cuda.is_available():
     print("CUDA is available. PyTorch can use the GPU.")
     print(f"Device count: {torch.cuda.device_count()}")
     print(f"Device name: {torch.cuda.get_device_name(0)}")
 else:
     print("CUDA is not available. PyTorch will use the CPU.")
-
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     
 transform = transforms.Compose(
     [transforms.ToTensor(), #converstimages loaded by Pillow into PyTorch tensors
@@ -56,7 +54,6 @@ testset = torchvision.datasets.CIFAR10(root='./data', train=False,
 testloader = torch.utils.data.DataLoader(testset, batch_size=4,
                                          shuffle=False, num_workers=2)
 
-
 # define a Convolutional Neural Network
 class Net(nn.Module):
     def __init__(self):
@@ -78,6 +75,7 @@ class Net(nn.Module):
         return x    
 
 net = Net()
+net.to(device)
 
 # define a Loss function and optimizer
 criterion = nn.CrossEntropyLoss()
