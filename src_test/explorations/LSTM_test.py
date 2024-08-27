@@ -12,7 +12,10 @@ import seaborn as sns
 #TODO sklearn has an option to say how much cpu should be used
 #TODO NIce value in script for adapting priority of running script, wiki eejit
 
-data = pd.read_pickle('/home/hausw001/Data/inputDataML/totInputDataBaseFinal.pkl')
+#data = pd.read_pickle('/home/hausw001/Data/inputDataML/totInputDataBaseFinal.pkl')
+general_path = r'C:\Users\hausw001\surfdrive - Hauswirth, S.M. (Sandra)@surfdrive.surf.nl'
+#load the data
+data = pd.read_pickle(r'%s\Results\inputDataML\totInputDataBaseFinal.pkl' %(general_path))
 data.set_index('date', inplace=True)
 
 trainset = data.loc['1990-01-01':'2010-12-31']
@@ -114,12 +117,13 @@ for i in range(epochs):
     loss_epoch.append(new_loss)
     if new_loss<min_loss:
         min_loss = new_loss
-        torch.save(model, '/home/hausw001/Scripts/HybGGM/model.pth')
+        #torch.save(model, '/home/hausw001/Scripts/HybGGM/model.pth')
+        torch.save(model, '%s/Scripts/HybGGM/model.pth' %(general_path))
 
 
 #sns.lineplot(x=np.arange(len(loss_epoch)), y=np.array(loss_epoch))
 
-best_model = torch.load('/home/hausw001/Scripts/HybGGM/model.pth')
+best_model = torch.load('%s/Scripts/HybGGM/model.pth' %(general_path))
 best_model.init_hidden(x_test.shape[0])
 best_model.hidden =  best_model.hidden[0].to(device), best_model.hidden[1].to(device)
 y_pred = best_model(x_test)
