@@ -15,11 +15,11 @@ import glob
 
 general_path = r'C:\Users\hausw001\surfdrive - Hauswirth, S.M. (Sandra)@surfdrive.surf.nl'
 
-lon_bounds = (6, 8) #NL bounds(3,6)
-lat_bounds = (48, 50)#NL bounds(50,54)
+# lon_bounds = (6, 8) #NL bounds(3,6)
+# lat_bounds = (48, 50)#NL bounds(50,54)
 
-lon_bounds = (6, 10) #NL bounds(3,6)
-lat_bounds = (45, 48)#NL bounds(50,54)
+lon_bounds = (5, 10) #NL bounds(3,6)
+lat_bounds = (45, 50)#NL bounds(50,54)
 
 data_length = 12 # number of months in current dataset
 
@@ -47,12 +47,20 @@ def data_prep(f, lat_bounds, lon_bounds, data_length):
     if param in params_monthly:
         data_arr = data_cut.to_array().values
         data_arr = data_arr[0, :, :, :]
-        data_arr = np.where(data_arr==np.nan, 0, data_arr)
-        #remove inf values to 0
+        # data_arr = np.nan_to_num(data_arr, copy=False, nan=0)
+        # # data_arr = np.where(data_arr==np.nan, 0, data_arr)
+        # test = np.isnan(data_arr)
+        # if True in test:
+        #     print('nan replacement did not work') 
         data_arr = np.where(data_arr==np.inf, 0, data_arr)
+
     if param in params_initial:
         data_arr = np.repeat(data_cut.to_array().values, data_length, axis=0)
-        data_arr = np.where(data_arr==np.nan, 0, data_arr)
+        # data_arr = np.where(data_arr==np.nan, 0, data_arr)
+        # data_arr = np.nan_to_num(data_arr, copy=False, nan=0)
+        # test = np.isnan(data_arr)
+        # if True in test:
+        #     print('nan replacement did not work')
         data_arr = np.where(data_arr==np.inf, 0, data_arr)
     return data_arr
 
@@ -78,25 +86,39 @@ top_upper = data_prep(inFiles[18], lat_bounds, lon_bounds, data_length)
 vert_cond_lower = data_prep(inFiles[19], lat_bounds, lon_bounds, data_length)
 vert_cond_upper = data_prep(inFiles[20], lat_bounds, lon_bounds, data_length)
 
+# plot wtd for one month, indicating range of values
+plt.imshow(wtd[0, :, :], cmap='viridis')
+plt.colorbar()
+plt.title('WTD for one month')
 
-y = wtd[:, np.newaxis, :, :]
-X = np.stack([abs_lower, abs_upper, 
-              bed_cond, 
-              bottom_lower, bottom_upper, 
-              drain_cond, drain_elev_lower, drain_elev_upper, 
-              hor_cond_lower, hor_cond_upper, 
-              init_head_lower, init_head_upper, 
-              recharge, 
-              prim_stor_coeff_lower, prim_stor_coeff_upper, 
-              surf_wat_bed_elev, surf_wat_elev, 
-              top_upper, 
-              vert_cond_lower, vert_cond_upper], axis=1)
+
+
+y = wtd[1:, np.newaxis, :, :]
+X = np.stack([abs_lower[1:,:,:], abs_upper[1:,:,:], 
+              bed_cond[1:,:,:], 
+              bottom_lower[1:,:,:], bottom_upper[1:,:,:], 
+              drain_cond[1:,:,:], drain_elev_lower[1:,:,:], drain_elev_upper[1:,:,:], 
+              hor_cond_lower[1:,:,:], hor_cond_upper[1:,:,:], 
+              init_head_lower[1:,:,:], init_head_upper[1:,:,:], 
+              recharge[1:,:,:], 
+              prim_stor_coeff_lower[1:,:,:], prim_stor_coeff_upper[1:,:,:], 
+              surf_wat_bed_elev[1:,:,:], surf_wat_elev[1:,:,:], 
+              top_upper[1:,:,:], 
+              vert_cond_lower[1:,:,:], vert_cond_upper[1:,:,:], #vert_cond_lower has inf values (for the test case of CH -> in prep fct fill with 0 )
+              wtd[:-1, :, :]
+              ], axis=1)
+
+
+
 
 #check if nan values in X
-# for i in range(X.shape[1]):
-#     print(f"Number of NaN values in variable {i}: {np.isnan(X[:, i, :, :]).sum()}")
+for i in range(X.shape[1]):
+    print(f"Number of NaN values in variable {i}: {np.isnan(X[:, i, :, :]).sum()}")
+for i in range(X.shape[1]):   
+    print(f"Number of inf values in variable {i}: {np.isinf(X[:, i, :, :]).sum()}")
 # for i in range(y.shape[1]):
-#     print(f"Number of NaN values in variable {i}: {np.isnan(y[:, i, :, :]).sum()}")
+#     # print(f"Number of NaN values in variable {i}: {np.isnan(y[:, i, :, :]).sum()}")
+#     print(f"Number of inf values in variable {i}: {np.isinf(y[:, i, :, :]).sum()}")
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
@@ -166,6 +188,7 @@ class SimpleCNN(nn.Module):
     
     def forward(self, x):
         # Encoder
+    
         x = F.relu(self.conv1(x))
         x = F.relu(self.conv2(x))
         x = F.relu(self.conv3(x))
@@ -188,15 +211,15 @@ def train_model(model, train_loader, criterion, optimizer, num_epochs=10):
         model.train()
         running_loss = 0.0
         for inputs, targets in train_loader:
-            print(f"Training input shape: {inputs.shape}")  # Debugging: print input shape
-            print(f"Training target shape: {targets.shape}")  # Debugging: print target shape
+            # print(f"Training input shape: {inputs.shape}")  # Debugging: print input shape
+            # print(f"Training target shape: {targets.shape}")  # Debugging: print target shape
 
             optimizer.zero_grad()
             outputs = model(inputs)
-            print(f"Model output shape: {outputs.shape}")  # Debugging: print output shape
+            # print(f"Model output shape: {outputs.shape}")  # Debugging: print output shape
 
             # Check shapes before the error line
-            print(f"Outputs shape: {outputs.shape}, Targets shape: {targets.shape}")
+            # print(f"Outputs shape: {outputs.shape}, Targets shape: {targets.shape}")
 
             loss = criterion(outputs, targets)
             loss.backward()
@@ -250,7 +273,7 @@ for i in range(y_pred_denorm.shape[0]):
     diff = y_test_denorm[i, 0, :, :] - y_pred_denorm[i]
     plt.subplot(2, 2, 3)
     plt.title('Predicted Groundwater Depth')
-    plt.imshow(diff, cmap='coolwarm', norm=SymLogNorm(linthresh=1))
+    plt.imshow(diff, cmap='coolwarm_r', norm=SymLogNorm(linthresh=1))
     plt.colorbar()
     plt.title(f"Difference OG{i} - Pred{i+1}")
     plt.tight_layout()
@@ -259,7 +282,7 @@ for i in range(y_pred_denorm.shape[0]):
     diff_act = y_test_denorm[i, 0, :, :] - y_test_denorm[i-1, 0, :, :]  
     plt.subplot(2, 2, 4)
     plt.title('Actual Groundwater Depth')
-    plt.imshow(diff_act, cmap='coolwarm', norm=SymLogNorm(linthresh=1))
+    plt.imshow(diff_act, cmap='coolwarm_r', norm=SymLogNorm(linthresh=1))
     plt.colorbar()
     plt.title(f"Difference OG{i} - OG{i+1}")    
     plt.tight_layout()
