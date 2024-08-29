@@ -367,7 +367,7 @@ y_pred_denorm = y_pred_denorm[:, 0, :, :]
 y_pred_denorm = np.flip(y_pred_denorm, axis=1) 
 y_run_denorm = y_run_denorm.flip(2).numpy()
 
-for i in range(y_pred_denorm.shape[0])[:2]:
+for i in range(y_pred_denorm.shape[0])[:]:
     print(i)
     vmax = max([y_run_denorm.max(),y_pred_denorm.max()])
     vmin = min([y_run_denorm.min(),y_pred_denorm.min()])
@@ -420,6 +420,8 @@ for i in range(y_pred_denorm.shape[0])[:2]:
         plt.ylabel('Simulated WTD')
         plt.title(f"Actual vs Sim{i}")
         plt.tight_layout()
+
+    plt.savefig(r'..\data\temp\plots\test_results_%s.png' %(i))
   
         
 
