@@ -365,54 +365,62 @@ y_pred_denorm = y_pred_full*out_var_std[0].numpy() + out_var_mean[0].numpy() #de
 y_pred_denorm = y_pred_denorm[:, 0, :, :]
 
 y_pred_denorm = np.flip(y_pred_denorm, axis=1) 
-y_run_denorm = y_run_denorm.flip(2)
+y_run_denorm = y_run_denorm.flip(2).numpy()
 
-
-for i in range(y_pred_denorm.shape[0])[:]:
+for i in range(y_pred_denorm.shape[0])[:2]:
+    print(i)
     vmax = max([y_run_denorm.max(),y_pred_denorm.max()])
     vmin = min([y_run_denorm.min(),y_pred_denorm.min()])
-    plt.figure(figsize=(10, 8))
-    plt.subplot(2, 2, 1)
-    plt.title('Actual Groundwater Depth')
+    plt.figure(figsize=(15, 8))
+    plt.subplot(2, 3, 1)
+    plt.title('Actual WTD (OG)')
     plt.imshow(y_run_denorm[i, 0, :, :], cmap='viridis',vmin=vmin,vmax=vmax)
     plt.colorbar()
 
-    plt.subplot(2, 2, 2)
-    plt.title('Predicted Groundwater Depth')
+    plt.subplot(2, 3, 2)
+    plt.title('Predicted WTD')
     plt.imshow(y_pred_denorm[i], cmap='viridis',vmin=vmin,vmax=vmax)
     plt.colorbar()
     plt.title(f"Model Output {i+1}")
 
     diff = y_run_denorm[i, 0, :, :] - y_pred_denorm[i]
-    diff_del = y_pred_denorm[i] - y_run_denorm[i-1, 0, :, :] #delta between predicted and previous actual
-    diff_act = y_run_denorm[i, 0, :, :] - y_run_denorm[i-1, 0, :, :]  
-    #TODO scatterplot of y_pred_denorm vs y_run_denorm
-    #TODO also plot diff_del
-    vmax_diff = max([diff.max(),diff_act.max()])
-    vmin_diff = min([diff.min(),diff_act.min()])
-    
-    plt.subplot(2, 2, 3)
-    plt.title('Predicted Groundwater Depth')
-    plt.text(0, 60, 'min=%s, max=%s' %(np.array(diff).min(),np.array(diff).max()), fontsize = 12)
-    # pcm = plt.imshow(diff, cmap='RdBu', norm=colors.CenteredNorm())#, norm=SymLogNorm(linthresh=1))
+    plt.subplot(2, 3, 3)
+    plt.title('Predicted WTD')
     pcm = plt.imshow(diff, cmap='RdBu', norm=SymLogNorm(linthresh=1))
     plt.colorbar(pcm, orientation='vertical')
-    plt.title(f"Difference OG-Pred {i+1}")
+    plt.title(f"Difference Pred {i} - OG{i} 'n diff actual vs sim wtd")
     plt.tight_layout()
 
     if i == 0:
         continue
-    else:
-        plt.subplot(2, 2, 4)
-        plt.title('Actual Groundwater Depth')
-        plt.text(0, 60, 'min=%s, max=%s' %(np.array(diff_act).min(),np.array(diff_act).max()), fontsize = 12)
-        # pcm = plt.imshow(diff_act, cmap='RdBu', norm=colors.CenteredNorm())#, norm=SymLogNorm(linthresh=1))norm=SymLogNorm(linthresh=1))
-        pcm = plt.imshow(diff_act, cmap='RdBu', norm=SymLogNorm(linthresh=1))# norm=SymLogNorm(linthresh=1))
+    else:           
+        diff_del = y_pred_denorm[i] - y_run_denorm[i-1, 0, :, :] #delta between predicted and previous actual
+        diff_act = y_run_denorm[i, 0, :, :] - y_run_denorm[i-1, 0, :, :]  
+
+        plt.subplot(2, 3, 4)
+        pcm = plt.imshow(diff_del, cmap='RdBu', norm=SymLogNorm(linthresh=1))
         plt.colorbar(pcm, orientation='vertical')
-        plt.title(f"Difference OG{i} - OG{i+1}")    
+        plt.title(f"Difference Pred {i} - OG{i-1} \n sim delta change")
         plt.tight_layout()
 
-        #plot diff_del
+        plt.subplot(2, 3, 5)
+        pcm = plt.imshow(diff_act, cmap='RdBu', norm=SymLogNorm(linthresh=1))# norm=SymLogNorm(linthresh=1))
+        plt.colorbar(pcm, orientation='vertical')
+        plt.title(f"Difference OG{i} - OG{i-1} \n actual delta change")    
+        plt.tight_layout()
+
+        vmax = max([y_run_denorm[i, 0, :, :].max(),y_pred_denorm[i].max()])
+        vmin = min([y_run_denorm[i, 0, :, :].min(),y_pred_denorm[i].min()])
+        plt.subplot(2, 3, 6)
+        plt.scatter(y_run_denorm[i, 0, :, :].flatten(), y_pred_denorm[i].flatten(),alpha=0.5, facecolors='none', edgecolors='r')
+        plt.plot([vmin, vmax], [vmin, vmax], 'k--', lw=2)
+        plt.xlabel('Actual WTD')
+        plt.xlim(vmin,vmax)
+        plt.ylim(vmin,vmax)
+        plt.ylabel('Simulated WTD')
+        plt.title(f"Actual vs Sim{i}")
+        plt.tight_layout()
+  
         
 
 
