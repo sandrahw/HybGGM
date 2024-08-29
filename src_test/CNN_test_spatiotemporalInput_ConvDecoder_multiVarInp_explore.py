@@ -12,6 +12,7 @@ from torch.utils.data import DataLoader, TensorDataset
 import xarray as xr
 import matplotlib.pyplot as plt
 from matplotlib.colors import SymLogNorm
+import matplotlib.colors as colors
 
 general_path = r'C:\Users\hausw001\surfdrive - Hauswirth, S.M. (Sandra)@surfdrive.surf.nl'
 
@@ -19,34 +20,34 @@ input_data = xr.open_dataset(r'..\data\temp\input_rch.nc') # in this case, groun
 target_data = xr.open_dataset(r'..\data\temp\target.nc') # in this case, water table depth
 input_data_top = xr.open_dataset(r'..\data\temp\top_uppermost_layer.nc') # upper most layer, topography?
 
-# test_i = input_data['Band1'].isel(time=1)
-# test_o = target_data['Band1'].isel(time=1)
-# fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
-# test_i.plot(ax=ax1)
-# test_o.plot(ax=ax2)
-
-lon_bounds = (6, 10) #NL bounds(3,6)
-lat_bounds = (45, 48)#NL bounds(50,54)
+# Select a region of the data for now
+lon_bounds = (5, 10) #NL bounds(3,6)
+lat_bounds = (45, 50)#NL bounds(50,54)
 
 input_data = input_data.sel(lat=slice(*lat_bounds), lon=slice(*lon_bounds))
 target_data = target_data.sel(lat=slice(*lat_bounds), lon=slice(*lon_bounds))
 input_data_top = input_data_top.sel(lat=slice(*lat_bounds), lon=slice(*lon_bounds)) 
 
 
-test_i = input_data['Band1'].isel(time=1)
-test_o = target_data['Band1'].isel(time=1)
-fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(15, 6))
-test_i.plot(ax=ax1)
-test_o.plot(ax=ax2)
-input_data_top['Band1'].plot(ax=ax3)
 
+## Plot the region data
+# test_i = input_data['Band1'].isel(time=1)
+# test_o = target_data['Band1'].isel(time=1)
+# fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(30, 10))
+# test_i.plot(ax=ax1)
+# test_o.plot(ax=ax2)
+# input_data_top['Band1'].plot(ax=ax3)
+# ax1.set_title('recharge')
+# ax2.set_title('wtd')
+# ax3.set_title('topography')
 
 # Convert xarray DataArrays to numpy arrays
 input_array = input_data.to_array().values
-#reshape input2_array to match input_array by repeating the same array for every timestep in input_array
-input2_array = np.repeat(input_data_top.to_array().values, input_array.shape[1], axis=0)
+input2_array = np.repeat(input_data_top.to_array().values, input_array.shape[1], axis=0) #reshape input2_array to match input_array by repeating the same array for every timestep in input_array
 input3_array = target_data.to_array().values
 target_array = target_data.to_array().values
+mask = np.isnan(target_array) #mask of ocean/land
+
 
 # create a mask for nan values of target_array and use on input arrays (all nan should be converted to zero)
 # mask = np.isnan(target_array) #mask of ocean/land
@@ -61,40 +62,73 @@ target_array = target_data.to_array().values
 # input2_array = np.where(mask, np.nan, input2_array)
 # input3_array = np.where(mask, np.nan, input3_array)
 
-
+# reshape arrays for input to CNN
 X1 = input_array[0, 1:, :, :] # recharge from 2nd month till last (because we want to include lagged values from wtd)
 X2 = input2_array [1: , : , :]# topography
 X3 = input3_array[0, :-1, :, :]# wtd from 1st month till second last
 y = target_array[0, 1:, :, :] # wtd from 2nd month till last
 
-X = np.stack([X1, X2, X3], axis=1)
+# create input and target arrays for CNN
+X = np.stack([X1, X2, X3], axis=1) #stack input arrays along the channel axis
 y = y[:, np.newaxis, :, :]
 
-X_flat = X.reshape(X.shape[0], X.shape[1], -1)
-y_flat = y.reshape(y.shape[0], y.shape[1], -1)
 
-maskflat = ~np.isnan(X_flat).all(axis=(0, 1))  
-# Indices of non-NaN cells
-valid_indices = np.where(maskflat)[0]  # Indices of valid cells
-# Randomly shuffle the indices
-np.random.shuffle(valid_indices)
-# Determine the split index (e.g., 80% for training, 20% for testing)
-split_idx = int(len(valid_indices) * 0.8)
-# Select train and test indices
-train_indices = valid_indices[:split_idx]
-test_indices = valid_indices[split_idx:]
-# Training data
-X_train = X_flat[:, :, train_indices]  # Shape: (11, 3, num_train_cells)
-y_train = y_flat[:, :, train_indices]  # Shape: (11, 1, num_train_cells)
-# Test data
-X_test = X_flat[:, :, test_indices]  # Shape: (11, 3, num_test_cells)
-y_test = y_flat[:, :, test_indices]  # Shape: (11, 1, num_test_cells)
+# Step 1: Random Temporal Split
+timespan = np.arange(0, X.shape[0]) #create a timespan array to include as a feature in the input array
+train_months, test_months = train_test_split(timespan, test_size=0.3, random_state=42)
+
+# Extract training and testing data for the temporal split
+Xtrain_data_temporal = X[train_months, :, :, :]  # Shape: (train_months, 3, 360, 480)
+Xtest_data_temporal = X[test_months, :, :, :]    # Shape: (test_months, 3, 360, 480)
+
+ytrain_data_temporal = y[train_months, :, :, :]  # Shape: (train_months, 1, 360, 480)
+ytest_data_temporal = y[test_months, :, :, :]    # Shape: (test_months, 1, 360, 480)
+
+# Step 2: Random Spatial Split
+lat_indices = np.arange(X.shape[2])
+lon_indices = np.arange(X.shape[3])
+
+# Randomly select grid points
+train_lat_indices, test_lat_indices = train_test_split(lat_indices, test_size=0.3, random_state=42)
+train_lon_indices, test_lon_indices = train_test_split(lon_indices, test_size=0.3, random_state=42)
 
 
-# # Split data into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-train_mask = ~np.isnan(X_train)
-test_mask = ~np.isnan(X_test)
+# Extract training and testing data for the spatial split
+Xtrain_data_spatial = Xtrain_data_temporal[:, :, train_lat_indices, :][:, :, :, train_lon_indices]
+Xtest_data_spatial = Xtest_data_temporal[:, :, test_lat_indices, :][:, :, :, test_lon_indices]
+
+ytrain_data_spatial = ytrain_data_temporal[:, :, train_lat_indices, :][:, :, :, train_lon_indices]
+ytest_data_spatial = ytest_data_temporal[:, :, test_lat_indices, :][:, :, :, test_lon_indices]
+
+
+# #idea for random sampling: reshape the array into a 2D array 
+# # and then randomly sample from the valid indices 
+# # (which would be based on the mask that still needs to be implemented)
+# # this sampling is not yet temporal though I think
+# X_flat = X.reshape(X.shape[0], X.shape[1], -1)
+# y_flat = y.reshape(y.shape[0], y.shape[1], -1)
+
+# # Indices of non-NaN cells
+# valid_indices = np.where(mask)[0]  # Indices of valid cells
+# # Randomly shuffle the indices
+# np.random.shuffle(valid_indices)
+# # Determine the split index (e.g., 80% for training, 20% for testing)
+# split_idx = int(len(valid_indices) * 0.8)
+# # Select train and test indices
+# train_indices = valid_indices[:split_idx]
+# test_indices = valid_indices[split_idx:]
+# # Training data
+# X_train = X_flat[:, :, train_indices]  # Shape: (11, 3, num_train_cells)
+# y_train = y_flat[:, :, train_indices]  # Shape: (11, 1, num_train_cells)
+# # Test data
+# X_test = X_flat[:, :, test_indices]  # Shape: (11, 3, num_test_cells)
+# y_test = y_flat[:, :, test_indices]  # Shape: (11, 1, num_test_cells)
+
+
+# # # Split data into training and testing sets
+# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# train_mask = ~np.isnan(X_train)
+# test_mask = ~np.isnan(X_test)
 
 # fill_value = 0  # or -9999, depending on your preference
 
@@ -116,8 +150,8 @@ inp_var_mean_train = [] # list to store normalisation information for denormalis
 inp_var_std_train = []
 inp_var_std_test = []
 inp_var_mean_test = []
-X_train = torch.from_numpy(X_train).float() #tranform into torch tensor
-X_test = torch.from_numpy(X_test).float()
+X_train = torch.from_numpy(Xtrain_data_spatial).float() #tranform into torch tensor
+X_test = torch.from_numpy(Xtest_data_spatial).float()
 for i in range(X_train.shape[1]):
     mean, std = normalize(X_train[:, i, :, :]) #normalise each variable separately
     inp_var_mean_train.append(mean)
@@ -131,8 +165,8 @@ out_var_mean_train = []
 out_var_std_train = []
 out_var_std_test = []
 out_var_mean_test = []
-y_train = torch.from_numpy(y_train).float() #transform into torch tensor
-y_test = torch.from_numpy(y_test).float()
+y_train = torch.from_numpy(ytrain_data_spatial).float() #transform into torch tensor
+y_test = torch.from_numpy(ytest_data_spatial).float()
 for i in range(y_train.shape[1]):
     mean, std = normalize(y_train[:, i, :, :])#normalise each variable separately
     out_var_mean_train.append(mean) # append mean and std of each variable to the list
@@ -205,15 +239,15 @@ def train_model(model, train_loader, criterion, optimizer, num_epochs=10):
         model.train()
         running_loss = 0.0
         for inputs, targets in train_loader:
-            print(f"Training input shape: {inputs.shape}")  # Debugging: print input shape
-            print(f"Training target shape: {targets.shape}")  # Debugging: print target shape
+            # print(f"Training input shape: {inputs.shape}")  # Debugging: print input shape
+            # print(f"Training target shape: {targets.shape}")  # Debugging: print target shape
 
             optimizer.zero_grad()
             outputs = model(inputs)
-            print(f"Model output shape: {outputs.shape}")  # Debugging: print output shape
+            # print(f"Model output shape: {outputs.shape}")  # Debugging: print output shape
 
             # Check shapes before the error line
-            print(f"Outputs shape: {outputs.shape}, Targets shape: {targets.shape}")
+            # print(f"Outputs shape: {outputs.shape}, Targets shape: {targets.shape}")
             loss = criterion(outputs, targets)
             # loss = masked_loss(outputs, targets, mask)
             loss.backward()
@@ -242,40 +276,154 @@ def evaluate_model(model, test_loader, criterion):
     return all_outputs   # Denormalize the outputs
 
 test_outputs = evaluate_model(model, test_loader, criterion)
-test_outputs_reshaped = test_outputs[:, 0, :, :]
 
-y_test_denorm = y_test*out_var_std_train[0].float() + out_var_mean_train[0].float() #denormalise the test outputs
-y_pred_denorm = test_outputs*out_var_std_train[0].numpy() + out_var_mean_train[0].numpy() #denormalise the predicted outputs
+
+'''running the model on original data'''
+'''extra test different region'''
+input_data = xr.open_dataset(r'..\data\temp\input_rch.nc') # in this case, groundwater recharge
+target_data = xr.open_dataset(r'..\data\temp\target.nc') # in this case, water table depth
+input_data_top = xr.open_dataset(r'..\data\temp\top_uppermost_layer.nc') # upper most layer, topography?
+# Select a region of the data for now
+# lon_bounds = (5, 10) #example swiss bounds
+# lat_bounds = (45, 50)#example swiss bounds
+lon_bounds = (9, 14) #NL bounds(3,6)
+lat_bounds = (50, 55)#NL bounds(50,54)
+
+input_data = input_data.sel(lat=slice(*lat_bounds), lon=slice(*lon_bounds))
+target_data = target_data.sel(lat=slice(*lat_bounds), lon=slice(*lon_bounds))
+input_data_top = input_data_top.sel(lat=slice(*lat_bounds), lon=slice(*lon_bounds)) 
+
+
+
+## Plot the region data
+test_i = input_data['Band1'].isel(time=1)
+test_o = target_data['Band1'].isel(time=1)
+fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(30, 10))
+test_i.plot(ax=ax1)
+test_o.plot(ax=ax2)
+input_data_top['Band1'].plot(ax=ax3)
+ax1.set_title('recharge')
+ax2.set_title('wtd')
+ax3.set_title('topography')
+
+# Convert xarray DataArrays to numpy arrays
+input_array = input_data.to_array().values
+input2_array = np.repeat(input_data_top.to_array().values, input_array.shape[1], axis=0) #reshape input2_array to match input_array by repeating the same array for every timestep in input_array
+input3_array = target_data.to_array().values
+target_array = target_data.to_array().values
+
+
+# reshape arrays for input to CNN
+X1 = input_array[0, 1:, :, :] # recharge from 2nd month till last (because we want to include lagged values from wtd)
+X2 = input2_array [1: , : , :]# topography
+X3 = input3_array[0, :-1, :, :]# wtd from 1st month till second last
+y = target_array[0, 1:, :, :] # wtd from 2nd month till last
+
+# create input and target arrays for CNN
+X = np.stack([X1, X2, X3], axis=1) #stack input arrays along the channel axis
+y = y[:, np.newaxis, :, :]
+
+# replace nan with 0 in X and y
+X = np.nan_to_num(X, copy=False, nan=0)
+y = np.nan_to_num(y, copy=False, nan=0)
+
+
+inp_var_mean = [] # list to store normalisation information for denormalisation later
+inp_var_std = []
+X_run = torch.from_numpy(X).float() #tranform into torch tensor
+for i in range(X.shape[1]):
+    mean, std = normalize(X_run[:, i, :, :]) #normalise each variable separately
+    inp_var_mean.append(mean)
+    inp_var_std.append(std)
+
+out_var_mean = []
+out_var_std = []
+y_run = torch.from_numpy(y).float() #transform into torch tensor
+for i in range(y.shape[1]):
+    mean, std = normalize(y_run[:, i, :, :])#normalise each variable separately
+    out_var_mean.append(mean) # append mean and std of each variable to the list
+    out_var_std.append(std)
+
+dataset = TensorDataset(X_run, y_run)
+data_loader = DataLoader(dataset, batch_size=1, shuffle=False)
+
+def run_model_on_full_data(model, data_loader):
+    model.eval()
+    all_outputs = []
+    with torch.no_grad():
+        for inp, tar in data_loader:
+            outputs = model(inp)
+            all_outputs.append(outputs.cpu().numpy())
+    all_outputs = np.concatenate(all_outputs, axis=0)
+    return all_outputs
+
+# Running the model on the entire dataset
+y_pred_full = run_model_on_full_data(model, data_loader)
+
+y_run_denorm = y_run*out_var_std[0].float() + out_var_mean[0].float() #denormalise the test outputs
+y_pred_denorm = y_pred_full*out_var_std[0].numpy() + out_var_mean[0].numpy() #denormalise the predicted outputs
 y_pred_denorm = y_pred_denorm[:, 0, :, :]
 
-# #use mask to replace true values of mask with nan
-# y_pred_denorm = np.where(mask[0, 0, :, :], np.nan, y_pred_denorm)
-# y_test_denorm = np.where(mask[0, 0, :, :], np.nan, y_test_denorm)
-
 y_pred_denorm = np.flip(y_pred_denorm, axis=1) 
-y_test_denorm = y_test_denorm.flip(2)
+y_run_denorm = y_run_denorm.flip(2)
 
 
-for i in range(y_pred_denorm.shape[0]):
-    vmax = max([y_test_denorm.max(),y_pred_denorm.max()])
-    vmin = min([y_test_denorm.min(),y_pred_denorm.min()])
+for i in range(y_pred_denorm.shape[0])[:]:
+    vmax = max([y_run_denorm.max(),y_pred_denorm.max()])
+    vmin = min([y_run_denorm.min(),y_pred_denorm.min()])
     plt.figure(figsize=(10, 8))
     plt.subplot(2, 2, 1)
     plt.title('Actual Groundwater Depth')
-    plt.imshow(y_test_denorm[i, 0, :, :], cmap='viridis')#,vmin=vmin,vmax=vmax)
+    plt.imshow(y_run_denorm[i, 0, :, :], cmap='viridis',vmin=vmin,vmax=vmax)
     plt.colorbar()
 
     plt.subplot(2, 2, 2)
     plt.title('Predicted Groundwater Depth')
-    plt.imshow(y_pred_denorm[i], cmap='viridis')#,vmin=vmin,vmax=vmax)
+    plt.imshow(y_pred_denorm[i], cmap='viridis',vmin=vmin,vmax=vmax)
     plt.colorbar()
     plt.title(f"Model Output {i+1}")
 
-    diff = y_test_denorm[i, 0, :, :] - y_pred_denorm[i]
+    diff = y_run_denorm[i, 0, :, :] - y_pred_denorm[i]
+    diff_del = y_pred_denorm[i] - y_run_denorm[i-1, 0, :, :] #delta between predicted and previous actual
+    diff_act = y_run_denorm[i, 0, :, :] - y_run_denorm[i-1, 0, :, :]  
+    #TODO scatterplot of y_pred_denorm vs y_run_denorm
+    #TODO also plot diff_del
+    vmax_diff = max([diff.max(),diff_act.max()])
+    vmin_diff = min([diff.min(),diff_act.min()])
+    
     plt.subplot(2, 2, 3)
     plt.title('Predicted Groundwater Depth')
-    plt.imshow(diff, cmap='coolwarm', norm=SymLogNorm(linthresh=1))
-    plt.colorbar()
+    plt.text(0, 60, 'min=%s, max=%s' %(np.array(diff).min(),np.array(diff).max()), fontsize = 12)
+    # pcm = plt.imshow(diff, cmap='RdBu', norm=colors.CenteredNorm())#, norm=SymLogNorm(linthresh=1))
+    pcm = plt.imshow(diff, cmap='RdBu', norm=SymLogNorm(linthresh=1))
+    plt.colorbar(pcm, orientation='vertical')
     plt.title(f"Difference OG-Pred {i+1}")
     plt.tight_layout()
 
+    if i == 0:
+        continue
+    else:
+        plt.subplot(2, 2, 4)
+        plt.title('Actual Groundwater Depth')
+        plt.text(0, 60, 'min=%s, max=%s' %(np.array(diff_act).min(),np.array(diff_act).max()), fontsize = 12)
+        # pcm = plt.imshow(diff_act, cmap='RdBu', norm=colors.CenteredNorm())#, norm=SymLogNorm(linthresh=1))norm=SymLogNorm(linthresh=1))
+        pcm = plt.imshow(diff_act, cmap='RdBu', norm=SymLogNorm(linthresh=1))# norm=SymLogNorm(linthresh=1))
+        plt.colorbar(pcm, orientation='vertical')
+        plt.title(f"Difference OG{i} - OG{i+1}")    
+        plt.tight_layout()
+
+        #plot diff_del
+        
+
+
+# highlight regions on original map by drawing a rectangle based on the lat and lon bounds
+lon_bounds_old = (5, 10) #example swiss bounds
+lat_bounds_old = (45, 50)#example swiss bounds
+map = xr.open_dataset(r'..\data\temp\target.nc') # in this case, water table depth
+# map = map.sel(lat=slice(*lat_bounds), lon=slice(*lon_bounds))
+map = map['Band1'].isel(time=1)
+fig, ax = plt.subplots()
+map.plot(ax=ax)
+ax.add_patch(plt.Rectangle((lon_bounds[0], lat_bounds[0]), lon_bounds[1] - lon_bounds[0], lat_bounds[1] - lat_bounds[0], fill=None, color='red'))
+ax.add_patch(plt.Rectangle((lon_bounds_old[0], lat_bounds_old[0]), lon_bounds_old[1] - lon_bounds_old[0], lat_bounds_old[1] - lat_bounds_old[0], fill=None, color='blue'))
+plt.show()

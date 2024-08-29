@@ -92,19 +92,18 @@ plt.colorbar()
 plt.title('WTD for one month')
 
 
-
 y = wtd[1:, np.newaxis, :, :]
-X = np.stack([abs_lower[1:,:,:], abs_upper[1:,:,:], 
-              bed_cond[1:,:,:], 
-              bottom_lower[1:,:,:], bottom_upper[1:,:,:], 
-              drain_cond[1:,:,:], drain_elev_lower[1:,:,:], drain_elev_upper[1:,:,:], 
-              hor_cond_lower[1:,:,:], hor_cond_upper[1:,:,:], 
-              init_head_lower[1:,:,:], init_head_upper[1:,:,:], 
+X = np.stack([#abs_lower[1:,:,:], abs_upper[1:,:,:], 
+              #bed_cond[1:,:,:], 
+              #bottom_lower[1:,:,:], bottom_upper[1:,:,:], 
+              #drain_cond[1:,:,:], drain_elev_lower[1:,:,:], drain_elev_upper[1:,:,:], 
+              #hor_cond_lower[1:,:,:], hor_cond_upper[1:,:,:], 
+              #init_head_lower[1:,:,:], init_head_upper[1:,:,:], 
               recharge[1:,:,:], 
-              prim_stor_coeff_lower[1:,:,:], prim_stor_coeff_upper[1:,:,:], 
-              surf_wat_bed_elev[1:,:,:], surf_wat_elev[1:,:,:], 
+              #prim_stor_coeff_lower[1:,:,:], prim_stor_coeff_upper[1:,:,:], 
+              #surf_wat_bed_elev[1:,:,:], surf_wat_elev[1:,:,:], 
               top_upper[1:,:,:], 
-              vert_cond_lower[1:,:,:], vert_cond_upper[1:,:,:], #vert_cond_lower has inf values (for the test case of CH -> in prep fct fill with 0 )
+              #vert_cond_lower[1:,:,:], vert_cond_upper[1:,:,:], #vert_cond_lower has inf values (for the test case of CH -> in prep fct fill with 0 )
               wtd[:-1, :, :]
               ], axis=1)
 
