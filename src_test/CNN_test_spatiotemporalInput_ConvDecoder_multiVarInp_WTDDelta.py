@@ -16,7 +16,6 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import SymLogNorm
 import matplotlib.colors as colors
 
-#TODO more epochs
 
 random.seed(10)
 print(random.random())
@@ -101,9 +100,9 @@ plt.title('WTD for one month') #arrays are flipped so plotting might look weird
 
 # calculate the delta wtd for each month
 delta_wtd = np.diff(wtd, axis=0) #wtd is always for end of the month so here for example delta wtd between jan and feb means the delta for feb
-wtd0 = wtd[0, :, :]
-wtd1 = wtd[1, :, :]
-dwtd = wtd1 - wtd0 #this is the same as delta_wtd[0, :, :] #so e.g. delta between feb and jan
+# wtd0 = wtd[0, :, :]
+# wtd1 = wtd[1, :, :]
+# dwtd = wtd1 - wtd0 #this is the same as delta_wtd[0, :, :] #so e.g. delta between feb and jan
 
 # define target (y) and input (X) arrays for the CNN
 #TODO: double check if datashift makes sense for delta wtd as target and corresponding input
@@ -156,36 +155,39 @@ for i in range(y.shape[1]):
     out_var_mean.append(mean) # append mean and std of each variable to the list
     out_var_std.append(std)
 
-# Random Temporal Split
-timespan = np.arange(0, X.shape[0]) #create a timespan array to include as a feature in the input array
-train_months, test_months = train_test_split(timespan, test_size=0.3, random_state=42)
+# # Random Temporal Split
+# timespan = np.arange(0, X.shape[0]) #create a timespan array to include as a feature in the input array
+# train_months, test_months = train_test_split(timespan, test_size=0.3, random_state=42)
 
-# Extract training and testing data for the temporal split
-Xtrain_data_temporal = X[train_months, :, :, :]  
-Xtest_data_temporal = X[test_months, :, :, :]    
+# # Extract training and testing data for the temporal split
+# Xtrain_data_temporal = X[train_months, :, :, :]  
+# Xtest_data_temporal = X[test_months, :, :, :]    
 
-ytrain_data_temporal = y[train_months, :, :, :]  
-ytest_data_temporal = y[test_months, :, :, :] 
+# ytrain_data_temporal = y[train_months, :, :, :]  
+# ytest_data_temporal = y[test_months, :, :, :] 
 
-#  Random Spatial Split
-lat_indices = np.arange(X.shape[2])
-lon_indices = np.arange(X.shape[3])
+# #  Random Spatial Split
+# lat_indices = np.arange(X.shape[2])
+# lon_indices = np.arange(X.shape[3])
 
-# Randomly select grid points
-train_lat_indices, test_lat_indices = train_test_split(lat_indices, test_size=0.3, random_state=42)
-train_lon_indices, test_lon_indices = train_test_split(lon_indices, test_size=0.3, random_state=42)
+# # Randomly select grid points
+# train_lat_indices, test_lat_indices = train_test_split(lat_indices, test_size=0.3, random_state=42)
+# train_lon_indices, test_lon_indices = train_test_split(lon_indices, test_size=0.3, random_state=42)
 
-# Extract training and testing data for the spatial split
-Xtrain_data_spatial = Xtrain_data_temporal[:, :, train_lat_indices, :][:, :, :, train_lon_indices]
-Xtest_data_spatial = Xtest_data_temporal[:, :, test_lat_indices, :][:, :, :, test_lon_indices]
+# # Extract training and testing data for the spatial split
+# Xtrain_data_spatial = Xtrain_data_temporal[:, :, train_lat_indices, :][:, :, :, train_lon_indices]
+# Xtest_data_spatial = Xtest_data_temporal[:, :, test_lat_indices, :][:, :, :, test_lon_indices]
 
-ytrain_data_spatial = ytrain_data_temporal[:, :, train_lat_indices, :][:, :, :, train_lon_indices]
-ytest_data_spatial = ytest_data_temporal[:, :, test_lat_indices, :][:, :, :, test_lon_indices]
+# ytrain_data_spatial = ytrain_data_temporal[:, :, train_lat_indices, :][:, :, :, train_lon_indices]
+# ytest_data_spatial = ytest_data_temporal[:, :, test_lat_indices, :][:, :, :, test_lon_indices]
 
-X_train = Xtrain_data_spatial
-X_test = Xtest_data_spatial
-y_train = ytrain_data_spatial
-y_test = ytest_data_spatial
+# X_train = Xtrain_data_spatial
+# X_test = Xtest_data_spatial
+# y_train = ytrain_data_spatial
+# y_test = ytest_data_spatial
+
+#TODO: test old splitting method
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
 
 # Create DataLoader
 train_dataset = TensorDataset(X_train, y_train)
@@ -308,7 +310,7 @@ map_tile = xr.open_dataset(r'..\data\temp\target.nc')
 map_tile = map_tile['Band1'].isel(time=1)
 
 
-for i in range(y_pred_denorm.shape[0])[:1]:
+for i in range(y_pred_denorm.shape[0])[:]:
     # print(i)
     #X_wtd is the full 12 months, while y_pred_denorm is shifted by 1 month resulting in 11 months, 
     # here calculate the wtd which is the first month of X_wtd + the predicted delta wtd and then 
@@ -386,7 +388,7 @@ for i in range(y_pred_denorm.shape[0])[:1]:
     ax.add_patch(plt.Rectangle((lon_bounds[0], lat_bounds[0]), lon_bounds[1] - lon_bounds[0], lat_bounds[1] - lat_bounds[0], fill=None, color='red'))
     plt.tight_layout()
     
-    plt.savefig(r'..\data\temp\plots\plot_%s.png' %(i))
+    plt.savefig(r'..\data\temp\plots\plot_timesplit_%s.png' %(i))
 
         
 
