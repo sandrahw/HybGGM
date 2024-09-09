@@ -13,6 +13,10 @@ for file in files[:]:
     # open the map file
     fileN = str.split(file, '\\')[-1]
     fileN = fileN[:-4]
+    # check if file already excist in input_netcdfs folder
+    if glob.glob(r'%s\%s.nc' %(input_netcdfs,fileN)):
+        print('file already exists')
+        continue
     temp = gdal.Open(file)
     driver = gdal.GetDriverByName('NetCDF')
     temp_copy = driver.CreateCopy(r'%s\%s.nc' %(input_netcdfs,fileN), temp, 0)
@@ -25,8 +29,8 @@ output_tif = r'%s\Data\GLOBGM\output\transient_1958-2015\tif' %(general_path)
 output_netcdf = r'%s\Data\GLOBGM\output\transient_1958-2015\netcdf' %(general_path)
 
 
-files = glob.glob(r'%s\*.tif' %(output_tif))
-for file in files[1:]:
+files = glob.glob(r'%s\*wtd-2*.tif' %(output_tif))
+for file in files[:]:
     print(file)
     # open the map file
     fileN = str.split(file, '\\')[-1]
