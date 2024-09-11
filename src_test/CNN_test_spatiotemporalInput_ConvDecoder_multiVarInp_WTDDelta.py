@@ -340,8 +340,6 @@ def evaluate_model(model, test_loader, criterion, writer=None, epoch=0):
 
 test_outputs = evaluate_model(model, test_loader, criterion, writer=writer)
 
-
-
 def plot_tensorboard_logs(log_dir):
     # List all event files in the log directory
     event_files = [os.path.join(log_dir, f) for f in os.listdir(log_dir) if 'events.out.tfevents' in f]
@@ -360,10 +358,10 @@ def plot_tensorboard_logs(log_dir):
 
     # Extract scalars
     loss_train = event_acc.Scalars('Loss/train_epoch')
-    print('loss train', loss_train)
+    # print('loss train', loss_train)
 
-    event_acc = EventAccumulator(event_files[1])
-    event_acc.Reload()
+    # event_acc = EventAccumulator(event_files[1])
+    # event_acc.Reload()
 
     loss_test = event_acc.Scalars('Loss/test_epoch')
     print('loss test', loss_test)
@@ -378,24 +376,21 @@ def plot_tensorboard_logs(log_dir):
         test_loss.append(loss_test[i].value)
 
     # Plot the training and test losses
-    plt.figure(figsize=(12, 5))
-    plt.subplot(1, 2, 1)
+    plt.figure(figsize=(10, 5))
     plt.plot(stepstr, train_loss, label='Train Loss', color='blue')
     plt.scatter(stepste, test_loss, label='Test Loss', color='orange')
     plt.xlabel('Steps')
     plt.ylabel('Loss')
     plt.title('Training and Test Loss')
     plt.legend()
-
     plt.tight_layout()
-    plt.show()
     plt.savefig(r'..\training\logs\%s\training_loss.png' %(def_epochs))
 
 plot_tensorboard_logs(log_directory)
 
 
 '''running the model on original data'''
-dataset = TensorDataset(transformArrayToTensor(X), transformArrayToTensor(y))
+dataset = TensorDataset(transformArrayToTensor(X_norm), transformArrayToTensor(y_norm)) 
 data_loader = DataLoader(dataset, batch_size=1, shuffle=False)
 
 model_reload = SimpleCNN()
@@ -434,8 +429,8 @@ mask_na = np.where(mask==0, np.nan, mask)
 mask_na = np.flip(mask_na, axis=1)
 mask_na = mask_na[0,:,:]
 
-for i in range(y_pred_denorm.shape[0])[-2:-1]:
-    # print(i)
+for i in range(y_pred_denorm.shape[0])[-12:]:
+    print(i)
     #X_wtd is the full 12 months, while y_pred_denorm is shifted by 1 month resulting in 11 months, 
     # here calculate the wtd which is the first month of X_wtd + the predicted delta wtd and then 
     # compare to X_wtd[i+1] which is the actual wtd for the same month as delta wtd was predicted
@@ -443,18 +438,18 @@ for i in range(y_pred_denorm.shape[0])[-2:-1]:
 
     vmax = max([pred_wtd.max(),X_wtd[i:, :, :].max()])
     vmin = min([pred_wtd.min(),X_wtd[i:, :, :].min()])
-    # lim = np.max([np.abs(vmax), np.abs(vmin)])
+    lim = np.max([np.abs(vmax), np.abs(vmin)])
     
     plt.figure(figsize=(20, 8))
     plt.subplot(2, 4, 1)
     plt.title('Actual WTD (OG) month %s' %(i+2))
-    plt.imshow(X_wtd[i+1, :, :]*mask_na, cmap='viridis',norm=SymLogNorm(linthresh=1))#, vmin=vmin, vmax=vmax) #plot the actual wtd that to compare wtd+delta wtd
+    plt.imshow(X_wtd[i+1, :, :]*mask_na, cmap='viridis', vmin=vmin, vmax=vmax) #plot the actual wtd that to compare wtd+delta wtd
     plt.colorbar(shrink=0.8)
     plt.tight_layout()
 
     plt.subplot(2, 4, 2)
     plt.title('Predicted WTD')
-    plt.imshow(pred_wtd, cmap='viridis',norm=SymLogNorm(linthresh=1))#, vmin=vmin,vmax=vmax)#,vmin=vmin,vmax=vmax)
+    plt.imshow(pred_wtd*mask_na, cmap='viridis', vmin=vmin,vmax=vmax)#,vmin=vmin,vmax=vmax)
     plt.colorbar(shrink=0.8)
     plt.tight_layout()
 
@@ -480,7 +475,7 @@ for i in range(y_pred_denorm.shape[0])[-2:-1]:
     lim = np.max([np.abs(vmax), np.abs(vmin)])
     plt.subplot(2, 4, 4)
     plt.title('diff actual vs sim wtd')
-    pcm = plt.imshow(diff, cmap='RdBu', norm=SymLogNorm(linthresh=1))#vmin=-lim, vmax=lim)#norm=SymLogNorm(linthresh=1))#norm=colors.CenteredNorm()) #difference between wtd and calculated wtd
+    pcm = plt.imshow(diff, cmap='RdBu',vmin=-lim, vmax=lim)#norm=SymLogNorm(linthresh=1))#norm=colors.CenteredNorm()) #difference between wtd and calculated wtd
     plt.colorbar(pcm, orientation='vertical',shrink=0.8)
     plt.tight_layout()
 
@@ -488,7 +483,7 @@ for i in range(y_pred_denorm.shape[0])[-2:-1]:
     vmin = np.nanmin(y_run_og[i,:,:]*mask_na)
     lim = np.max([np.abs(vmax), np.abs(vmin)])
     plt.subplot(2, 4, 5)
-    pcm = plt.imshow(y_run_og[i,:,:]*mask_na, cmap='RdBu', norm=SymLogNorm(linthresh=1))# vmin=-lim, vmax=lim)# norm=SymLogNorm(linthresh=1)) # delta wtd that was target
+    pcm = plt.imshow(y_run_og[i,:,:]*mask_na, cmap='RdBu',  vmin=-lim, vmax=lim)# norm=SymLogNorm(linthresh=1)) # delta wtd that was target
     plt.colorbar(pcm, orientation='vertical', shrink=0.8)
     plt.title(f"OG delta WTD")
     plt.tight_layout()
@@ -497,7 +492,7 @@ for i in range(y_pred_denorm.shape[0])[-2:-1]:
     vmin = np.nanmin(y_pred_denorm[i,:,:]*mask_na)
     lim = np.max([np.abs(vmax), np.abs(vmin)])
     plt.subplot(2, 4, 6)
-    pcm = plt.imshow(y_pred_denorm[i,:,:]*mask_na, cmap='RdBu', norm=SymLogNorm(linthresh=1))#, vmin=-lim, vmax=lim)#, norm=SymLogNorm(linthresh=1))#norm=colors.CenteredNorm())# norm=SymLogNorm(linthresh=1)) #delta wtd that was predicted
+    pcm = plt.imshow(y_pred_denorm[i,:,:]*mask_na, cmap='RdBu', vmin=-lim, vmax=lim)#, norm=SymLogNorm(linthresh=1))#norm=colors.CenteredNorm())# norm=SymLogNorm(linthresh=1)) #delta wtd that was predicted
     plt.colorbar(pcm, orientation='vertical', shrink=0.8)
     plt.title(f"predicted delta WTD")    
     plt.tight_layout()
@@ -523,11 +518,18 @@ for i in range(y_pred_denorm.shape[0])[-2:-1]:
     ax.add_patch(plt.Rectangle((lon_bounds[0], lat_bounds[0]), lon_bounds[1] - lon_bounds[0], lat_bounds[1] - lat_bounds[0], fill=None, color='red'))
     plt.tight_layout()
     
-    plt.savefig(r'..\data\temp\plots\plot_timesplit_%s.png' %(i))
+    plt.savefig(r'..\training\spatial_eval_plots\plot_timesplit_%s.png' %(i))
 
 
 
         
+
+
+
+
+
+
+
 
 # ''' running it on a different region from the same tile'''
 # lon_bounds = (9, 14) #NL bounds(3,6)
