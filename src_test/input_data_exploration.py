@@ -19,15 +19,16 @@ lat_bounds = (50,54)#NL bounds(50,54)
 
 #create mask (for land/ocean)
 map_tile = xr.open_dataset(r'..\data\temp\wtd.nc')
-# map_cut = map_tile.sel(lat=slice(*lat_bounds), lon=slice(*lon_bounds))
-# mask = map_cut.to_array().values
-mask = map_tile.to_array().values
+map_cut = map_tile.sel(lat=slice(*lat_bounds), lon=slice(*lon_bounds))
+mask = map_cut.to_array().values
+# mask = map_tile.to_array().values
 # mask where everything that is nan is 0 and everything else is 1
 mask = np.nan_to_num(mask, copy=False, nan=0)
 mask = np.where(mask==0, 0, 1)
 mask = mask[0, :, :]
 mask = np.flip(mask, axis=1)
 mask_na = np.where(mask==0, np.nan, 1)
+
 
 
 inFiles = glob.glob(r'..\data\temp\*.nc') #load all input files in the folder
@@ -49,13 +50,13 @@ params_initial = ['bottom_lowermost_layer', 'bottom_uppermost_layer',
  'vertical_conductivity_lowermost_layer', 'vertical_conductivity_uppermost_layer']
 
 
-for file in inFiles[:]:
+for file in inFiles[-3:-2]:
     print(file)
     param = file.split('\\')[-1].split('.')[0]
 
     data = xr.open_dataset(file)
-    # data_cut = data.sel(lat=slice(*lat_bounds), lon=slice(*lon_bounds))
-    data_cut = data.copy()
+    data_cut = data.sel(lat=slice(*lat_bounds), lon=slice(*lon_bounds))
+    # data_cut = data.copy()
     data_array = data_cut.to_array().values
     if param in params_monthly:
         data_array_flipped = np.flip(data_array, axis=2)
@@ -71,7 +72,8 @@ for file in inFiles[:]:
     if np.isinf(data_array[0, :, :]).any():
         mask_inf = np.where(data_array[0, :, :].flatten()==np.inf, 0, 1)
         mask_inf = mask_inf.reshape(data_array[0, :, :].shape)
-        plt.imshow(mask_inf)
+        mask_flipped = np.flip(mask_inf, axis=0)
+        plt.imshow(mask_flipped)
         plt.title('inf values in data', fontsize=30)
         plt.colorbar(shrink=0.8,  ticks=[0, 1])
         plt.tight_layout()
@@ -178,6 +180,6 @@ for file in inFiles[:]:
     plt.title('distribution of masked data all months', fontsize=30)
     plt.tight_layout()
 
-    plt.savefig(r'..\data\temp\input_data_plots\%s_tile48.png' %param)
+    plt.savefig(r'..\data\temp\input_data_plots\%s_48.png' %param)
     plt.close()
 

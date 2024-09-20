@@ -23,12 +23,27 @@ print(random.random())
 
 general_path = r'C:\Users\hausw001\surfdrive - Hauswirth, S.M. (Sandra)@surfdrive.surf.nl'
 
+# define the number of months in the dataset and the number of epochs
+data_length = 72 # number of months in current dataset (needed for dataprep function to extend the static parameters)
+def_epochs = 3
+
+log_directory = r'..\training\logs\%s' %(def_epochs)
+log_dir_fig = r'..\training\logs\%s\spatial_eval_plots' %(def_epochs)
+#create folder in case not there yet
+if not os.path.exists(log_directory):
+    os.makedirs(log_directory) 
+if not os.path.exists(log_dir_fig):
+    os.makedirs(log_dir_fig)
+
+# define the lat and lon bounds for the test region
 # lon_bounds = (5, 10) #CH bounds(5,10)
 # lat_bounds = (45, 50)#CH bounds(45,50)
 
 lon_bounds = (3,6) #NL bounds(3,6)
 lat_bounds = (50,54)#NL bounds(50,54)
 
+# lat_bounds = (52, 53)
+# lon_bounds = (4, 5)
 #create mask (for land/ocean)
 map_tile = xr.open_dataset(r'..\data\temp\wtd.nc')
 map_cut = map_tile.sel(lat=slice(*lat_bounds), lon=slice(*lon_bounds))
@@ -37,10 +52,8 @@ mask = map_cut.to_array().values
 mask = np.nan_to_num(mask, copy=False, nan=0)
 mask = np.where(mask==0, 0, 1)
 mask = mask[0, :, :]
+plt.imshow(mask[0, :, :])
 
-# define the number of months in the dataset and the number of epochs
-data_length = 72 # number of months in current dataset (needed for dataprep function to extend the static parameters)
-def_epochs = 11
 
 inFiles = glob.glob(r'..\data\temp\*.nc') #load all input files in the folder
 
@@ -120,13 +133,8 @@ plt.title('Mask')
 plt.imshow(mask[0,:,:])
 
 
-
 # calculate the delta wtd for each month
 delta_wtd = np.diff(wtd, axis=0) #wtd is always for end of the month so here for example delta wtd between jan and feb means the delta for feb
-# wtd0 = wtd[0, :, :]
-# wtd1 = wtd[1, :, :]
-# dwtd = wtd1 - wtd0 #this is the same as delta_wtd[0, :, :] #so e.g. delta between feb and jan
-
 
 # define target (y) and input (X) arrays for the CNN
 y = delta_wtd[:, np.newaxis, :, :] #shape[timesteps, channels, lat, lon]
@@ -146,130 +154,233 @@ X_All = np.stack([abs_lower, abs_upper,
               ], axis=1)
 X = X_All[1:,:,:,:] #remove first month to match the delta wtd data
 
-#check if nan or inf values in X
-for i in range(X.shape[1]):
-    print(f"Number of NaN values in variable {i}: {np.isnan(X[:, i, :, :]).sum()}")
-for i in range(X.shape[1]):   
-    print(f"Number of inf values in variable {i}: {np.isinf(X[:, i, :, :]).sum()}")
-for i in range(y.shape[1]):
-    print(f"Number of NaN values in variable {i}: {np.isnan(y[:, i, :, :]).sum()}")
-    print(f"Number of inf values in variable {i}: {np.isinf(y[:, i, :, :]).sum()}")
 
-
-def normalize(df):
-    mean = df.mean()
-    std = df.std()
-    df -= mean 
-    df /= std
-    return   mean, std
-
-#TODO include mask for normalisation
+# normalising the data for every array and save mean and std for denormalisation
 inp_var_mean = [] # list to store normalisation information for denormalisation later
 inp_var_std = []
-X_norm= X.copy()#torch.from_numpy(X).float() #tranform into torch tensor
-for i in range(X_norm.shape[1]):
-    mean, std = normalize(X_norm[:, i, :, :]) #normalise each variable separately
+X_norm = []
+
+for i in range(X.shape[1]):
+    mean = X[:, i, :, :].mean()
+    std = X[:, i, :, :].std()
+    # check if every value in array is 0, if so, skip normalisation
+    if X[:, i, :, :].max() == 0 and X[:, i, :, :].min() == 0:
+        print('skipped normalisation for array %s' %i)
+        X_temp = X[:, i, :, :]
+    else:
+        X_temp = (X[:, i, :, :] - mean) / std
+    # print(mean, std, X_temp)
+    X_norm.append(X_temp)
     inp_var_mean.append(mean)
     inp_var_std.append(std)
+X_norm_arr = np.array(X_norm)
+X_norm_arr = X_norm_arr.transpose(1, 0, 2, 3)
+
 
 out_var_mean = []
 out_var_std = []
-y_norm =  y.copy()#torch.from_numpy(y).float() #transform into torch tensor
-for i in range(y_norm.shape[1]):
-    mean, std = normalize(y_norm[:, i, :, :])#normalise each variable separately
-    out_var_mean.append(mean) # append mean and std of each variable to the list
+y_norm = []
+for i in range(y.shape[1]):
+    mean = y[:, i, :, :].mean()
+    std = y[:, i, :, :].std()
+    y_temp = (y[:, i, :, :] - mean) / std
+    y_norm.append(y_temp)
+    out_var_mean.append(mean)
     out_var_std.append(std)
+y_norm_arr = np.array(y_norm)
+y_norm_arr = y_norm_arr.transpose(1, 0, 2, 3)
 
-# # Random Temporal Split
-# timespan = np.arange(0, X.shape[0]) #create a timespan array to include as a feature in the input array
-# train_months, test_months = train_test_split(timespan, test_size=0.3, random_state=42)
 
-# # Extract training and testing data for the temporal split
-# Xtrain_data_temporal = X[train_months, :, :, :]  
-# Xtest_data_temporal = X[test_months, :, :, :]    
+# def normalize(tensor):
+#     mean = tensor.mean()
+#     std = tensor.std()
+#     tensor -= mean 
+#     tensor /= std
+#     return   mean, std
+# inp_var_mean_new = [] # list to store normalisation information for denormalisation later
+# inp_var_std_new = []
+# X_norm_new= torch.from_numpy(X).float() #
+# for i in range(X.shape[1]):
+#     mean, std = normalize(X_norm_new[:, i, :, :]) #normalise each variable separately
+#     inp_var_mean_new.append(mean)
+#     inp_var_std_new.append(std)
 
-# ytrain_data_temporal = y[train_months, :, :, :]  
-# ytest_data_temporal = y[test_months, :, :, :] 
+# out_var_mean_new = []
+# out_var_std_new = []
+# y_norm_new = torch.from_numpy(y).float() #transform into torch tensor
+# for i in range(y.shape[1]):
+#     mean, std = normalize(y_norm_new[:, i, :, :])#normalise each variable separately
+#     out_var_mean_new.append(mean) # append mean and std of each variable to the list
+#     out_var_std_new.append(std)
 
-# #  Random Spatial Split
-# lat_indices = np.arange(X.shape[2])
-# lon_indices = np.arange(X.shape[3])
 
-# # Randomly select grid points
-# train_lat_indices, test_lat_indices = train_test_split(lat_indices, test_size=0.3, random_state=42)
-# train_lon_indices, test_lon_indices = train_test_split(lon_indices, test_size=0.3, random_state=42)
+#transform ndarrays of training and test data into torch tensors
 
-# # Extract training and testing data for the spatial split
-# Xtrain_data_spatial = Xtrain_data_temporal[:, :, train_lat_indices, :][:, :, :, train_lon_indices]
-# Xtest_data_spatial = Xtest_data_temporal[:, :, test_lat_indices, :][:, :, :, test_lon_indices]
+# ## Create DataLoader
+# train_dataset = TensorDataset(transformArrayToTensor(X_train_all), transformArrayToTensor(y_train_all))
+# test_dataset = TensorDataset(transformArrayToTensor(X_test_all), transformArrayToTensor(y_test_all))
+# train_loader = DataLoader(train_dataset, batch_size=1, shuffle=True)
+# test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False)
 
-# ytrain_data_spatial = ytrain_data_temporal[:, :, train_lat_indices, :][:, :, :, train_lon_indices]
-# ytest_data_spatial = ytest_data_temporal[:, :, test_lat_indices, :][:, :, :, test_lon_indices]
+'''TODO: create selection of training,testing and validation data
+ where I use areas of e.g. 50x50 pixels and then select them randomly'''
 
-# X_train = Xtrain_data_spatial
-# X_test = Xtest_data_spatial
-# y_train = ytrain_data_spatial
-# y_test = ytest_data_spatial
 
 #This is the old splitting method
-X_train_all, X_test_all, y_train_all, y_test_all = train_test_split(X, y, test_size=0.4, random_state=42)
-#TODO: detach mask from y_train and y_test
-# mask extracted from train test split
-X_train_mask = X_train_all[:, -1, :, :]
-X_test_mask = X_test_all[:, -1, :, :]
-y_train_mask = y_train_all[:, -1, :, :]
-y_test_mask = y_test_all[:, -1, :, :]
-
+X_train_all, X_test_all, y_train_all, y_test_all = train_test_split(X_norm_arr, y_norm_arr, test_size=0.4, random_state=42)
 # remove mask from input data train and test
 X_train = X_train_all[:, :-1, :, :]
 X_test = X_test_all[:, :-1, :, :]
-y_train = y_train_all[:, :-1, :, :]
-y_test = y_test_all[:, :-1, :, :]
+y_train = y_train_all.copy()
+y_test = y_test_all.copy()
 
-#transform ndarrays of training and test data into torch tensors
+# mask extracted from train test split
 def transformArrayToTensor(array):
     return torch.from_numpy(array).float()
-# Create DataLoader
-train_dataset = TensorDataset(transformArrayToTensor(X_train_all), transformArrayToTensor(y_train_all))
-test_dataset = TensorDataset(transformArrayToTensor(X_test_all), transformArrayToTensor(y_test_all))
+
+
+def train_test_mask(data):
+    data_mask = data[:, -1, :, :]
+    data_mask = data_mask[:, np.newaxis, :, :]
+    # data_mask_ex = np.repeat(data_mask, data.shape[1]-1, axis=1)
+    data_mask_tensor = transformArrayToTensor(data_mask)
+    data_mask_binary = data_mask_tensor.type(torch.ByteTensor)
+    data_mask_bool = data_mask_binary.bool()
+    return data_mask_bool
+X_train_mask = train_test_mask(X_train_all)
+X_test_mask = train_test_mask(X_test_all)
+y_train_mask = train_test_mask(X_train_all) #does it make sense to use the Xtrain mask as target as well? 
+y_test_mask = train_test_mask(X_test_all)
+
+
+#create new dataset and dataloader for combined loss function incl mask
+from torch.utils.data import Dataset, DataLoader
+class CustomDataset(Dataset):
+    def __init__(self, data, labels, masks, transform=None):
+        """
+        Args:
+            data (torch.Tensor or numpy array): Input data (e.g., images).
+            labels (torch.Tensor or numpy array): Corresponding labels for the input data.
+            masks (torch.Tensor or numpy array): Masks corresponding to each input data.
+            transform (callable, optional): Optional transform to be applied
+                on a sample (e.g., for data augmentation).
+        """
+        self.data = data
+        self.labels = labels
+        self.masks = masks
+        self.transform = transform
+
+    def __len__(self):
+        return len(self.data)
+
+    def __getitem__(self, idx):
+        # Get the input data, label, and mask for the given index
+        input_data = self.data[idx]
+        label = self.labels[idx]
+        mask = self.masks[idx]
+
+        # Apply any transformations if specified
+        if self.transform:
+            input_data = self.transform(input_data)
+
+        return input_data, label, mask
+# Create dataset instances
+train_dataset = CustomDataset(X_train, y_train, X_train_mask)
+test_dataset = CustomDataset(X_test, y_test, y_test_mask)
+
+# Create DataLoader instances
 train_loader = DataLoader(train_dataset, batch_size=1, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False)
 
 
-# Define the CNN model
-class SimpleCNN(nn.Module):
-    def __init__(self):
-        super(SimpleCNN, self).__init__()
-        
-        # Convolutional layers
-        self.conv1 = nn.Conv2d(22, 16, kernel_size=3, padding=1)  # Input: 3 channels (recharge, levels, topography)
-        self.conv2 = nn.Conv2d(16, 32, kernel_size=3, padding=1)
-        self.conv3 = nn.Conv2d(32, 64, kernel_size=3, padding=1)
-        
-        # Decoder (upsampling layers)
-        self.conv4 = nn.Conv2d(64, 32, kernel_size=3, padding=1)
-        self.conv5 = nn.Conv2d(32, 16, kernel_size=3, padding=1)
-        self.conv6 = nn.Conv2d(16, 1, kernel_size=3, padding=1)  # Output: 1 channel (WTD)
-    
+class ConvBlock(nn.Module):
+    def __init__(self, in_channels, out_channels):
+        super(ConvBlock, self).__init__()
+        self.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=7, padding=3)
+        self.bn1 = nn.BatchNorm2d(out_channels)
+        self.conv2 = nn.Conv2d(out_channels, out_channels, kernel_size=7, padding=3)
+        self.bn2 = nn.BatchNorm2d(out_channels)
+        self.relu = nn.ReLU(inplace=True)
+
     def forward(self, x):
-        # Encoder
-        x = F.relu(self.conv1(x))
-        x = F.relu(self.conv2(x))
-        x = F.relu(self.conv3(x))
-        
-        # Decoder
-        x = F.relu(self.conv4(x))
-        x = F.relu(self.conv5(x))
-        x = self.conv6(x)  # No activation here, let the loss function handle it
-        
+        x = self.relu(self.bn1(self.conv1(x)))
+        x = self.relu(self.bn2(self.conv2(x)))
         return x
 
+class EncoderBlock(nn.Module):
+    def __init__(self, in_channels, out_channels):
+        super(EncoderBlock, self).__init__()
+        self.conv = ConvBlock(in_channels, out_channels)
+        self.pool = nn.MaxPool2d(kernel_size=2, stride=2)
+
+    def forward(self, x):
+        x_conv = self.conv(x)
+        x_pool = self.pool(x_conv)
+        return x_conv, x_pool
+
+class DecoderBlock(nn.Module):
+    def __init__(self, in_channels, out_channels):
+        super(DecoderBlock, self).__init__()
+        self.up = nn.ConvTranspose2d(in_channels, out_channels, kernel_size=2, stride=2)
+        self.conv = ConvBlock(out_channels * 2, out_channels)
+
+    def forward(self, x, skip):
+        x = self.up(x)
+        # Center crop the skip connection tensor to match the size of the upsampled tensor
+        if x.size() != skip.size():
+            diffY = skip.size()[2] - x.size()[2]
+            diffX = skip.size()[3] - x.size()[3]
+            x = F.pad(x, [diffX // 2, diffX - diffX // 2, diffY // 2, diffY - diffY // 2])
+
+        x = torch.cat([skip, x], dim=1)  # Concatenate along channel axis
+        x = self.conv(x)
+        return x
+
+class UNet(nn.Module):
+    def __init__(self):
+        super(UNet, self).__init__()
+        self.enc1 = EncoderBlock(21, 64)   # Input channels = 21, Output channels = 64
+        self.enc2 = EncoderBlock(64, 128)
+        # self.enc3 = EncoderBlock(128, 256)
+        # self.enc4 = EncoderBlock(256, 512)
+        
+        # self.bottleneck = ConvBlock(512, 1024)  # Bottleneck layer
+        self.bottleneck = ConvBlock(128, 256) 
+
+        # self.dec4 = DecoderBlock(1024, 512)
+        # self.dec3 = DecoderBlock(512, 256)
+        self.dec2 = DecoderBlock(256, 128)
+        self.dec1 = DecoderBlock(128, 64)
+
+        self.output_conv = nn.Conv2d(64, 1, kernel_size=1)  # Output layer with 1 channel
+
+    def forward(self, x):
+        # Encoder path
+        x1, p1 = self.enc1(x)
+        x2, p2 = self.enc2(p1)
+        # x3, p3 = self.enc3(p2)
+        # x4, p4 = self.enc4(p3)
+
+        # Bottleneck
+        # b = self.bottleneck(p4)
+        b = self.bottleneck(p2)
+
+        # Decoder path
+        # d4 = self.dec4(b, x4)
+        # d3 = self.dec3(d4, x3)
+        d2 = self.dec2(b, x2)
+        d1 = self.dec1(d2, x1)
+
+        # Output
+        output = self.output_conv(d1)
+        return output
+
 # Instantiate the model, define the loss function and the optimizer
-model = SimpleCNN()
-# Define the loss function without reduction to retain per-element losses
+writer = SummaryWriter(log_dir=log_directory)
+model = UNet()
+torch.save(model.state_dict(), os.path.join(log_directory, 'model_untrained.pth'))
 criterion = nn.MSELoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
-
 
 # Training function
 def train_model(model, train_loader, criterion, optimizer, num_epochs, writer=None):
@@ -277,64 +388,48 @@ def train_model(model, train_loader, criterion, optimizer, num_epochs, writer=No
         print(f"Epoch {epoch+1}/{num_epochs}")
         model.train()
         running_loss = 0.0
-        for inputs, targets in train_loader:
-            # print(f"Training input shape: {inputs.shape}")  # Debugging: print input shape
-            # print(f"Training target shape: {targets.shape}")  # Debugging: print target shape
+        for inputs, targets, masks in train_loader:
+            inputs = inputs.float()
+            targets = targets.float()  
 
             optimizer.zero_grad()
             outputs = model(inputs)
-            # print(f"Model output shape: {outputs.shape}")  # Debugging: print output shape
-
-            # Check shapes before the error line
-            # print(f"Outputs shape: {outputs.shape}, Targets shape: {targets.shape}")
-            loss = criterion(outputs, targets)
-            # print(f"Loss: {loss.item()}")
-            #TODO recreate mask_loss function   
-            # loss = masked_loss(outputs, targets, mask)
+  
+            # Compute the combined loss
+            loss = criterion(outputs[masks], targets[masks])
+            # print(loss)
             loss.backward()
             optimizer.step()
             running_loss += loss.item()
 
-            #  # Optionally, log the loss for every batch
-            # if writer:
-            #     writer.add_scalar('Loss/train_batch', loss.item(), epoch * len(train_loader) + i)
-
         print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {running_loss/len(train_loader):.4f}")
         if writer:
            writer.add_scalar('Loss/train_epoch', running_loss/len(train_loader), epoch)
+    return 
 
-log_directory = r'..\training\logs\%s' %(def_epochs)
-#create folder in case not there yet
-if not os.path.exists(log_directory):
-    os.makedirs(log_directory)  
-torch.save(model.state_dict(), os.path.join(log_directory, 'model_untrained.pth'))
-writer = SummaryWriter(log_dir=log_directory)
 # Train the model
 train_model(model, train_loader, criterion, optimizer, num_epochs=def_epochs, writer=writer)
 
 torch.save(model.state_dict(), os.path.join(log_directory, 'model_trained.pth'))
-def evaluate_model(model, test_loader, criterion, writer=None, epoch=0):
+
+def evaluate_model(model, test_loader, criterion, writer=None):
     model.eval()
     test_loss = 0.0
     all_outputs = []
     with torch.no_grad():
-        for inputs, targets in test_loader:
+        for inputs, targets, masks in test_loader:
+            inputs = inputs.float()
+            targets = targets.float()
+
             outputs = model(inputs)
-            # masked_outputs = outputs * mask_torch
-            # masked_targets = targets * mask_torch # Zero out ocean values
-            loss = criterion(outputs, targets)
-            # normalized_loss = loss.sum()/mask_torch.sum()
+            loss = criterion(outputs[masks], targets[masks])
             test_loss += loss.item()
-            print(f"Test Loss: {loss.item()}")
             all_outputs.append(outputs.cpu().numpy())
-            # Optionally, log the loss for every batch
-            # if writer:
-            #     writer.add_scalar('Loss/test_batch', loss.item(), epoch * len(test_loader) + i)
 
         print(f"Test Loss: {test_loss/len(test_loader):.4f}")
         # Log the average test loss for this epoch
         if writer:
-            writer.add_scalar('Loss/test_epoch', test_loss/len(test_loader), epoch)
+            writer.add_scalar('Loss/test_epoch', test_loss/len(test_loader))
         all_outputs = np.concatenate(all_outputs, axis=0)
         return all_outputs   # Denormalize the outputs
 
@@ -376,13 +471,16 @@ def plot_tensorboard_logs(log_dir):
         test_loss.append(loss_test[i].value)
 
     # Plot the training and test losses
-    plt.figure(figsize=(10, 5))
-    plt.plot(stepstr, train_loss, label='Train Loss', color='blue')
-    plt.scatter(stepste, test_loss, label='Test Loss', color='orange')
-    plt.xlabel('Steps')
-    plt.ylabel('Loss')
+    fig, ax1 = plt.subplots()
+    ax1.plot(stepstr, train_loss, label='Train Loss', color='blue')
+    ax1.set_xlabel('Steps')
+    ax1.set_ylabel('Training Loss')
+    ax1.legend(loc='upper left')
+    ax2 = ax1.twinx()
+    ax2.scatter(stepste, test_loss, label='Test Loss', color='orange')
+    ax2.set_ylabel('Test Loss')
     plt.title('Training and Test Loss')
-    plt.legend()
+    ax2.legend(loc='upper right')
     plt.tight_layout()
     plt.savefig(r'..\training\logs\%s\training_loss.png' %(def_epochs))
 
@@ -390,17 +488,29 @@ plot_tensorboard_logs(log_directory)
 
 
 '''running the model on original data'''
-dataset = TensorDataset(transformArrayToTensor(X_norm), transformArrayToTensor(y_norm)) 
+#if mask has to be cut out from the input data
+def transformArrayToTensor(array):
+    return torch.from_numpy(array).float()
+X_norm_nomask = X_norm_arr[:, :-1, :, :]
+mask = map_cut.to_array().values
+# mask where everything that is nan is 0 and everything else is 1
+mask = np.nan_to_num(mask, copy=False, nan=0)
+mask_full = mask[0, :, :]
+mask_full = mask_full[:, np.newaxis, :, :]
+
+# dataset = TensorDataset(transformArrayToTensor(X_norm_arr), transformArrayToTensor(y_norm_arr)) 
+dataset = CustomDataset(transformArrayToTensor(X_norm_nomask), transformArrayToTensor(y_norm_arr), transformArrayToTensor(mask_full)) 
 data_loader = DataLoader(dataset, batch_size=1, shuffle=False)
 
-model_reload = SimpleCNN()
+# model_reload = SimpleCNN()
+model_reload = UNet()
 model_reload.load_state_dict(torch.load(os.path.join(log_directory, 'model_trained.pth')))
 #run pretrained model from above on the original data
 def run_model_on_full_data(model, data_loader):
     model.eval()
     all_outputs = []
     with torch.no_grad():
-        for inp, tar in data_loader:
+        for inp, tar, mask in data_loader:
             outputs = model(inp)
             all_outputs.append(outputs.cpu().numpy())
     all_outputs = np.concatenate(all_outputs, axis=0)
@@ -425,11 +535,11 @@ X_wtd = np.flip(wtd[:, :, :],axis=1) #also get wtd data for plotting
 map_tile = xr.open_dataset(r'..\data\temp\wtd.nc')
 map_tile = map_tile['Band1'].isel(time=1)
 #TODO: mask ocean/land from wtd
-mask_na = np.where(mask==0, np.nan, mask)
+mask_na = np.where(mask==0, np.nan, 1) #
 mask_na = np.flip(mask_na, axis=1)
-mask_na = mask_na[0,:,:]
+mask_na = mask_na[0,1,:,:]
 
-for i in range(y_pred_denorm.shape[0])[-12:]:
+for i in range(y_pred_denorm.shape[0])[:1]:
     print(i)
     #X_wtd is the full 12 months, while y_pred_denorm is shifted by 1 month resulting in 11 months, 
     # here calculate the wtd which is the first month of X_wtd + the predicted delta wtd and then 
@@ -501,8 +611,8 @@ for i in range(y_pred_denorm.shape[0])[-12:]:
     # vmin = min([y_run_og[i,:,:].min(),y_pred_denorm[i,:,:].min()])
     y_run_scatter =y_run_og[i,:,:]*mask_na
     y_pred_scatter = y_pred_denorm[i,:,:]*mask_na
-    vmin = min([np.nanmin(y_run_og[i,:,:]),np.nanmin(y_pred_denorm[i,:,:])])
-    vmax = max([np.nanmax(y_run_og[i,:,:]),np.nanmax(y_pred_denorm[i,:,:])])
+    vmin = min([np.nanmin(y_run_scatter),np.nanmin(y_pred_scatter)])
+    vmax = max([np.nanmax(y_run_scatter),np.nanmax(y_pred_scatter)])
     plt.subplot(2, 4, 7)
     plt.scatter(y_run_scatter, y_pred_scatter,alpha=0.5, facecolors='none', edgecolors='r')
     plt.plot([vmin, vmax], [vmin, vmax], 'k--', lw=2)
@@ -518,7 +628,7 @@ for i in range(y_pred_denorm.shape[0])[-12:]:
     ax.add_patch(plt.Rectangle((lon_bounds[0], lat_bounds[0]), lon_bounds[1] - lon_bounds[0], lat_bounds[1] - lat_bounds[0], fill=None, color='red'))
     plt.tight_layout()
     
-    plt.savefig(r'..\training\spatial_eval_plots\plot_timesplit_%s.png' %(i))
+    plt.savefig(r'%s\plot_timesplit_%s.png' %(log_dir_fig, i))
 
 
 
