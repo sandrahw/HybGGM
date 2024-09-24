@@ -25,7 +25,7 @@ general_path = r'C:\Users\hausw001\surfdrive - Hauswirth, S.M. (Sandra)@surfdriv
 
 # define the number of months in the dataset and the number of epochs
 data_length = 72 # number of months in current dataset (needed for dataprep function to extend the static parameters)
-def_epochs = 3
+def_epochs = 5
 
 log_directory = r'..\training\logs\%s' %(def_epochs)
 log_dir_fig = r'..\training\logs\%s\spatial_eval_plots' %(def_epochs)
@@ -39,11 +39,11 @@ if not os.path.exists(log_dir_fig):
 # lon_bounds = (5, 10) #CH bounds(5,10)
 # lat_bounds = (45, 50)#CH bounds(45,50)
 
-lon_bounds = (3,6) #NL bounds(3,6)
-lat_bounds = (50,54)#NL bounds(50,54)
+# lon_bounds = (3,6) #NL bounds(3,6)
+# lat_bounds = (50,54)#NL bounds(50,54)
 
-# lat_bounds = (52, 53)
-# lon_bounds = (4, 5)
+lat_bounds = (52, 53)
+lon_bounds = (4, 5)
 #create mask (for land/ocean)
 map_tile = xr.open_dataset(r'..\data\temp\wtd.nc')
 map_cut = map_tile.sel(lat=slice(*lat_bounds), lon=slice(*lon_bounds))
@@ -226,6 +226,7 @@ y_norm_arr = y_norm_arr.transpose(1, 0, 2, 3)
  where I use areas of e.g. 50x50 pixels and then select them randomly'''
 
 
+
 #This is the old splitting method
 X_train_all, X_test_all, y_train_all, y_test_all = train_test_split(X_norm_arr, y_norm_arr, test_size=0.4, random_state=42)
 # remove mask from input data train and test
@@ -294,35 +295,73 @@ test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False)
 
 
 class ConvBlock(nn.Module):
+    """
+    A basic convolutional block consisting of two Conv2D layers,
+    each followed by batch normalization and ReLU activation.
+    """
     def __init__(self, in_channels, out_channels):
         super(ConvBlock, self).__init__()
-        self.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=7, padding=3)
+        self.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=5, padding=2)
         self.bn1 = nn.BatchNorm2d(out_channels)
-        self.conv2 = nn.Conv2d(out_channels, out_channels, kernel_size=7, padding=3)
+        self.conv2 = nn.Conv2d(out_channels, out_channels, kernel_size=5, padding=2)
         self.bn2 = nn.BatchNorm2d(out_channels)
-        self.relu = nn.ReLU(inplace=True)
+        self.relu = nn.ReLU()
 
     def forward(self, x):
-        x = self.relu(self.bn1(self.conv1(x)))
+        x = self.relu(self.bn1(self.conv1(x))) # Conv -> BatchNorm -> ReLU
         x = self.relu(self.bn2(self.conv2(x)))
         return x
 
 class EncoderBlock(nn.Module):
+    """
+    Encoder block consisting of a ConvBlock followed by MaxPooling.
+    The output of the ConvBlock is stored for the skip connection.
+    """
     def __init__(self, in_channels, out_channels):
         super(EncoderBlock, self).__init__()
         self.conv = ConvBlock(in_channels, out_channels)
         self.pool = nn.MaxPool2d(kernel_size=2, stride=2)
 
     def forward(self, x):
-        x_conv = self.conv(x)
-        x_pool = self.pool(x_conv)
-        return x_conv, x_pool
+        x_conv = self.conv(x)  # Apply the convolutional block
+        x_pool = self.pool(x_conv) # Apply max pooling
+        return x_conv, x_pool # Return both for the skip connection
+
+# class DecoderBlock(nn.Module):
+#     """
+#     Decoder block consisting of an upsampling (ConvTranspose2d) and a ConvBlock.
+#     It takes the skip connection from the corresponding encoder block.
+#     """
+#     def __init__(self, in_channels, out_channels):
+#         super(DecoderBlock, self).__init__()
+#         self.up = nn.ConvTranspose2d(in_channels, out_channels, kernel_size=2, stride=2)
+#         self.conv_block = ConvBlock(out_channels * 2, out_channels)  # Double input channels to account for skip connection
+#     def forward(self, x, skip):
+#         x = self.up(x)  # Upsample the input
+#         # Crop skip connection if the sizes don't match
+#         if x.shape != skip.shape:
+#             skip = self.center_crop(skip, x.shape[2], x.shape[3])
+#         x = torch.cat([x, skip], dim=1)  # Concatenate with the corresponding skip connection
+#         x = self.conv_block(x)  # Apply convolutional block
+#         return x
+#     def center_crop(self, feature_map, target_height, target_width):
+#             """
+#             Center crops the feature_map to match the target_height and target_width.
+#             """
+#             _, _, h, w = feature_map.size()
+#             delta_h = (h - target_height) // 2
+#             delta_w = (w - target_width) // 2
+#             return feature_map[:, :, delta_h:(delta_h + target_height), delta_w:(delta_w + target_width)]
 
 class DecoderBlock(nn.Module):
+    """
+    Decoder block consisting of an upsampling (ConvTranspose2d) and a ConvBlock.
+    It takes the skip connection from the corresponding encoder block.
+    """
     def __init__(self, in_channels, out_channels):
         super(DecoderBlock, self).__init__()
         self.up = nn.ConvTranspose2d(in_channels, out_channels, kernel_size=2, stride=2)
-        self.conv = ConvBlock(out_channels * 2, out_channels)
+        self.conv = ConvBlock(out_channels * 2, out_channels)# Double input channels to account for skip connection
 
     def forward(self, x, skip):
         x = self.up(x)
@@ -337,50 +376,104 @@ class DecoderBlock(nn.Module):
         return x
 
 class UNet(nn.Module):
-    def __init__(self):
+    """
+    The complete U-Net architecture with an encoder-decoder structure.
+    It uses skip connections from the encoder to the decoder.
+    """
+    def __init__(self, input_channels, output_channels):
         super(UNet, self).__init__()
-        self.enc1 = EncoderBlock(21, 64)   # Input channels = 21, Output channels = 64
-        self.enc2 = EncoderBlock(64, 128)
-        # self.enc3 = EncoderBlock(128, 256)
-        # self.enc4 = EncoderBlock(256, 512)
         
-        # self.bottleneck = ConvBlock(512, 1024)  # Bottleneck layer
-        self.bottleneck = ConvBlock(128, 256) 
+        # Encoder: Downsampling path
+        self.encoder1 = EncoderBlock(input_channels, 64)
+        self.encoder2 = EncoderBlock(64, 128)
+        self.encoder3 = EncoderBlock(128, 256)
+        self.encoder4 = EncoderBlock(256, 512)
 
-        # self.dec4 = DecoderBlock(1024, 512)
-        # self.dec3 = DecoderBlock(512, 256)
-        self.dec2 = DecoderBlock(256, 128)
-        self.dec1 = DecoderBlock(128, 64)
+        # Bottleneck layer (middle part of the U-Net)
+        self.bottleneck = ConvBlock(512, 1024)
 
-        self.output_conv = nn.Conv2d(64, 1, kernel_size=1)  # Output layer with 1 channel
+        # Decoder: Upsampling path
+        self.decoder1 = DecoderBlock(1024, 512)
+        self.decoder2 = DecoderBlock(512, 256)
+        self.decoder3 = DecoderBlock(256, 128)
+        self.decoder4 = DecoderBlock(128, 64)
+
+        # Final output layer to reduce to the number of desired output channels
+        self.final_conv = nn.Conv2d(64, output_channels, kernel_size=1)
 
     def forward(self, x):
-        # Encoder path
-        x1, p1 = self.enc1(x)
-        x2, p2 = self.enc2(p1)
-        # x3, p3 = self.enc3(p2)
-        # x4, p4 = self.enc4(p3)
+        # Encoder
+        x1, p1 = self.encoder1(x)  # First block
+        x2, p2 = self.encoder2(p1) # Second block
+        x3, p3 = self.encoder3(p2) # Third block
+        x4, p4 = self.encoder4(p3) # Fourth block
 
-        # Bottleneck
-        # b = self.bottleneck(p4)
-        b = self.bottleneck(p2)
+        # Bottleneck (middle)
+        bottleneck = self.bottleneck(p4)
 
-        # Decoder path
-        # d4 = self.dec4(b, x4)
-        # d3 = self.dec3(d4, x3)
-        d2 = self.dec2(b, x2)
-        d1 = self.dec1(d2, x1)
+        # Decoder
+        d1 = self.decoder1(bottleneck, x4)  # Upsample from bottleneck and add skip connection from encoder4
+        d2 = self.decoder2(d1, x3)          # Continue with decoder and corresponding skip connection from encoder3
+        d3 = self.decoder3(d2, x2)          # Continue with decoder and corresponding skip connection from encoder2
+        d4 = self.decoder4(d3, x1)          # Continue with decoder and corresponding skip connection from encoder1
 
-        # Output
-        output = self.output_conv(d1)
+        # Final output layer
+        output = self.final_conv(d4)        # Reduce to the number of output channels (e.g., 1 for groundwater head)
+
         return output
+
+
+
+# class UNet(nn.Module):
+#     """
+#     The complete U-Net architecture with an encoder-decoder structure.
+#     It uses skip connections from the encoder to the decoder.
+#     """
+#     def __init__(self):
+#         super(UNet, self).__init__()
+#         self.enc1 = EncoderBlock(21, 64)   # Input channels = 21, Output channels = 64
+#         self.enc2 = EncoderBlock(64, 128)
+#         # self.enc3 = EncoderBlock(128, 256)
+#         # self.enc4 = EncoderBlock(256, 512)
+        
+#         # self.bottleneck = ConvBlock(512, 1024)  # Bottleneck layer
+#         self.bottleneck = ConvBlock(128, 256) 
+
+#         # self.dec4 = DecoderBlock(1024, 512)
+#         # self.dec3 = DecoderBlock(512, 256)
+#         self.dec2 = DecoderBlock(256, 128)
+#         self.dec1 = DecoderBlock(128, 64)
+
+#         self.output_conv = nn.Conv2d(64, 1, kernel_size=1)  # Output layer with 1 channel
+
+#     def forward(self, x):
+#         # Encoder path
+#         x1, p1 = self.enc1(x)
+#         x2, p2 = self.enc2(p1)
+#         # x3, p3 = self.enc3(p2)
+#         # x4, p4 = self.enc4(p3)
+
+#         # Bottleneck
+#         # b = self.bottleneck(p4)
+#         b = self.bottleneck(p2)
+
+#         # Decoder path
+#         # d4 = self.dec4(b, x4)
+#         # d3 = self.dec3(d4, x3)
+#         d2 = self.dec2(b, x2)
+#         d1 = self.dec1(d2, x1)
+
+#         # Output
+#         output = self.output_conv(d1)
+#         return output
+
 
 # Instantiate the model, define the loss function and the optimizer
 writer = SummaryWriter(log_dir=log_directory)
-model = UNet()
+model = UNet(input_channels=21, output_channels=1)
 torch.save(model.state_dict(), os.path.join(log_directory, 'model_untrained.pth'))
 criterion = nn.MSELoss()
-optimizer = optim.Adam(model.parameters(), lr=0.001)
+optimizer = optim.Adam(model.parameters(), lr=0.0001)
 
 # Training function
 def train_model(model, train_loader, criterion, optimizer, num_epochs, writer=None):
@@ -503,7 +596,7 @@ dataset = CustomDataset(transformArrayToTensor(X_norm_nomask), transformArrayToT
 data_loader = DataLoader(dataset, batch_size=1, shuffle=False)
 
 # model_reload = SimpleCNN()
-model_reload = UNet()
+model_reload = UNet(input_channels=21, output_channels=1)
 model_reload.load_state_dict(torch.load(os.path.join(log_directory, 'model_trained.pth')))
 #run pretrained model from above on the original data
 def run_model_on_full_data(model, data_loader):
