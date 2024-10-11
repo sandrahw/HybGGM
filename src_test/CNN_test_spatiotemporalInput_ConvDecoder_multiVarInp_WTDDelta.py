@@ -10,7 +10,7 @@ import torch.nn.functional as F
 from torchvision import transforms
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
-from torch.utils.data import DataLoader, TensorDataset
+from torch.utils.data import random_split, DataLoader, Dataset, TensorDataset
 import xarray as xr
 import matplotlib.pyplot as plt
 from matplotlib.colors import SymLogNorm
@@ -18,33 +18,49 @@ import matplotlib.colors as colors
 from torch.utils.tensorboard import SummaryWriter
 from tensorboard.backend.event_processing.event_accumulator import EventAccumulator
 
-random.seed(10)
-print(random.random())
+''' Set random seed for reproducibility also for different torch applications'''
+def set_seed(seed):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)  # Set seed for CPU
+    torch.cuda.manual_seed(seed)  # If using GPU
+    torch.cuda.manual_seed_all(seed)  # If using multi-GPU
+    torch.backends.cudnn.deterministic = True  # Ensures deterministic convolution algorithms
+    torch.backends.cudnn.benchmark = False     # Turn off optimization that introduces randomness
 
+# Set seed before any training or data loading happens
+set_seed(10)
+
+'''define general path, data length, case area, number of epochs, learning rate and batch size'''
 general_path = r'C:\Users\hausw001\surfdrive - Hauswirth, S.M. (Sandra)@surfdrive.surf.nl'
-
 # define the number of months in the dataset and the number of epochs
 data_length = 72 # number of months in current dataset (needed for dataprep function to extend the static parameters)
-def_epochs = 5
+def_epochs = 10
+lr_rate = 0.0001
+batchSize = 1
+kernel = 3
 
-log_directory = r'..\training\logs\%s' %(def_epochs)
-log_dir_fig = r'..\training\logs\%s\spatial_eval_plots' %(def_epochs)
+# define the lat and lon bounds for the test region
+lon_bounds = (7, 10) #CH bounds(5,10)
+lat_bounds = (47, 50)#CH bounds(45,50)
+
+# lon_bounds = (3,6) #NL bounds(3,6)
+# lat_bounds = (50,54)#NL bounds(50,54)
+
+# lat_bounds = (52, 53)
+# lon_bounds = (4, 5)
+
+'''create log directory for tensorboard logs'''
+log_directory = r'..\training\logs\%s_%s_%s_%s' %(def_epochs, lr_rate ,batchSize, kernel)
+log_dir_fig = r'..\training\logs\%s_%s_%s_%s\spatial_eval_plots' %(def_epochs, lr_rate ,batchSize, kernel)
 #create folder in case not there yet
 if not os.path.exists(log_directory):
     os.makedirs(log_directory) 
 if not os.path.exists(log_dir_fig):
     os.makedirs(log_dir_fig)
 
-# define the lat and lon bounds for the test region
-# lon_bounds = (5, 10) #CH bounds(5,10)
-# lat_bounds = (45, 50)#CH bounds(45,50)
 
-# lon_bounds = (3,6) #NL bounds(3,6)
-# lat_bounds = (50,54)#NL bounds(50,54)
-
-lat_bounds = (52, 53)
-lon_bounds = (4, 5)
-#create mask (for land/ocean)
+'''create mask (for land/ocean)'''
 map_tile = xr.open_dataset(r'..\data\temp\wtd.nc')
 map_cut = map_tile.sel(lat=slice(*lat_bounds), lon=slice(*lon_bounds))
 mask = map_cut.to_array().values
@@ -52,11 +68,11 @@ mask = map_cut.to_array().values
 mask = np.nan_to_num(mask, copy=False, nan=0)
 mask = np.where(mask==0, 0, 1)
 mask = mask[0, :, :]
-plt.imshow(mask[0, :, :])
+# plt.imshow(mask[0, :, :])
+np.save(r'%s\mask.npy'%log_directory, mask)
 
-
+'''load the modflow files and prepare the data for input'''
 inFiles = glob.glob(r'..\data\temp\*.nc') #load all input files in the folder
-
 # modflow files that are saved monthly
 params_monthly = ['abstraction_lowermost_layer', 'abstraction_uppermost_layer', 
  'bed_conductance_used', 
@@ -64,7 +80,6 @@ params_monthly = ['abstraction_lowermost_layer', 'abstraction_uppermost_layer',
  'initial_head_lowermost_layer', 'initial_head_uppermost_layer',
  'surface_water_bed_elevation_used',
  'surface_water_elevation', 'net_RCH', 'wtd']
-
 # other modflow files that seem to be static parameters
 params_initial = ['bottom_lowermost_layer', 'bottom_uppermost_layer', 
  'drain_conductance', 
@@ -128,14 +143,12 @@ plt.subplot(1, 2, 1)
 plt.title('WTD for one month')
 plt.imshow(wtd[0, :, :], cmap='viridis') #the array version of the input data is flipped
 plt.colorbar()
-plt.subplot(1, 2, 2)
-plt.title('Mask')
-plt.imshow(mask[0,:,:])
+# plt.subplot(1, 2, 2)
+# plt.title('Mask')
+# plt.imshow(mask[0,:,:])
 
-
-# calculate the delta wtd for each month
+''''calculate the delta wtd for each month - define target (y) and input (X) arrays for the CNN'''
 delta_wtd = np.diff(wtd, axis=0) #wtd is always for end of the month so here for example delta wtd between jan and feb means the delta for feb
-
 # define target (y) and input (X) arrays for the CNN
 y = delta_wtd[:, np.newaxis, :, :] #shape[timesteps, channels, lat, lon]
 X_All = np.stack([abs_lower, abs_upper, 
@@ -153,13 +166,13 @@ X_All = np.stack([abs_lower, abs_upper,
               mask #TODO check if mask should be used in the input data
               ], axis=1)
 X = X_All[1:,:,:,:] #remove first month to match the delta wtd data
+np.save(r'%s\X.npy'%log_directory, X)
+np.save(r'%s\y.npy'%log_directory, y)
 
-
-# normalising the data for every array and save mean and std for denormalisation
+'''normalising the data for every array and save mean and std for denormalisation'''
 inp_var_mean = [] # list to store normalisation information for denormalisation later
 inp_var_std = []
 X_norm = []
-
 for i in range(X.shape[1]):
     mean = X[:, i, :, :].mean()
     std = X[:, i, :, :].std()
@@ -175,7 +188,9 @@ for i in range(X.shape[1]):
     inp_var_std.append(std)
 X_norm_arr = np.array(X_norm)
 X_norm_arr = X_norm_arr.transpose(1, 0, 2, 3)
-
+np.save(r'%s\X_norm_arr.npy'%log_directory, X_norm_arr)
+np.save(r'%s\inp_var_mean.npy'%log_directory, inp_var_mean)
+np.save(r'%s\inp_var_std.npy'%log_directory, inp_var_std)
 
 out_var_mean = []
 out_var_std = []
@@ -183,13 +198,21 @@ y_norm = []
 for i in range(y.shape[1]):
     mean = y[:, i, :, :].mean()
     std = y[:, i, :, :].std()
+    # check if every value in array is 0, if so, skip normalisation
+    if y[:, i, :, :].max() == 0 and y[:, i, :, :].min() == 0:
+        print('skipped normalisation for array %s' %i)
+        y_temp = X[:, i, :, :]
+    else:
+        y_temp = (X[:, i, :, :] - mean) / std
     y_temp = (y[:, i, :, :] - mean) / std
     y_norm.append(y_temp)
     out_var_mean.append(mean)
     out_var_std.append(std)
 y_norm_arr = np.array(y_norm)
 y_norm_arr = y_norm_arr.transpose(1, 0, 2, 3)
-
+np.save(r'%s\y_norm_arr.npy'%log_directory, y_norm_arr)
+np.save(r'%s\out_var_mean.npy'%log_directory, out_var_mean)
+np.save(r'%s\out_var_std.npy'%log_directory, out_var_std)
 
 # def normalize(tensor):
 #     mean = tensor.mean()
@@ -214,48 +237,55 @@ y_norm_arr = y_norm_arr.transpose(1, 0, 2, 3)
 #     out_var_std_new.append(std)
 
 
-#transform ndarrays of training and test data into torch tensors
 
-# ## Create DataLoader
-# train_dataset = TensorDataset(transformArrayToTensor(X_train_all), transformArrayToTensor(y_train_all))
-# test_dataset = TensorDataset(transformArrayToTensor(X_test_all), transformArrayToTensor(y_test_all))
-# train_loader = DataLoader(train_dataset, batch_size=1, shuffle=True)
-# test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False)
+'''split the patches into training, validation and test sets'''
+X_train, X_val_test = train_test_split(X_norm_arr, test_size=0.7, random_state=10)
+X_val, X_test = train_test_split(X_val_test, test_size=0.6, random_state=10)  # 20% test, 20% validation
 
-'''TODO: create selection of training,testing and validation data
- where I use areas of e.g. 50x50 pixels and then select them randomly'''
+y_train, y_val_test = train_test_split(y_norm_arr, test_size=0.7, random_state=10)
+y_val, y_test = train_test_split(y_val_test, test_size=0.6, random_state=10)  # 20% test, 20% validation
 
 
+'''remove mask in every training, validation and test patch'''
+def remove_mask_patch(r):
+    r_train = r[:, :-1, :, :]
+    r_mask = r[:, -1, :, :]
+    r_mask = np.where(r_mask<=0, 0, 1)
+    mask_bool = r_mask.astype(bool)
+    mask_bool = mask_bool[:, np.newaxis, :, :]
+    return r_train, mask_bool
 
-#This is the old splitting method
-X_train_all, X_test_all, y_train_all, y_test_all = train_test_split(X_norm_arr, y_norm_arr, test_size=0.4, random_state=42)
-# remove mask from input data train and test
-X_train = X_train_all[:, :-1, :, :]
-X_test = X_test_all[:, :-1, :, :]
-y_train = y_train_all.copy()
-y_test = y_test_all.copy()
+X_train, mask_train = remove_mask_patch(X_train)
+X_val, mask_val = remove_mask_patch(X_val)
+X_test, mask_test = remove_mask_patch(X_test)
+np.save(r'%s/X_train.npy' %log_directory, X_train)
+np.save(r'%s/X_val.npy' %log_directory, X_val)
+np.save(r'%s/X_test.npy' %log_directory, X_test)
 
-# mask extracted from train test split
+np.save(r'%s/mask_train.npy' %log_directory, mask_train)
+np.save(r'%s/mask_val.npy' %log_directory, mask_val)
+np.save(r'%s/mask_test.npy' %log_directory, mask_test)
+
+np.save(r'%s/y_train.npy' %log_directory, y_train)
+np.save(r'%s/y_val.npy' %log_directory, y_val)
+np.save(r'%s/y_test.npy' %log_directory, y_test)
+
+
+# X_train = np.load(r'%s/X_train.npy' %log_directory)
+# X_val = np.load(r'%s/X_val.npy' %log_directory)
+# X_test = np.load(r'%s/X_test.npy' %log_directory)
+
+# mask_train = np.load(r'%s/mask_train.npy' %log_directory)
+# mask_val = np.load(r'%s/mask_val.npy' %log_directory)
+# mask_test = np.load(r'%s/mask_test.npy' %log_directory)
+
+# y_train = np.load(r'%s/y_train.npy' %log_directory)
+# y_val = np.load(r'%s/y_val.npy' %log_directory)
+# y_test = np.load(r'%s/y_test.npy' %log_directory)
+
+'''transform the data into tensors'''
 def transformArrayToTensor(array):
     return torch.from_numpy(array).float()
-
-
-def train_test_mask(data):
-    data_mask = data[:, -1, :, :]
-    data_mask = data_mask[:, np.newaxis, :, :]
-    # data_mask_ex = np.repeat(data_mask, data.shape[1]-1, axis=1)
-    data_mask_tensor = transformArrayToTensor(data_mask)
-    data_mask_binary = data_mask_tensor.type(torch.ByteTensor)
-    data_mask_bool = data_mask_binary.bool()
-    return data_mask_bool
-X_train_mask = train_test_mask(X_train_all)
-X_test_mask = train_test_mask(X_test_all)
-y_train_mask = train_test_mask(X_train_all) #does it make sense to use the Xtrain mask as target as well? 
-y_test_mask = train_test_mask(X_test_all)
-
-
-#create new dataset and dataloader for combined loss function incl mask
-from torch.utils.data import Dataset, DataLoader
 class CustomDataset(Dataset):
     def __init__(self, data, labels, masks, transform=None):
         """
@@ -285,14 +315,13 @@ class CustomDataset(Dataset):
             input_data = self.transform(input_data)
 
         return input_data, label, mask
-# Create dataset instances
-train_dataset = CustomDataset(X_train, y_train, X_train_mask)
-test_dataset = CustomDataset(X_test, y_test, y_test_mask)
+train_loader = DataLoader(CustomDataset(X_train, y_train, mask_train), batch_size=batchSize, shuffle=False)
+validation_loader = DataLoader(CustomDataset(X_val, y_val, mask_val), batch_size=batchSize, shuffle=False)
+test_loader = DataLoader(CustomDataset(X_test, y_test, mask_test), batch_size=batchSize, shuffle=False)
 
-# Create DataLoader instances
-train_loader = DataLoader(train_dataset, batch_size=1, shuffle=True)
-test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False)
-
+np.save(r'%s/train_loader.npy' %log_directory, train_loader)
+np.save(r'%s/validation_loader.npy' %log_directory, validation_loader)
+np.save(r'%s/test_loader.npy' %log_directory, test_loader)
 
 class ConvBlock(nn.Module):
     """
@@ -301,9 +330,9 @@ class ConvBlock(nn.Module):
     """
     def __init__(self, in_channels, out_channels):
         super(ConvBlock, self).__init__()
-        self.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=5, padding=2)
+        self.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=3, padding=1)
         self.bn1 = nn.BatchNorm2d(out_channels)
-        self.conv2 = nn.Conv2d(out_channels, out_channels, kernel_size=5, padding=2)
+        self.conv2 = nn.Conv2d(out_channels, out_channels, kernel_size=3, padding=1)
         self.bn2 = nn.BatchNorm2d(out_channels)
         self.relu = nn.ReLU()
 
@@ -326,32 +355,6 @@ class EncoderBlock(nn.Module):
         x_conv = self.conv(x)  # Apply the convolutional block
         x_pool = self.pool(x_conv) # Apply max pooling
         return x_conv, x_pool # Return both for the skip connection
-
-# class DecoderBlock(nn.Module):
-#     """
-#     Decoder block consisting of an upsampling (ConvTranspose2d) and a ConvBlock.
-#     It takes the skip connection from the corresponding encoder block.
-#     """
-#     def __init__(self, in_channels, out_channels):
-#         super(DecoderBlock, self).__init__()
-#         self.up = nn.ConvTranspose2d(in_channels, out_channels, kernel_size=2, stride=2)
-#         self.conv_block = ConvBlock(out_channels * 2, out_channels)  # Double input channels to account for skip connection
-#     def forward(self, x, skip):
-#         x = self.up(x)  # Upsample the input
-#         # Crop skip connection if the sizes don't match
-#         if x.shape != skip.shape:
-#             skip = self.center_crop(skip, x.shape[2], x.shape[3])
-#         x = torch.cat([x, skip], dim=1)  # Concatenate with the corresponding skip connection
-#         x = self.conv_block(x)  # Apply convolutional block
-#         return x
-#     def center_crop(self, feature_map, target_height, target_width):
-#             """
-#             Center crops the feature_map to match the target_height and target_width.
-#             """
-#             _, _, h, w = feature_map.size()
-#             delta_h = (h - target_height) // 2
-#             delta_w = (w - target_width) // 2
-#             return feature_map[:, :, delta_h:(delta_h + target_height), delta_w:(delta_w + target_width)]
 
 class DecoderBlock(nn.Module):
     """
@@ -388,15 +391,25 @@ class UNet(nn.Module):
         self.encoder2 = EncoderBlock(64, 128)
         self.encoder3 = EncoderBlock(128, 256)
         self.encoder4 = EncoderBlock(256, 512)
+        self.encoder5 = EncoderBlock(512, 1024)#new layer
+        self.encoder6 = EncoderBlock(1024, 2048)#new layer
 
         # Bottleneck layer (middle part of the U-Net)
-        self.bottleneck = ConvBlock(512, 1024)
+        # self.bottleneck = ConvBlock(512, 1024)
+        self.bottleneck = ConvBlock(2048, 4096)
 
         # Decoder: Upsampling path
-        self.decoder1 = DecoderBlock(1024, 512)
-        self.decoder2 = DecoderBlock(512, 256)
-        self.decoder3 = DecoderBlock(256, 128)
-        self.decoder4 = DecoderBlock(128, 64)
+        self.decoder1 = DecoderBlock(4096, 2048)
+        self.decoder2 = DecoderBlock(2048, 1024)
+        self.decoder3 = DecoderBlock(1024, 512)
+        self.decoder4 = DecoderBlock(512, 256)
+        self.decoder5 = DecoderBlock(256, 128)
+        self.decoder6 = DecoderBlock(128, 64)
+
+        # self.decoder1 = DecoderBlock(1024, 512)
+        # self.decoder2 = DecoderBlock(512, 256)
+        # self.decoder3 = DecoderBlock(256, 128)
+        # self.decoder4 = DecoderBlock(128, 64)
 
         # Final output layer to reduce to the number of desired output channels
         self.final_conv = nn.Conv2d(64, output_channels, kernel_size=1)
@@ -407,511 +420,280 @@ class UNet(nn.Module):
         x2, p2 = self.encoder2(p1) # Second block
         x3, p3 = self.encoder3(p2) # Third block
         x4, p4 = self.encoder4(p3) # Fourth block
+        x5, p5 = self.encoder5(p4) # Fifth block
+        x6, p6 = self.encoder6(p5) # Sixth block
 
         # Bottleneck (middle)
-        bottleneck = self.bottleneck(p4)
+        # bottleneck = self.bottleneck(p4)
+        bottleneck = self.bottleneck(p6)
 
         # Decoder
-        d1 = self.decoder1(bottleneck, x4)  # Upsample from bottleneck and add skip connection from encoder4
-        d2 = self.decoder2(d1, x3)          # Continue with decoder and corresponding skip connection from encoder3
-        d3 = self.decoder3(d2, x2)          # Continue with decoder and corresponding skip connection from encoder2
-        d4 = self.decoder4(d3, x1)          # Continue with decoder and corresponding skip connection from encoder1
+        d1 = self.decoder1(bottleneck, x6)  # Upsample from bottleneck and add skip connection from encoder4
+        d2 = self.decoder2(d1, x5)          # Continue with decoder and corresponding skip connection from encoder3
+        d3 = self.decoder3(d2, x4)          # Continue with decoder and corresponding skip connection from encoder2 
+        d4 = self.decoder4(d3, x3)          # Continue with decoder and corresponding skip connection from encoder1
+        d5 = self.decoder5(d4, x2)          # Continue with decoder and corresponding skip connection from encoder1
+        d6 = self.decoder6(d5, x1)          # Continue with decoder and corresponding skip connection from encoder1
+        # d1 = self.decoder1(bottleneck, x4)  # Upsample from bottleneck and add skip connection from encoder4
+        # d2 = self.decoder2(d1, x3)          # Continue with decoder and corresponding skip connection from encoder3
+        # d3 = self.decoder3(d2, x2)          # Continue with decoder and corresponding skip connection from encoder2
+        # d4 = self.decoder4(d3, x1)          # Continue with decoder and corresponding skip connection from encoder1
 
         # Final output layer
-        output = self.final_conv(d4)        # Reduce to the number of output channels (e.g., 1 for groundwater head)
-
+        # output = self.final_conv(d4)        # Reduce to the number of output channels (e.g., 1 for groundwater head)
+        output = self.final_conv(d6)  
         return output
 
 
 
-# class UNet(nn.Module):
-#     """
-#     The complete U-Net architecture with an encoder-decoder structure.
-#     It uses skip connections from the encoder to the decoder.
-#     """
-#     def __init__(self):
-#         super(UNet, self).__init__()
-#         self.enc1 = EncoderBlock(21, 64)   # Input channels = 21, Output channels = 64
-#         self.enc2 = EncoderBlock(64, 128)
-#         # self.enc3 = EncoderBlock(128, 256)
-#         # self.enc4 = EncoderBlock(256, 512)
-        
-#         # self.bottleneck = ConvBlock(512, 1024)  # Bottleneck layer
-#         self.bottleneck = ConvBlock(128, 256) 
-
-#         # self.dec4 = DecoderBlock(1024, 512)
-#         # self.dec3 = DecoderBlock(512, 256)
-#         self.dec2 = DecoderBlock(256, 128)
-#         self.dec1 = DecoderBlock(128, 64)
-
-#         self.output_conv = nn.Conv2d(64, 1, kernel_size=1)  # Output layer with 1 channel
-
-#     def forward(self, x):
-#         # Encoder path
-#         x1, p1 = self.enc1(x)
-#         x2, p2 = self.enc2(p1)
-#         # x3, p3 = self.enc3(p2)
-#         # x4, p4 = self.enc4(p3)
-
-#         # Bottleneck
-#         # b = self.bottleneck(p4)
-#         b = self.bottleneck(p2)
-
-#         # Decoder path
-#         # d4 = self.dec4(b, x4)
-#         # d3 = self.dec3(d4, x3)
-#         d2 = self.dec2(b, x2)
-#         d1 = self.dec1(d2, x1)
-
-#         # Output
-#         output = self.output_conv(d1)
-#         return output
-
-
 # Instantiate the model, define the loss function and the optimizer
 writer = SummaryWriter(log_dir=log_directory)
+#make sure model uses GPU if available
+# device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+# model = UNet(input_channels=21, output_channels=1).to(device)
 model = UNet(input_channels=21, output_channels=1)
 torch.save(model.state_dict(), os.path.join(log_directory, 'model_untrained.pth'))
 criterion = nn.MSELoss()
-optimizer = optim.Adam(model.parameters(), lr=0.0001)
+optimizer = optim.Adam(model.parameters(), lr=lr_rate)
+# RMSE function
+def rmse(outputs, targets, masks):
+    return torch.sqrt(F.mse_loss(outputs[masks], targets[masks]))
 
 # Training function
-def train_model(model, train_loader, criterion, optimizer, num_epochs, writer=None):
+def train_model(model, train_loader, validation_loader, criterion, optimizer, num_epochs, writer=None):
+    best_val_loss = float('inf')
     for epoch in range(num_epochs):
         print(f"Epoch {epoch+1}/{num_epochs}")
         model.train()
-        running_loss = 0.0
+        running_train_loss = 0.0
+
         for inputs, targets, masks in train_loader:
-            inputs = inputs.float()
-            targets = targets.float()  
+            inputs = inputs.float()# inputs.to(device).float()
+            targets = targets.float()#targets.to(device).float()
+            masks = masks.bool()#masks.to(device).bool()
 
             optimizer.zero_grad()
             outputs = model(inputs)
-  
-            # Compute the combined loss
-            loss = criterion(outputs[masks], targets[masks])
-            # print(loss)
+
+            # loss = criterion(outputs[masks], targets[masks])
+            loss = rmse(outputs, targets, masks)
             loss.backward()
             optimizer.step()
-            running_loss += loss.item()
 
-        print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {running_loss/len(train_loader):.4f}")
+            running_train_loss += loss.item()
+
+        epoch_train_loss = running_train_loss / len(train_loader.dataset)
+    
         if writer:
-           writer.add_scalar('Loss/train_epoch', running_loss/len(train_loader), epoch)
-    return 
+            writer.add_scalar('Loss/train_epoch', running_train_loss / len(train_loader), epoch)
+            
+        # Validation Phase
+        model.eval()
+        running_val_loss = 0.0
 
-# Train the model
-train_model(model, train_loader, criterion, optimizer, num_epochs=def_epochs, writer=writer)
+        with torch.no_grad():
+            for inputs, targets, masks in validation_loader:
+                inputs = inputs.float()# inputs.to(device).float()
+                targets = targets.float()#targets.to(device).float()
+                masks = masks.bool()#masks.to(device).bool()
 
-torch.save(model.state_dict(), os.path.join(log_directory, 'model_trained.pth'))
+                outputs = model(inputs)
+                # loss = criterion(outputs[masks], targets[masks])
+                loss = rmse(outputs, targets, masks)
+                running_val_loss += loss.item()
+         
+        epoch_val_loss = running_val_loss / len(validation_loader.dataset)
 
-def evaluate_model(model, test_loader, criterion, writer=None):
+        if writer:
+            writer.add_scalar('Loss/validation_epoch', running_val_loss / len(validation_loader), epoch)
+
+        print(f"Epoch [{epoch+1}/{num_epochs}], Training Loss: {epoch_train_loss:.4f}, Validation Loss: {epoch_val_loss:.4f}")
+ 
+        if epoch_val_loss < best_val_loss:
+            best_val_loss = epoch_val_loss
+            torch.save(model.state_dict(), os.path.join(log_directory, 'best_model.pth'))
+            print("Best model saved!")
+
+    return
+
+def test_model(model, test_loader, criterion, writer=None):
     model.eval()
-    test_loss = 0.0
+    running_test_loss = 0.0
     all_outputs = []
+
     with torch.no_grad():
         for inputs, targets, masks in test_loader:
-            inputs = inputs.float()
-            targets = targets.float()
+            inputs = inputs.float()# inputs.to(device).float()
+            targets = targets.float()#targets.to(device).float()
+            masks = masks.bool()#masks.to(device).bool()
 
             outputs = model(inputs)
-            loss = criterion(outputs[masks], targets[masks])
-            test_loss += loss.item()
+
+            # Compute the loss
+            # loss = criterion(outputs[masks], targets[masks])
+            loss = rmse(outputs, targets, masks)
+            running_test_loss += loss.item()
+
+            # Store outputs for further analysis or visualization if needed
             all_outputs.append(outputs.cpu().numpy())
 
-        print(f"Test Loss: {test_loss/len(test_loader):.4f}")
-        # Log the average test loss for this epoch
-        if writer:
-            writer.add_scalar('Loss/test_epoch', test_loss/len(test_loader))
-        all_outputs = np.concatenate(all_outputs, axis=0)
-        return all_outputs   # Denormalize the outputs
+        # Compute the average loss, RMSE, and MAE for the entire test dataset
+        test_loss = running_test_loss / len(test_loader.dataset)
 
-test_outputs = evaluate_model(model, test_loader, criterion, writer=writer)
+        # Log test metrics if using a writer (e.g., TensorBoard)
+        if writer:
+            writer.add_scalar('Loss/test_epoch', test_loss)
+        # Combine all output batches into a single array
+        all_outputs = np.concatenate(all_outputs, axis=0)
+
+        # Print test results
+        print(f"Test Loss: {test_loss:.4f}")
+
+    return all_outputs
+# Train the model
+
+train_model(model, train_loader, validation_loader, criterion, optimizer, num_epochs=def_epochs, writer=writer)
+
+test_outputs = test_model(model, test_loader, criterion, writer=writer)
 
 def plot_tensorboard_logs(log_dir):
     # List all event files in the log directory
     event_files = [os.path.join(log_dir, f) for f in os.listdir(log_dir) if 'events.out.tfevents' in f]
-    print(event_files)
+    # print(event_files)
     # Initialize lists to store the data
     train_loss = []
+    val_loss = []
     test_loss = []
 
     stepstr = []
+    stepsva = []
     stepste = []
 
     # Iterate through all event files and extract data
-    # for event_file in event_files[:]:
     event_acc = EventAccumulator(event_files[0])
     event_acc.Reload()
 
     # Extract scalars
     loss_train = event_acc.Scalars('Loss/train_epoch')
-    # print('loss train', loss_train)
-
-    # event_acc = EventAccumulator(event_files[1])
-    # event_acc.Reload()
-
+    loss_val = event_acc.Scalars('Loss/validation_epoch')
+    print(loss_val)
     loss_test = event_acc.Scalars('Loss/test_epoch')
-    print('loss test', loss_test)
 
     # Append to the lists
     for i in range(len(loss_train)):
         stepstr.append(loss_train[i].step)
         train_loss.append(loss_train[i].value)
+    
+    for i in range(len(loss_val)):
+        stepsva.append(loss_val[i].step)
+        val_loss.append(loss_val[i].value)
             
     for i in range(len(loss_test)):
-        stepste.append(loss_train[i].step)
+        stepste.append(loss_test[i].step)
         test_loss.append(loss_test[i].value)
 
     # Plot the training and test losses
     fig, ax1 = plt.subplots()
     ax1.plot(stepstr, train_loss, label='Train Loss', color='blue')
+    ax1.plot(stepsva, val_loss, label='Validation Loss', color='green')
     ax1.set_xlabel('Steps')
-    ax1.set_ylabel('Training Loss')
-    ax1.legend(loc='upper left')
-    ax2 = ax1.twinx()
-    ax2.scatter(stepste, test_loss, label='Test Loss', color='orange')
-    ax2.set_ylabel('Test Loss')
+    ax1.set_ylabel('Training/Validation Loss')
+    # ax1.legend(loc='upper left')
+    # ax2 = ax1.twinx()
+    ax1.scatter(stepste, test_loss, label='Test Loss', color='orange')
+    # ax2.set_ylabel('Test Loss')
     plt.title('Training and Test Loss')
-    ax2.legend(loc='upper right')
+    ax1.legend(loc='upper right')
     plt.tight_layout()
-    plt.savefig(r'..\training\logs\%s\training_loss.png' %(def_epochs))
+    plt.savefig(r'%s\training_loss.png' %(log_directory))
 
 plot_tensorboard_logs(log_directory)
 
-
+#TODO still need to check this part
 '''running the model on original data'''
-#if mask has to be cut out from the input data
-def transformArrayToTensor(array):
-    return torch.from_numpy(array).float()
-X_norm_nomask = X_norm_arr[:, :-1, :, :]
-mask = map_cut.to_array().values
-# mask where everything that is nan is 0 and everything else is 1
-mask = np.nan_to_num(mask, copy=False, nan=0)
-mask_full = mask[0, :, :]
-mask_full = mask_full[:, np.newaxis, :, :]
-
-# dataset = TensorDataset(transformArrayToTensor(X_norm_arr), transformArrayToTensor(y_norm_arr)) 
-dataset = CustomDataset(transformArrayToTensor(X_norm_nomask), transformArrayToTensor(y_norm_arr), transformArrayToTensor(mask_full)) 
-data_loader = DataLoader(dataset, batch_size=1, shuffle=False)
-
-# model_reload = SimpleCNN()
 model_reload = UNet(input_channels=21, output_channels=1)
-model_reload.load_state_dict(torch.load(os.path.join(log_directory, 'model_trained.pth')))
+model_reload.load_state_dict(torch.load(os.path.join(log_directory, 'best_model.pth')))
+
+# test_loader /= np.load(r'%s/test_loader.npy' %log_directory)
 #run pretrained model from above on the original data
 def run_model_on_full_data(model, data_loader):
     model.eval()
     all_outputs = []
     with torch.no_grad():
         for inp, tar, mask in data_loader:
+            inp = inp.float()
+            tar = tar.float()  
             outputs = model(inp)
             all_outputs.append(outputs.cpu().numpy())
     all_outputs = np.concatenate(all_outputs, axis=0)
     return all_outputs
 
 # Running the model on the entire dataset
-y_pred_full = run_model_on_full_data(model_reload, data_loader) #this is now the delta wtd
+y_pred_full = run_model_on_full_data(model_reload, test_loader) #this is now the delta wtd
 
-# Denormalize the wtd data
-# y_run_denorm = y*out_var_std[0].float() + out_var_mean[0].float() #denormalise the original delta wtd
-y_run_og = delta_wtd[:, np.newaxis, :, :]
+
+y = np.load(r'%s\y.npy'%log_directory)
+target_train, target_val_test = train_test_split(y, test_size=0.7, random_state=10)
+target_val, target_test = train_test_split(target_val_test, test_size=0.6, random_state=10)  # 20% test, 20% validation
+
+out_var_mean = np.load(r'%s\out_var_mean.npy' %log_directory)
+out_var_std = np.load(r'%s\out_var_std.npy'%log_directory)
 y_pred_denorm = y_pred_full*out_var_std[0] + out_var_mean[0] #denormalise the predicted delta wtd
 
-# reshape and make sure data are arrays
-y_pred_denorm = y_pred_denorm[:, 0, :, :]
-y_run_og = y_run_og[:, 0, :, :]
+mask_test_na = np.where(mask_test==0, np.nan, 1)
 
-#flip data for plotting
-y_pred_denorm = np.flip(y_pred_denorm, axis=1) 
-y_run_og = np.flip(y_run_og, axis=1)#.numpy() #not necessarily needed to plot?
-X_wtd = np.flip(wtd[:, :, :],axis=1) #also get wtd data for plotting
-map_tile = xr.open_dataset(r'..\data\temp\wtd.nc')
-map_tile = map_tile['Band1'].isel(time=1)
-#TODO: mask ocean/land from wtd
-mask_na = np.where(mask==0, np.nan, 1) #
-mask_na = np.flip(mask_na, axis=1)
-mask_na = mask_na[0,1,:,:]
+for i in range(y_pred_denorm.shape[0])[:10]:
+    print(i, range(y_pred_denorm.shape[0]))
 
-for i in range(y_pred_denorm.shape[0])[:1]:
-    print(i)
-    #X_wtd is the full 12 months, while y_pred_denorm is shifted by 1 month resulting in 11 months, 
-    # here calculate the wtd which is the first month of X_wtd + the predicted delta wtd and then 
-    # compare to X_wtd[i+1] which is the actual wtd for the same month as delta wtd was predicted
-    pred_wtd = X_wtd[i] + y_pred_denorm[i] 
+    # vmax = max([y_pred_denorm[i, 0, :, :].max(),target_test[i, 0, :, :].max()])
+    # vmin = min([y_pred_denorm[i, 0, :, :].min(),target_test[i, 0, :, :].min()])
+    # lim = np.max([np.abs(vmax), np.abs(vmin)])
+    vminR = np.percentile(y_pred_denorm[i, 0, :, :], 5)
+    vmaxR = np.percentile(y_pred_denorm[i, 0, :, :], 95)
+    vminT = np.percentile(target_test[i, 0, :, :], 5)
+    vmaxT = np.percentile(target_test[i, 0, :, :], 95)
+    vmax = np.max([vmaxR, vmaxT])
+    vmin = np.min([vminR, vminT])
 
-    vmax = max([pred_wtd.max(),X_wtd[i:, :, :].max()])
-    vmin = min([pred_wtd.min(),X_wtd[i:, :, :].min()])
     lim = np.max([np.abs(vmax), np.abs(vmin)])
-    
+
+
     plt.figure(figsize=(20, 8))
-    plt.subplot(2, 4, 1)
-    plt.title('Actual WTD (OG) month %s' %(i+2))
-    plt.imshow(X_wtd[i+1, :, :]*mask_na, cmap='viridis', vmin=vmin, vmax=vmax) #plot the actual wtd that to compare wtd+delta wtd
+    plt.subplot(1, 4, 1)
+    plt.imshow(target_test[i, 0, :, :]*mask_test_na[0,0,:,:], cmap='RdBu', vmin=-lim, vmax=lim)
     plt.colorbar(shrink=0.8)
+    plt.title('Actual delta (colorbar 5-95 percentile)')
     plt.tight_layout()
 
-    plt.subplot(2, 4, 2)
-    plt.title('Predicted WTD')
-    plt.imshow(pred_wtd*mask_na, cmap='viridis', vmin=vmin,vmax=vmax)#,vmin=vmin,vmax=vmax)
+    plt.subplot(1, 4, 2)
+    plt.imshow(y_pred_denorm[i, 0, :, :]*mask_test_na[0,0,:,:], cmap='RdBu',vmin=-lim, vmax=lim)
     plt.colorbar(shrink=0.8)
-    plt.tight_layout()
+    plt.title('Predicted delta (colorbar 5-95 percentile)')
 
-    # vmax = max([X_wtd[i+1, :, :]*.max(),pred_wtd.max()])
-    # vmin = min([X_wtd[i+1, :, :].min(),pred_wtd.min()])
-    X_wtd_scatter = X_wtd[i+1, :, :]*mask_na
-    pred_wtd_scatter = pred_wtd*mask_na
-    vmin = min([np.nanmin(X_wtd_scatter),np.nanmin(pred_wtd_scatter)])
-    vmax = max([np.nanmax(X_wtd_scatter),np.nanmax(pred_wtd_scatter)])
-    plt.subplot(2, 4, 3)
-    plt.scatter(X_wtd_scatter.flatten(), pred_wtd_scatter.flatten(),alpha=0.5, facecolors='none', edgecolors='r')
+    vmin = min([np.nanmin(target_test[i, 0, :, :]*mask_test_na[0,0,:,:]),np.nanmin(y_pred_denorm[i, 0, :, :]*mask_test_na[0,0,:,:])])
+    vmax = max([np.nanmax(target_test[i, 0, :, :]*mask_test_na[0,0,:,:]),np.nanmax(y_pred_denorm[i, 0, :, :]*mask_test_na[0,0,:,:])])
+    plt.subplot(1, 4, 3)
+    plt.scatter((target_test[i,0, :, :]*mask_test_na[0,0,:,:]).flatten(), (y_pred_denorm[i, 0, :, :]*mask_test_na[0,0,:,:]).flatten(),alpha=0.5, facecolors='none', edgecolors='r')
     plt.plot([vmin, vmax], [vmin, vmax], 'k--', lw=2)
-    plt.xlabel('OG WTD')
     plt.xlim(vmin,vmax)
     plt.ylim(vmin,vmax)
-    plt.ylabel('Simulated WTD')
-    plt.title(f"OG vs Sim WTD")
-    plt.tight_layout()
+    plt.ylabel('Predicted delta') 
+    plt.xlabel('Actual delta')
 
-    diff = (X_wtd[i+1, :, :]*mask_na)- (pred_wtd*mask_na) #difference between wtd and calculated wtd
-    vmax = np.nanmax(diff)
-    vmin = np.nanmin(diff)
+    plt.subplot(1, 4, 4)
+    diff = (target_test[i, 0, :, :]*mask_test_na[0,0,:,:]) - (y_pred_denorm[i, 0, :, :]*mask_test_na[0,0,:,:]) #difference between wtd and calculated wtd
+    vmax = np.nanmax(np.percentile(diff,95))
+    vmin = np.nanmin(np.percentile(diff,5))
     lim = np.max([np.abs(vmax), np.abs(vmin)])
-    plt.subplot(2, 4, 4)
-    plt.title('diff actual vs sim wtd')
-    pcm = plt.imshow(diff, cmap='RdBu',vmin=-lim, vmax=lim)#norm=SymLogNorm(linthresh=1))#norm=colors.CenteredNorm()) #difference between wtd and calculated wtd
-    plt.colorbar(pcm, orientation='vertical',shrink=0.8)
-    plt.tight_layout()
+    plt.imshow(diff, cmap='RdBu', vmin=-lim, vmax=lim)
+    plt.colorbar(shrink=0.8)
+    plt.title('Difference target-predicted (colorbar 5-95 percentile)')
 
-    vmax = np.nanmax(y_run_og[i,:,:]*mask_na)
-    vmin = np.nanmin(y_run_og[i,:,:]*mask_na)
-    lim = np.max([np.abs(vmax), np.abs(vmin)])
-    plt.subplot(2, 4, 5)
-    pcm = plt.imshow(y_run_og[i,:,:]*mask_na, cmap='RdBu',  vmin=-lim, vmax=lim)# norm=SymLogNorm(linthresh=1)) # delta wtd that was target
-    plt.colorbar(pcm, orientation='vertical', shrink=0.8)
-    plt.title(f"OG delta WTD")
-    plt.tight_layout()
-
-    vmax = np.nanmax(y_pred_denorm[i,:,:]*mask_na)
-    vmin = np.nanmin(y_pred_denorm[i,:,:]*mask_na)
-    lim = np.max([np.abs(vmax), np.abs(vmin)])
-    plt.subplot(2, 4, 6)
-    pcm = plt.imshow(y_pred_denorm[i,:,:]*mask_na, cmap='RdBu', vmin=-lim, vmax=lim)#, norm=SymLogNorm(linthresh=1))#norm=colors.CenteredNorm())# norm=SymLogNorm(linthresh=1)) #delta wtd that was predicted
-    plt.colorbar(pcm, orientation='vertical', shrink=0.8)
-    plt.title(f"predicted delta WTD")    
-    plt.tight_layout()
-
-    # vmax = max([y_run_og[i,:,:].max(),y_pred_denorm[i,:,:].max()])
-    # vmin = min([y_run_og[i,:,:].min(),y_pred_denorm[i,:,:].min()])
-    y_run_scatter =y_run_og[i,:,:]*mask_na
-    y_pred_scatter = y_pred_denorm[i,:,:]*mask_na
-    vmin = min([np.nanmin(y_run_scatter),np.nanmin(y_pred_scatter)])
-    vmax = max([np.nanmax(y_run_scatter),np.nanmax(y_pred_scatter)])
-    plt.subplot(2, 4, 7)
-    plt.scatter(y_run_scatter, y_pred_scatter,alpha=0.5, facecolors='none', edgecolors='r')
-    plt.plot([vmin, vmax], [vmin, vmax], 'k--', lw=2)
-    plt.xlabel('OG delta WTD')
-    plt.xlim(vmin,vmax)
-    plt.ylim(vmin,vmax)
-    plt.ylabel('Simulated delta WTD')
-    plt.title(f"OG vs Sim delta WTD")
-    plt.tight_layout()
-
-    ax = plt.subplot(2, 4, 8)
-    map_tile.plot(ax=ax)
-    ax.add_patch(plt.Rectangle((lon_bounds[0], lat_bounds[0]), lon_bounds[1] - lon_bounds[0], lat_bounds[1] - lat_bounds[0], fill=None, color='red'))
-    plt.tight_layout()
-    
     plt.savefig(r'%s\plot_timesplit_%s.png' %(log_dir_fig, i))
 
 
 
-        
 
 
 
 
-
-
-
-
-# ''' running it on a different region from the same tile'''
-# lon_bounds = (9, 14) #NL bounds(3,6)
-# lat_bounds = (50, 55)#NL bounds(50,54)
-
-# abs_lower, abs_upper, bed_cond, bottom_lower, bottom_upper, drain_cond, drain_elev_lower, drain_elev_upper, hor_cond_lower, hor_cond_upper, init_head_lower, init_head_upper, recharge, prim_stor_coeff_lower, prim_stor_coeff_upper, surf_wat_bed_elev, surf_wat_elev, wtd, top_upper, vert_cond_lower, vert_cond_upper = load_cut_data(inFiles, lat_bounds, lon_bounds, data_length)
-
-# plt.imshow(wtd[0, :, :], cmap='viridis')
-# plt.colorbar()
-# plt.title('WTD for one month') #arrays are flipped so plotting might look weird
-
-# # calculate the delta wtd for each month
-# delta_wtd = np.diff(wtd, axis=0)
-
-# y = delta_wtd[:, np.newaxis, :, :]
-# X_All = np.stack([abs_lower, abs_upper, 
-#               bed_cond, 
-#               bottom_lower, bottom_upper, 
-#               drain_cond, drain_elev_lower, drain_elev_upper, 
-#               hor_cond_lower, hor_cond_upper, 
-#               init_head_lower, init_head_upper, 
-#               recharge, 
-#               prim_stor_coeff_lower, prim_stor_coeff_upper, 
-#               surf_wat_bed_elev, surf_wat_elev, 
-#               top_upper, 
-#               vert_cond_lower, vert_cond_upper, #vert_cond_lower has inf values (for the test case of CH -> in prep fct fill with 0 )
-#               wtd
-#               ], axis=1)
-# X = X_All[1:,:,:,:]
-# # # replace nan with 0 in X and y
-# X = np.nan_to_num(X, copy=False, nan=0)
-# y = np.nan_to_num(y, copy=False, nan=0)
-
-# #normalise data
-# inp_var_mean = [] # list to store normalisation information for denormalisation later
-# inp_var_std = []
-# X_run = torch.from_numpy(X).float() #tranform into torch tensor
-# for i in range(X.shape[1]):
-#     mean, std = normalize(X_run[:, i, :, :]) #normalise each variable separately
-#     inp_var_mean.append(mean)
-#     inp_var_std.append(std)
-
-# out_var_mean = []
-# out_var_std = []
-# y_run = torch.from_numpy(y).float() #transform into torch tensor
-# for i in range(y.shape[1]):
-#     mean, std = normalize(y_run[:, i, :, :])#normalise each variable separately
-#     out_var_mean.append(mean) # append mean and std of each variable to the list
-#     out_var_std.append(std)
-
-# dataset = TensorDataset(X_run, y_run)
-# data_loader = DataLoader(dataset, batch_size=1, shuffle=False)
-# model_reload = SimpleCNN()
-# model_reload.load_state_dict(torch.load(os.path.join(log_directory, 'model_trained.pth')))
-# #run pretrained model from above on the original data
-# def run_model_on_full_data(model, data_loader):
-#     model.eval()
-#     all_outputs = []
-#     with torch.no_grad():
-#         for inp, tar in data_loader:
-#             outputs = model(inp)
-#             all_outputs.append(outputs.cpu().numpy())
-#     all_outputs = np.concatenate(all_outputs, axis=0)
-#     return all_outputs
-
-# # Running the model on the entire dataset
-# y_pred_full = run_model_on_full_data(model, data_loader) #this is now the delta wtd
-
-# # Denormalize the wtd data
-# y_run_denorm = y_run*out_var_std[0].float() + out_var_mean[0].float() #denormalise the original delta wtd
-# y_pred_denorm = y_pred_full*out_var_std[0].numpy() + out_var_mean[0].numpy() #denormalise the predicted delta wtd
-
-# # reshape and make sure data are arrays
-# y_pred_denorm = y_pred_denorm[:, 0, :, :]
-# y_run_denorm = y_run_denorm[:, 0, :, :].numpy()
-
-# #flip data for plotting
-# y_pred_denorm = np.flip(y_pred_denorm, axis=1) 
-# y_run_denorm = np.flip(y_run_denorm, axis=1)#.numpy() #not necessarily needed to plot?
-# X_wtd = np.flip(wtd[:, :, :],axis=1) #also get wtd data for plotting
-# map_tile = xr.open_dataset(r'..\data\temp\target.nc')
-# map_tile = map_tile['Band1'].isel(time=1)
-
-
-# for i in range(y_pred_denorm.shape[0])[:]:
-#     # print(i)
-#     pred_wtd = X_wtd[i] + y_pred_denorm[i] 
-#     #X_wtd is the full 12 months, while y_pred_denorm is shifted by 1 month resulting in 11 months, 
-#     # here calculate the wtd which is the first month of X_wtd + the predicted delta wtd and then 
-#     # compare to X_wtd[i+1] which is the actual wtd for the same month as delta wtd was predicted
-
-#     vmax = max([pred_wtd.max(),X_wtd[:, :, :].max()])
-#     vmin = min([pred_wtd.min(),X_wtd[:, :, :].min()])
-#     lim = np.max([np.abs(vmax), np.abs(vmin)])
-    
-#     plt.figure(figsize=(20, 8))
-#     plt.subplot(2, 4, 1)
-#     plt.title('Actual WTD (OG) month %s' %(i+2))
-#     plt.imshow(X_wtd[i+1, :, :], cmap='viridis',vmin=-lim,vmax=lim) #plot the actual wtd that to compare wtd+delta wtd
-#     plt.colorbar(shrink=0.8)
-
-#     plt.subplot(2, 4, 2)
-#     plt.title('Predicted WTD')
-#     plt.imshow(pred_wtd, cmap='viridis')#,vmin=vmin,vmax=vmax)
-#     plt.colorbar(shrink=0.8)
-
-#     vmax = max([X_wtd[i, :, :].max(),pred_wtd.max()])
-#     vmin = min([X_wtd[i, :, :].min(),pred_wtd.min()])
-#     plt.subplot(2, 4, 3)
-#     plt.scatter(X_wtd[i+1, :, :].flatten(), pred_wtd.flatten(),alpha=0.5, facecolors='none', edgecolors='r')
-#     plt.plot([vmin, vmax], [vmin, vmax], 'k--', lw=2)
-#     plt.xlabel('OG WTD')
-#     plt.xlim(vmin,vmax)
-#     plt.ylim(vmin,vmax)
-#     plt.ylabel('Simulated WTD')
-#     plt.title(f"OG vs Sim WTD")
-#     plt.tight_layout()
-
-#     diff = X_wtd[i+1, :, :] - pred_wtd #difference between wtd and calculated wtd
-#     plt.subplot(2, 4, 4)
-#     plt.title('diff actual vs sim wtd')
-#     pcm = plt.imshow(diff, cmap='RdBu', norm=colors.CenteredNorm()) #difference between wtd and calculated wtd
-#     plt.colorbar(pcm, orientation='vertical',shrink=0.8)
-#     plt.tight_layout()
-
-#     plt.subplot(2, 4, 5)
-#     pcm = plt.imshow(y_run_denorm[i,:,:], cmap='RdBu', norm=SymLogNorm(linthresh=1)) # delta wtd that was target
-#     plt.colorbar(pcm, orientation='vertical', shrink=0.8)
-#     plt.title(f"OG delta WTD")
-#     plt.tight_layout()
-
-#     plt.subplot(2, 4, 6)
-#     pcm = plt.imshow(y_pred_denorm[i,:,:], cmap='RdBu', norm=colors.CenteredNorm())# norm=SymLogNorm(linthresh=1)) #delta wtd that was predicted
-#     plt.colorbar(pcm, orientation='vertical', shrink=0.8)
-#     plt.title(f"predicted delta WTD")    
-#     plt.tight_layout()
-
-#     vmax = max([y_run_denorm[i,:,:].max(),y_pred_denorm[i,:,:].max()])
-#     vmin = min([y_run_denorm[i,:,:].min(),y_pred_denorm[i,:,:].min()])
-#     plt.subplot(2, 4, 7)
-#     plt.scatter(y_run_denorm[i,:,:], y_pred_denorm[i,:,:],alpha=0.5, facecolors='none', edgecolors='r')
-#     plt.plot([vmin, vmax], [vmin, vmax], 'k--', lw=2)
-#     plt.xlabel('OG delta WTD')
-#     plt.xlim(vmin,vmax)
-#     plt.ylim(vmin,vmax)
-#     plt.ylabel('Simulated delta WTD')
-#     plt.title(f"OG vs Sim delta WTD")
-
-#     ax = plt.subplot(2, 4, 8)
-#     map_tile.plot(ax=ax)
-#     ax.add_patch(plt.Rectangle((lon_bounds[0], lat_bounds[0]), lon_bounds[1] - lon_bounds[0], lat_bounds[1] - lat_bounds[0], fill=None, color='red'))
-#     plt.tight_layout()
-    
-#     plt.savefig(r'..\data\temp\plots\plot_different_region_%s.png' %(i))
-
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# # highlight regions on original map by drawing a rectangle based on the lat and lon bounds
-# lon_bounds_old = (5, 10) #example swiss bounds
-# lat_bounds_old = (45, 50)#example swiss bounds
-# map = xr.open_dataset(r'..\data\temp\target.nc') # in this case, water table depth
-# # map = map.sel(lat=slice(*lat_bounds), lon=slice(*lon_bounds))
-# map = map['Band1'].isel(time=1)
-
-# fig, ax = plt.subplots()
-# map.plot(ax=ax)
-# ax.add_patch(plt.Rectangle((lon_bounds[0], lat_bounds[0]), lon_bounds[1] - lon_bounds[0], lat_bounds[1] - lat_bounds[0], fill=None, color='red'))
-# ax.add_patch(plt.Rectangle((lon_bounds_old[0], lat_bounds_old[0]), lon_bounds_old[1] - lon_bounds_old[0], lat_bounds_old[1] - lat_bounds_old[0], fill=None, color='blue'))
-# plt.show()
