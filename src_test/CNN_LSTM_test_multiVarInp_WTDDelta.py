@@ -1,7 +1,5 @@
 #CNN_test
 import os
-import gc
-import tracemalloc
 import random
 import glob
 import numpy as np
@@ -12,7 +10,7 @@ import torch.nn.functional as F
 from torchvision import transforms
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
-from torch.utils.data import random_split, DataLoader, TensorDataset
+from torch.utils.data import random_split, DataLoader, Dataset, TensorDataset
 import xarray as xr
 import matplotlib.pyplot as plt
 from matplotlib.colors import SymLogNorm
@@ -36,28 +34,29 @@ set_seed(10)
 '''define general path, data length, case area, number of epochs, learning rate and batch size'''
 general_path = r'C:\Users\hausw001\surfdrive - Hauswirth, S.M. (Sandra)@surfdrive.surf.nl'
 # define the number of months in the dataset and the number of epochs
-data_length = 72 # number of months in current dataset (needed for dataprep function to extend the static parameters)
-def_epochs = 2
-lr_rate = 0.01
+data_length = 72 # 72 number of months in current dataset (needed for dataprep function to extend the static parameters)    
+data_short= 72
+def_epochs = 10
+lr_rate = 0.001
 batchSize = 1
-# lat_bounds = (45, 52.5) #roughly half the tile
-# lon_bounds = (0, 15)#roughly half the tile
+kernel = 3
+trainSize = 0.3
+testSize = 0.4
+sequence_length = 6
 
-# lon_bounds = (5, 10) #NL bounds(3,6)
-# lat_bounds = (45, 50)#NL bounds(50,54)
+# define the lat and lon bounds for the test region
+lon_bounds = (7, 10) #CH bounds(5,10)
+lat_bounds = (47, 50)#CH bounds(45,50)
 
-lon_bounds = (3, 6) #NL bounds(3,6)
-lat_bounds = (50, 54)#NL bounds(50,54)
 
 '''create log directory for tensorboard logs'''
-log_directory = r'..\training\logs\%s_%s_%s' %(def_epochs, lr_rate ,batchSize)
-log_dir_fig = r'..\training\logs\%s_%s_%s\spatial_eval_plots' %(def_epochs, lr_rate ,batchSize)
+log_directory = r'..\training\logs\%s_%s_%s_%s_%s_%s' %(def_epochs, lr_rate ,batchSize, kernel, sequence_length,data_short)
+log_dir_fig = r'..\training\logs\%s_%s_%s_%s_%s_%s\spatial_eval_plots' %(def_epochs, lr_rate ,batchSize, kernel, sequence_length,data_short)
 #create folder in case not there yet
 if not os.path.exists(log_directory):
     os.makedirs(log_directory) 
 if not os.path.exists(log_dir_fig):
     os.makedirs(log_dir_fig)
-
 
 
 '''create mask (for land/ocean)'''
@@ -68,8 +67,8 @@ mask = map_cut.to_array().values
 mask = np.nan_to_num(mask, copy=False, nan=0)
 mask = np.where(mask==0, 0, 1)
 mask = mask[0, :, :]
-plt.imshow(mask[0, :, :])
-
+# plt.imshow(mask[0, :, :])
+np.save(r'%s\mask.npy'%log_directory, mask)
 
 '''load the modflow files and prepare the data for input'''
 inFiles = glob.glob(r'..\data\temp\*.nc') #load all input files in the folder
@@ -87,6 +86,7 @@ params_initial = ['bottom_lowermost_layer', 'bottom_uppermost_layer',
  'primary_storage_coefficient_lowermost_layer', 'primary_storage_coefficient_uppermost_layer',
  'top_uppermost_layer',
  'vertical_conductivity_lowermost_layer', 'vertical_conductivity_uppermost_layer']
+
 def data_prep(f, lat_bounds, lon_bounds, data_length):
     '''function to prepare the data for input by:
      - cropping the data to the specified lat and lon bounds for test regions, 
@@ -108,6 +108,7 @@ def data_prep(f, lat_bounds, lon_bounds, data_length):
         data_arr = np.where(data_arr==np.nan, 0, data_arr)
         data_arr = np.where(data_arr==np.inf, 0, data_arr)
     return data_arr
+
 # load the different modflow files (#TODO: find a way to load all files at once)
 def load_cut_data(inFiles, lat_bounds, lon_bounds, data_length):
     abs_lower = data_prep(inFiles[0], lat_bounds, lon_bounds, data_length) #these include negative values
@@ -141,9 +142,9 @@ plt.subplot(1, 2, 1)
 plt.title('WTD for one month')
 plt.imshow(wtd[0, :, :], cmap='viridis') #the array version of the input data is flipped
 plt.colorbar()
-plt.subplot(1, 2, 2)
-plt.title('Mask')
-plt.imshow(mask[0,:,:])
+# plt.subplot(1, 2, 2)
+# plt.title('Mask')
+# plt.imshow(mask[0,:,:])
 
 ''''calculate the delta wtd for each month - define target (y) and input (X) arrays for the CNN'''
 delta_wtd = np.diff(wtd, axis=0) #wtd is always for end of the month so here for example delta wtd between jan and feb means the delta for feb
@@ -164,6 +165,8 @@ X_All = np.stack([abs_lower, abs_upper,
               mask #TODO check if mask should be used in the input data
               ], axis=1)
 X = X_All[1:,:,:,:] #remove first month to match the delta wtd data
+np.save(r'%s\X.npy'%log_directory, X)
+np.save(r'%s\y.npy'%log_directory, y)
 
 '''normalising the data for every array and save mean and std for denormalisation'''
 inp_var_mean = [] # list to store normalisation information for denormalisation later
@@ -184,6 +187,9 @@ for i in range(X.shape[1]):
     inp_var_std.append(std)
 X_norm_arr = np.array(X_norm)
 X_norm_arr = X_norm_arr.transpose(1, 0, 2, 3)
+np.save(r'%s\X_norm_arr.npy'%log_directory, X_norm_arr)
+np.save(r'%s\inp_var_mean.npy'%log_directory, inp_var_mean)
+np.save(r'%s\inp_var_std.npy'%log_directory, inp_var_std)
 
 out_var_mean = []
 out_var_std = []
@@ -191,32 +197,79 @@ y_norm = []
 for i in range(y.shape[1]):
     mean = y[:, i, :, :].mean()
     std = y[:, i, :, :].std()
+    # check if every value in array is 0, if so, skip normalisation
+    if y[:, i, :, :].max() == 0 and y[:, i, :, :].min() == 0:
+        print('skipped normalisation for array %s' %i)
+        y_temp = X[:, i, :, :]
+    else:
+        y_temp = (X[:, i, :, :] - mean) / std
     y_temp = (y[:, i, :, :] - mean) / std
     y_norm.append(y_temp)
     out_var_mean.append(mean)
     out_var_std.append(std)
 y_norm_arr = np.array(y_norm)
 y_norm_arr = y_norm_arr.transpose(1, 0, 2, 3)
+np.save(r'%s\y_norm_arr.npy'%log_directory, y_norm_arr)
+np.save(r'%s\out_var_mean.npy'%log_directory, out_var_mean)
+np.save(r'%s\out_var_std.npy'%log_directory, out_var_std)
 
 
-'''split the data into train/val/test'''
-X_train, X_temp, y_train, y_temp = train_test_split(X_norm_arr, y_norm_arr, test_size=0.7, random_state=42)
-X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=0.6, random_state=42)
+'''shorten data for experiment'''
+X_norm_arr = X_norm_arr[:data_short, :, :, :]
+y_norm_arr = y_norm_arr[:data_short, :, :, :]
 
+'''introduce sequence shift for lsmt aspect'''
+# Define the sequence length (e.g., 5 months)
+# sequence_length = 2
+
+# Prepare input (X) and target (y) sequences
+X_norm_sequences = []
+y_norm_sequences = []
+
+# Loop over the data to create sequences
+for i in range(len(X_norm_arr) - sequence_length):
+    X_seq = X_norm_arr[i:i+sequence_length, :, :, :]  # Input sequence of length 5
+    y_seq = y_norm_arr[i+sequence_length, :, :, :]    # Target is the next time step after the input sequence
+    X_norm_sequences.append(X_seq) 
+    y_norm_sequences.append(y_seq)  
+# Convert lists to numpy arrays
+X_sequences = np.array(X_norm_sequences)  # Shape: (num_sequences, sequence_length, 22, 360, 360)
+y_sequences = np.array(y_norm_sequences)  # Shape: (num_sequences, 1, 360, 360)
+
+'''temporal split the patches into training, validation and test sets'''
+X_train = X_sequences[:int(trainSize*len(X_sequences)), :, :, :, :]
+X_val = X_sequences[int(trainSize*len(X_sequences)):(int(trainSize*len(X_sequences))+(int((1-(trainSize+testSize))*len(X_sequences)))), :, :, :, :]
+X_test = X_sequences[int((1-(testSize))*len(X_sequences)):, :, :, :, :]
+
+y_train = y_sequences[:int(trainSize*len(y_sequences)), :, :, :]
+y_val = y_sequences[int(trainSize*len(y_sequences)):(int(trainSize*len(y_sequences))+(int((1-(trainSize+testSize))*len(y_sequences)))), :, :, :]
+y_test = y_sequences[int((1-(testSize))*len(y_sequences)):, :, :, :]
 
 
 '''remove mask in every training, validation and test patch'''
 def remove_mask_patch(r):
-    r_train = r[:, :-1, :, :]
-    r_mask = r[:, -1, :, :]
+    r_train = r[:, :, :-1, :, :]
+    r_mask = r[:, :, -1, :, :]
     r_mask = np.where(r_mask<=0, 0, 1)
     mask_bool = r_mask.astype(bool)
-    mask_bool = mask_bool[ :, np.newaxis, :, :]
+    mask_bool = mask_bool[:, :, np.newaxis, :, :]
     return r_train, mask_bool
 
 X_train, mask_train = remove_mask_patch(X_train)
 X_val, mask_val = remove_mask_patch(X_val)
 X_test, mask_test = remove_mask_patch(X_test)
+np.save(r'%s/X_train.npy' %log_directory, X_train)
+np.save(r'%s/X_val.npy' %log_directory, X_val)
+np.save(r'%s/X_test.npy' %log_directory, X_test)
+
+np.save(r'%s/mask_train.npy' %log_directory, mask_train)
+np.save(r'%s/mask_val.npy' %log_directory, mask_val)
+np.save(r'%s/mask_test.npy' %log_directory, mask_test)
+
+np.save(r'%s/y_train.npy' %log_directory, y_train)
+np.save(r'%s/y_val.npy' %log_directory, y_val)
+np.save(r'%s/y_test.npy' %log_directory, y_test)
+
 
 
 '''transform the data into tensors'''
@@ -256,114 +309,348 @@ train_loader = DataLoader(CustomDataset(X_train, y_train, mask_train), batch_siz
 validation_loader = DataLoader(CustomDataset(X_val, y_val, mask_val), batch_size=batchSize, shuffle=False)
 test_loader = DataLoader(CustomDataset(X_test, y_test, mask_test), batch_size=batchSize, shuffle=False)
 
-class CNN_LSTM(nn.Module):
-    def __init__(self, input_channels, hidden_size, output_size, height, width):
-        super(CNN_LSTM, self).__init__()
+
+
+class ConvBlock(nn.Module):
+    """
+    A basic convolutional block consisting of two Conv2D layers,
+    each followed by batch normalization and ReLU activation.
+    """
+    def __init__(self, in_channels, out_channels):
+        super(ConvBlock, self).__init__()
+        self.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=3, padding=1)
+        self.bn1 = nn.BatchNorm2d(out_channels)
+        self.conv2 = nn.Conv2d(out_channels, out_channels, kernel_size=3, padding=1)
+        self.bn2 = nn.BatchNorm2d(out_channels)
+        self.relu = nn.ReLU()
+
+    def forward(self, x):
+        x = self.relu(self.bn1(self.conv1(x))) # Conv -> BatchNorm -> ReLU
+        x = self.relu(self.bn2(self.conv2(x)))
+        return x
+
+class EncoderBlock(nn.Module):
+    """
+    Encoder block consisting of a ConvBlock followed by MaxPooling.
+    The output of the ConvBlock is stored for the skip connection.
+    """
+    def __init__(self, in_channels, out_channels):
+        super(EncoderBlock, self).__init__()
+        self.conv = ConvBlock(in_channels, out_channels)
+        self.pool = nn.MaxPool2d(kernel_size=2, stride=2)
+
+    def forward(self, x):
+        x_conv = self.conv(x)  # Apply the convolutional block
+        x_pool = self.pool(x_conv) # Apply max pooling
+        return x_conv, x_pool # Return both for the skip connection
+
+class DecoderBlock(nn.Module):
+    """
+    Decoder block consisting of an upsampling (ConvTranspose2d) and a ConvBlock.
+    It takes the skip connection from the corresponding encoder block.
+    """
+    def __init__(self, in_channels, out_channels):
+        super(DecoderBlock, self).__init__()
+        self.up = nn.ConvTranspose2d(in_channels, out_channels, kernel_size=2, stride=2)
+        self.conv = ConvBlock(out_channels * 2, out_channels)# Double input channels to account for skip connection
+
+    def forward(self, x, skip):
+        x = self.up(x)
+        # Center crop the skip connection tensor to match the size of the upsampled tensor
+        if x.size() != skip.size():
+            diffY = skip.size()[2] - x.size()[2]
+            diffX = skip.size()[3] - x.size()[3]
+            x = F.pad(x, [diffX // 2, diffX - diffX // 2, diffY // 2, diffY - diffY // 2])
+
+        x = torch.cat([skip, x], dim=1)  # Concatenate along channel axis
+        x = self.conv(x)
+        return x
+
+class UNetLSTM_Option1(nn.Module):
+    def __init__(self, input_channels, output_channels, hidden_dim, lstm_layers, dropout):
+        super(UNetLSTM_Option1, self).__init__()
+
+        # Encoder
+        self.encoder1 = EncoderBlock(input_channels, 64)
+        self.encoder2 = EncoderBlock(64, 128)
+        self.encoder3 = EncoderBlock(128, 256)
+        self.encoder4 = EncoderBlock(256, 512)
+
+        # Bottleneck
+        self.bottleneck = ConvBlock(512, 1024)
+
+        # LSTM after decoder
+        self.lstm = nn.LSTM(input_size=484, hidden_size=hidden_dim, num_layers=lstm_layers, dropout=dropout, batch_first=True)
+        # Decoder
+        self.decoder1 = DecoderBlock(1024, 512)
+        self.decoder2 = DecoderBlock(512, 256)
+        self.decoder3 = DecoderBlock(256, 128)
+        self.decoder4 = DecoderBlock(128, 64)
         
-        # CNN layers (to extract spatial features)
-        self.conv1 = nn.Conv2d(input_channels, 16, kernel_size=3, padding=1)
-        self.conv2 = nn.Conv2d(16, 32, kernel_size=3, padding=1)
-        
-        # LSTM layer (to model temporal dependencies)
-        self.lstm = nn.LSTM(input_size=32 * height * width, hidden_size=hidden_size, batch_first=True)
-        
-        # Fully connected layer (to predict output groundwater heads)
-        self.fc = nn.Linear(hidden_size, output_size)
-    
+        # Final output layer
+        self.final_conv = nn.Conv2d(64, output_channels, kernel_size=1)
+
     def forward(self, x):
         batch_size, seq_len, channels, height, width = x.size()
-        cnn_features = []
+        print('batch_size, seq_len, channels, height, width', batch_size, seq_len, channels, height, width)
+
+        # Flatten input for CNN part
+        x = x.view(batch_size * seq_len, channels, height, width)
+        print('xshape', x.shape)
+        # Encoder
+        x1, p1 = self.encoder1(x)
+        x2, p2 = self.encoder2(p1)
+        x3, p3 = self.encoder3(p2)
+        x4, p4 = self.encoder4(p3)
+        print('x1', x1.shape)   
+        print('x2', x2.shape)
+        print('x3', x3.shape)
+        print('x4', x4.shape)
         
-        # Apply CNN to each time step
-        for t in range(seq_len):
-            x_t = F.relu(self.conv1(x[:, t]))
-            x_t = F.relu(self.conv2(x_t))
-            x_t = x_t.view(batch_size, -1)  # Flatten spatial dimensions
-            cnn_features.append(x_t)
+         # Bottleneck
+        bottleneck = self.bottleneck(p4)
+        print('bottleneck', bottleneck.shape)
+        batch_size_bottleneck, channels_bottleneck, height_bottleneck, width_bottleneck = bottleneck.size()
+        print('batch_size_bottleneck, channels_bottleneck, height_bottleneck, width_bottleneck', batch_size_bottleneck, channels_bottleneck, height_bottleneck, width_bottleneck)
+
+        # Reshape for LSTM
+        bottleneck_flat = bottleneck.view(batch_size_bottleneck, channels_bottleneck, -1)  
+        print('bottleneckflat', bottleneck_flat.shape)
+        # LSTM
+        lstm_out, _ = self.lstm(bottleneck_flat)  
+        print('lstm_out', lstm_out.shape)
+        # Reshape LSTM output back to spatial form
+        lstm_out_reshaped = lstm_out.view(batch_size*batch_size_bottleneck, channels_bottleneck, height_bottleneck, width_bottleneck)
+        print('lstm_out_reshaped', lstm_out_reshaped.shape)
+        # Decoder
+        d1 = self.decoder1(lstm_out_reshaped, x4)
+        d2 = self.decoder2(d1, x3)
+        d3 = self.decoder3(d2, x2)
+        d4 = self.decoder4(d3, x1)
+
+        # Final output
+        out = self.final_conv(d4)
+        # print('out', out.shape)
+        out = out.view(batch_size, seq_len, output_channels, height, width)
+
+        return out
+class UNetLSTM_Option2(nn.Module):
+    def __init__(self, input_channels, output_channels, hidden_dim, lstm_layers=1):
+        super(UNetLSTM_Option2, self).__init__()
+
+        # Encoder
+        self.encoder1 = EncoderBlock(input_channels, 64)
+        self.encoder2 = EncoderBlock(64, 128)
+        self.encoder3 = EncoderBlock(128, 256)
+        self.encoder4 = EncoderBlock(256, 512)
+
+        # Bottleneck
+        self.bottleneck = ConvBlock(512, 1024)
+
+        # LSTM after decoder
+        self.lstm = nn.LSTM(input_size=484, hidden_size=hidden_dim, num_layers=lstm_layers, batch_first=True)
+        # Decoder
+        self.decoder1 = DecoderBlock(1024, 512)
+        self.decoder2 = DecoderBlock(512, 256)
+        self.decoder3 = DecoderBlock(256, 128)
+        self.decoder4 = DecoderBlock(128, 64)
         
-        # Stack CNN features for LSTM input
-        cnn_features = torch.stack(cnn_features, dim=1)  # (batch_size, seq_len, features)
+        # Final output layer
+        self.final_conv = nn.Conv2d(64, output_channels, kernel_size=1)
+
+    def forward(self, x):
+        batch_size, seq_len, channels, height, width = x.size()
+        print('batch_size, seq_len, channels, height, width', batch_size, seq_len, channels, height, width)
+
+        # Flatten input for CNN part
+        x = x.view(batch_size * seq_len, channels, height, width)
+        print('xshape', x.shape)
+        # Encoder
+        x1, p1 = self.encoder1(x)
+        x2, p2 = self.encoder2(p1)
+        x3, p3 = self.encoder3(p2)
+        x4, p4 = self.encoder4(p3)
+        print('x1', x1.shape)   
+        print('x2', x2.shape)
+        print('x3', x3.shape)
+        print('x4', x4.shape)
         
-        # LSTM layer
-        lstm_out, _ = self.lstm(cnn_features)
+         # Bottleneck
+        bottleneck = self.bottleneck(p4)
+        print('bottleneck', bottleneck.shape)
+        batch_size_bottleneck, channels_bottleneck, height_bottleneck, width_bottleneck = bottleneck.size()
+        print('batch_size_bottleneck, channels_bottleneck, height_bottleneck, width_bottleneck', batch_size_bottleneck, channels_bottleneck, height_bottleneck, width_bottleneck)
+
+        # Reshape for LSTM
+        bottleneck_flat = bottleneck.view(batch_size_bottleneck, channels_bottleneck, -1)  
+        print('bottleneckflat', bottleneck_flat.shape)
+        # LSTM
+        lstm_out, _ = self.lstm(bottleneck_flat)  
+        print('lstm_out', lstm_out.shape)
+        # Reshape LSTM output back to spatial form
+        lstm_out_reshaped = lstm_out.view(batch_size*batch_size_bottleneck, channels_bottleneck, height_bottleneck, width_bottleneck)
+        print('lstm_out_reshaped', lstm_out_reshaped.shape)
+        # Decoder
+        d1 = self.decoder1(lstm_out_reshaped, x4)
+        d2 = self.decoder2(d1, x3)
+        d3 = self.decoder3(d2, x2)
+        d4 = self.decoder4(d3, x1)
+
+        # Final output
+        out = self.final_conv(d4)
+        # print('out', out.shape)
+        out = out.view(batch_size, seq_len, output_channels, height, width)
+
+        return out
+    
+
+class UNetLSTM_Option3(nn.Module):
+    def __init__(self, input_channels, output_channels, hidden_dim, lstm_layers=1):
+        super(UNetLSTM_Option3, self).__init__()
+
+        # Encoder
+        self.encoder1 = EncoderBlock(input_channels, 64)
+        self.encoder2 = EncoderBlock(64, 128)
+        self.encoder3 = EncoderBlock(128, 256)
+        self.encoder4 = EncoderBlock(256, 512)
+
+        # Bottleneck
+        self.bottleneck = ConvBlock(512, 1024)
+    
+        # Decoder
+        self.decoder1 = DecoderBlock(1024, 512)
+        self.decoder2 = DecoderBlock(512, 256)
+        self.decoder3 = DecoderBlock(256, 128)
+        self.decoder4 = DecoderBlock(128, 64)
         
-        # Take the output of the last time step
-        output = lstm_out[:, -1, :]
+        # LSTM and FC (placeholder for dynamic input size initialization)
+        self.hidden_dim = hidden_dim
+        self.lstm_layers = lstm_layers
+        self.lstm = None
+        self.fc = None
+
+        # Final output layer
+        self.final_conv = nn.Conv2d(64, output_channels, kernel_size=1)
+
+    def forward(self, x):
+        batch_size, seq_len, channels, height, width = x.size()
+        # print('batch_size, seq_len, channels, height, width', batch_size, seq_len, channels, height, width)
+
+        # Flatten input for CNN part
+        x = x.view(batch_size * seq_len, channels, height, width)
+        # print('xshape', x.shape)
+        # Encoder
+        x1, p1 = self.encoder1(x)
+        x2, p2 = self.encoder2(p1)
+        x3, p3 = self.encoder3(p2)
+        x4, p4 = self.encoder4(p3)
+        # print('x1', x1.shape)   
+        # print('x2', x2.shape)
+        # print('x3', x3.shape)
+        # print('x4', x4.shape)
         
-        # Fully connected layer to get final prediction
-        output = self.fc(output)
-        
-        # Reshape to (batch_size, height, width)
-        output = output.view(batch_size, height, width)
-        
-        return output
-# Instantiate the model, define the loss function and the optimizer
+        # Bottleneck
+        bottleneck = self.bottleneck(p4)
+        # print('bottleneck', bottleneck.shape)
+        # Decoder
+        d1 = self.decoder1(bottleneck, x4)
+        d2 = self.decoder2(d1, x3)
+        d3 = self.decoder3(d2, x2)
+        d4 = self.decoder4(d3, x1)
+
+        # print('d1', d1.shape)
+        # print('d2', d2.shape)
+        # print('d3', d3.shape)
+        # print('d4', d4.shape)
+
+        # Get the spatial dimensions of the decoder output dynamically
+        d4_batch, d4_channels, d4_height, d4_width = d4.size()
+        print('Decoder output shape:', d4_batch, d4_channels, d4_height, d4_width)
+
+        # Initialize LSTM and FC only once, based on the spatial dimensions of the first forward pass
+        if self.lstm is None:
+            lstm_input_size = d4_channels * d4_height * d4_width
+            self.lstm = nn.LSTM(input_size=lstm_input_size, hidden_size=self.hidden_dim, num_layers=self.lstm_layers, batch_first=True)
+            self.fc = nn.Linear(self.hidden_dim, lstm_input_size)
+
+        # Reshape decoder output for LSTM
+        d4_flat = d4.view(batch_size, seq_len, -1)  # Shape: [batch_size, seq_len, 64 * height * width]
+
+        # LSTM (process temporal information)
+        lstm_out, _ = self.lstm(d4_flat)  # Shape: [batch_size, seq_len, hidden_dim]
+        print('LSTM output shape:', lstm_out.shape)
+
+        # Apply fully connected layer to map LSTM output back to spatial dimensions
+        lstm_out_mapped = self.fc(lstm_out)
+        print('Mapped LSTM output shape:', lstm_out_mapped.shape)
+
+        # Reshape to spatial dimensions (batch_size * seq_len, 64, height, width)
+        lstm_out_reshaped = lstm_out_mapped.view(batch_size * seq_len, d4_channels, d4_height, d4_width)
+        print('Reshaped LSTM output shape:', lstm_out_reshaped.shape)
+
+        # Final output
+        out = self.final_conv(lstm_out_reshaped)
+        print('Final output shape before reshaping:', out.shape)
+
+        # Reshape to match the sequence format (batch_size, seq_len, channels, height, width)
+        out = out.view(batch_size, seq_len, -1, d4_height, d4_width)
+        print('Final output shape:', out.shape)
+
+        return out
+    
 writer = SummaryWriter(log_dir=log_directory)
 # Instantiate the model
 input_channels = 21  # Number of input variables (channels)
-hidden_size = 128  # Number of LSTM units
-height, width = X_train.shape[2], X_train.shape[3]  # Spatial dimensions of the input data
-output_size = height * width  # Predicting groundwater head (single value)
+output_channels = 1  # Single output channel (groundwater head)
+hidden_dim = 484  # Number of LSTM units
+lstm_layers = 1  # Number of LSTM layers
+dropout =0
 
-model = CNN_LSTM(input_channels, hidden_size, output_size, height, width)
-
-torch.save(model.state_dict(), os.path.join(log_directory, 'model_untrained.pth'))
-criterion = nn.MSELoss()
+model = UNetLSTM_Option1(input_channels, output_channels, hidden_dim, lstm_layers, dropout)
+# model = UNetLSTM_Option3(input_channels, output_channels, hidden_dim, lstm_layers)
 optimizer = optim.Adam(model.parameters(), lr=lr_rate)
 
-
-#TODO debug training function
 # RMSE function
-def rmse(outputs, targets, masks):
-    return torch.sqrt(F.mse_loss(outputs[masks], targets[masks]))
+def rmse_cnnlstm(outputs, targets, mas):
+    return torch.sqrt(F.mse_loss(outputs[mas], targets[mas]))
 
-# Training function
-def train_model(model, train_loader, validation_loader, criterion, optimizer, num_epochs, writer=None):
+
+def train_model_UnetLSTM(model, train_loader, validation_loader, optimizer, num_epochs, writer=None):
     best_val_loss = float('inf')
     for epoch in range(num_epochs):
         print(f"Epoch {epoch+1}/{num_epochs}")
         model.train()
         running_train_loss = 0.0
-        running_train_rmse = 0.0
 
         for inputs, targets, masks in train_loader:
             inputs = inputs.float()
-            print(inputs.shape)
-            print(inputs.ndim)
+            # print('input shape orig', inputs.shape)
             targets = targets.float()
-                # Ensure inputs have 5 dimensions
-            if inputs.ndim == 4:
-                inputs = inputs.unsqueeze(1)
-            if targets.ndim == 4:
-                targets = targets.unsqueeze(1)
-            if masks.ndim == 4:
-                masks = masks.unsqueeze(1)
+            # print('target shape orig', targets.shape)
+            masks = masks.bool()
+            # print('mask shape orig', masks.shape)
 
             optimizer.zero_grad()
             outputs = model(inputs)
-
-            loss = criterion(outputs[masks], targets[masks])
-            # loss = rmse(outputs, targets, masks)
+            # print('output shape', outputs.shape)
+            if targets.shape != outputs.shape:
+                batch, seql, chan, h, w = outputs.shape
+                # print('seql, chan, h, w', seql, chan, h, w)
+                targets = targets.expand(batch, seql, chan, h, w)
+            # print('target shape ext', targets.shape)	
+            loss = rmse_cnnlstm(outputs, targets, masks)
             loss.backward()
             optimizer.step()
 
             running_train_loss += loss.item()
-
-            # Calculate RMSE and MAE
-            # running_train_rmse += rmse(outputs, targets, masks).item()
-
         epoch_train_loss = running_train_loss / len(train_loader.dataset)
-        # epoch_train_rmse = running_train_rmse / len(train_loader.dataset)
-
         if writer:
             writer.add_scalar('Loss/train_epoch', running_train_loss / len(train_loader), epoch)
-            # writer.add_scalar('RMSE/train_epoch', epoch_train_rmse, epoch)
+  
         
         # Validation Phase
         model.eval()
         running_val_loss = 0.0
-        running_val_rmse = 0.0
-        running_val_mae = 0.0
 
         with torch.no_grad():
             for inputs, targets, masks in validation_loader:
@@ -371,70 +658,58 @@ def train_model(model, train_loader, validation_loader, criterion, optimizer, nu
                 targets = targets.float()
 
                 outputs = model(inputs)
-                # loss = criterion(outputs[masks], targets[masks])
-                loss = rmse(outputs, targets, masks)
+                if targets.shape != outputs.shape:
+                    batch, seql, chan, h, w = outputs.shape
+                    # print('seql, chan, h, w', seql, chan, h, w)
+                    targets = targets.expand(batch, seql, chan, h, w)
+                # print('target shape ext', targets.shape)	
+                loss = rmse_cnnlstm(outputs, targets, masks)
                 running_val_loss += loss.item() * inputs.size(0)
-
-                # Calculate RMSE and MAE
-                # running_val_rmse += rmse(outputs, targets, masks).item()
         
         epoch_val_loss = running_val_loss / len(validation_loader.dataset)
-        # epoch_val_rmse = running_val_rmse / len(validation_loader.dataset)
-
 
         if writer:
             writer.add_scalar('Loss/validation_epoch', running_val_loss / len(validation_loader), epoch)
-            # writer.add_scalar('RMSE/validation_epoch', epoch_val_rmse, epoch)
-            # writer.add_scalar('MAE/validation_epoch', epoch_val_mae, epoch)
-
         print(f"Epoch [{epoch+1}/{num_epochs}], Training Loss: {epoch_train_loss:.4f}, Validation Loss: {epoch_val_loss:.4f}")
-            #   f"Training RMSE: {epoch_train_rmse:.4f}, Validation RMSE: {epoch_val_rmse:.4f}, "
-            #   f"Training MAE: {epoch_train_mae:.4f}, Validation MAE: {epoch_val_mae:.4f}")
-
+ 
         if epoch_val_loss < best_val_loss:
             best_val_loss = epoch_val_loss
             torch.save(model.state_dict(), os.path.join(log_directory, 'best_model.pth'))
             print("Best model saved!")
-
     return
 
-def test_model(model, test_loader, criterion, writer=None):
+train_model_UnetLSTM(model, train_loader, validation_loader, optimizer, num_epochs=def_epochs, writer=writer)
+
+
+
+def test_model_UnetLSTM(model, test_loader, writer=None):
     model.eval()
     running_test_loss = 0.0
-    running_test_rmse = 0.0
-    running_test_mae = 0.0
     all_outputs = []
 
     with torch.no_grad():
         for inputs, targets, masks in test_loader:
             inputs = inputs.float()
             targets = targets.float()
+            masks = masks.bool()
 
             outputs = model(inputs)
-
+            if targets.shape != outputs.shape:
+                    batch, seql, chan, h, w = outputs.shape
+                    # print('seql, chan, h, w', seql, chan, h, w)
+                    targets = targets.expand(batch, seql, chan, h, w)
             # Compute the loss
-            # loss = criterion(outputs[masks], targets[masks])
-            loss = rmse(outputs, targets, masks)
+            loss = rmse_cnnlstm(outputs, targets, masks)
             running_test_loss += loss.item() * inputs.size(0)
-
-            # Compute RMSE and MAE for the current batch
-            # running_test_rmse += rmse(outputs, targets, masks).item() * inputs.size(0)
-            # running_test_mae += mae(outputs, targets, masks).item() * inputs.size(0)
 
             # Store outputs for further analysis or visualization if needed
             all_outputs.append(outputs.cpu().numpy())
 
         # Compute the average loss, RMSE, and MAE for the entire test dataset
         test_loss = running_test_loss / len(test_loader.dataset)
-        # test_rmse = running_test_rmse / len(test_loader.dataset)
-        # test_mae = running_test_mae / len(test_loader.dataset)
-
         # Log test metrics if using a writer (e.g., TensorBoard)
         if writer:
             writer.add_scalar('Loss/test_epoch', test_loss)
-            # writer.add_scalar('RMSE/test_epoch', test_rmse)
-            # writer.add_scalar('MAE/test_epoch', test_mae)
-
         # Combine all output batches into a single array
         all_outputs = np.concatenate(all_outputs, axis=0)
 
@@ -442,35 +717,127 @@ def test_model(model, test_loader, criterion, writer=None):
         print(f"Test Loss: {test_loss:.4f}")
 
     return all_outputs
-# Train the model
-train_model(model, train_loader, validation_loader, criterion, optimizer, num_epochs=def_epochs, writer=writer)
 
-test_outputs = test_model(model, test_loader, criterion, writer=writer)
+test_outputs = test_model_UnetLSTM(model, test_loader,  writer=writer)
+
+# Train the model
+
+# Training function
+# def train_model_UnetLSTM1(model, train_loader, validation_loader, optimizer, num_epochs, writer=None):
+#     best_val_loss = float('inf')
+#     for epoch in range(num_epochs):
+#         print(f"Epoch {epoch+1}/{num_epochs}")
+#         model.train()
+#         running_train_loss = 0.0
+
+#         for inputs, targets, masks in train_loader:
+#             inputs = inputs.float()
+#             # print('input shape orig', inputs.shape)
+#             targets = targets.float()
+#             # print('target shape orig', targets.shape)
+#             masks = masks.bool()
+#             # print('mask shape orig', masks.shape)
+
+#             optimizer.zero_grad()
+#             outputs = model(inputs)
+#             # print('output shape', outputs.shape)
+#             if targets.shape != outputs.shape:
+#                 seql, chan, h, w = outputs.shape
+#                 # print('seql, chan, h, w', seql, chan, h, w)
+#                 targets = targets.expand(seql, chan, h, w)
+#             # print('target shape ext', targets.shape)	
+#             loss = rmse_cnnlstm(outputs, targets, masks[0,:,:,:,:])
+#             loss.backward()
+#             optimizer.step()
+
+#             running_train_loss += loss.item()
+#         epoch_train_loss = running_train_loss / len(train_loader.dataset)
+#         if writer:
+#             writer.add_scalar('Loss/train_epoch', running_train_loss / len(train_loader), epoch)
+  
+        
+#         # Validation Phase
+#         model.eval()
+#         running_val_loss = 0.0
+
+#         with torch.no_grad():
+#             for inputs, targets, masks in validation_loader:
+#                 inputs = inputs.float()
+#                 targets = targets.float()
+
+#                 outputs = model(inputs)
+#                 if targets.shape != outputs.shape:
+#                     seql, chan, h, w = outputs.shape
+#                     # print('seql, chan, h, w', seql, chan, h, w)
+#                     targets = targets.expand(seql, chan, h, w)
+#                 loss = rmse_cnnlstm(outputs, targets, masks[0,:,:,:,:])
+#                 running_val_loss += loss.item() * inputs.size(0)
+        
+#         epoch_val_loss = running_val_loss / len(validation_loader.dataset)
+
+#         if writer:
+#             writer.add_scalar('Loss/validation_epoch', running_val_loss / len(validation_loader), epoch)
+#         print(f"Epoch [{epoch+1}/{num_epochs}], Training Loss: {epoch_train_loss:.4f}, Validation Loss: {epoch_val_loss:.4f}")
+ 
+#         if epoch_val_loss < best_val_loss:
+#             best_val_loss = epoch_val_loss
+#             torch.save(model.state_dict(), os.path.join(log_directory, 'best_model.pth'))
+#             print("Best model saved!")
+#     return
+
+# def test_model_UnetLSTM1(model, test_loader, writer=None):
+#     model.eval()
+#     running_test_loss = 0.0
+#     all_outputs = []
+
+#     with torch.no_grad():
+#         for inputs, targets, masks in test_loader:
+#             inputs = inputs.float()
+#             targets = targets.float()
+#             masks = masks.bool()
+
+#             outputs = model(inputs)
+#             if targets.shape != outputs.shape:
+#                 seql, chan, h, w = outputs.shape
+#                 # print('seql, chan, h, w', seql, chan, h, w)
+#                 targets = targets.expand(seql, chan, h, w)
+
+#             # Compute the loss
+#             loss = rmse_cnnlstm(outputs, targets, masks[0,:,:,:,:])
+#             running_test_loss += loss.item() * inputs.size(0)
+
+#             # Store outputs for further analysis or visualization if needed
+#             all_outputs.append(outputs.cpu().numpy())
+
+#         # Compute the average loss, RMSE, and MAE for the entire test dataset
+#         test_loss = running_test_loss / len(test_loader.dataset)
+#         # Log test metrics if using a writer (e.g., TensorBoard)
+#         if writer:
+#             writer.add_scalar('Loss/test_epoch', test_loss)
+#         # Combine all output batches into a single array
+#         all_outputs = np.concatenate(all_outputs, axis=0)
+
+#         # Print test results
+#         print(f"Test Loss: {test_loss:.4f}")
+
+#     return all_outputs
+# # Train the model
+# train_model_UnetLSTM1(model, train_loader, validation_loader, optimizer, num_epochs=def_epochs, writer=writer)
+
+# test_outputs = test_model_UnetLSTM1(model, test_loader,  writer=writer)
 
 def plot_tensorboard_logs(log_dir):
     # List all event files in the log directory
     event_files = [os.path.join(log_dir, f) for f in os.listdir(log_dir) if 'events.out.tfevents' in f]
-    # print(event_files)
+
     # Initialize lists to store the data
     train_loss = []
     val_loss = []
     test_loss = []
-    # train_rmse = []
-    # val_rmse = []
-    # test_rmse = []
-    # train_mae = []
-    # val_mae = []
-    # test_mae = []
-    
+
     stepstr = []
     stepsva = []
     stepste = []
-    # stepstrrmse = []
-    # stepsvrmse = []
-    # stepstermse = []
-    # stepstrmae = []
-    # stepsvmae = []
-    # stepstemae = []
 
     # Iterate through all event files and extract data
     event_acc = EventAccumulator(event_files[0])
@@ -480,13 +847,6 @@ def plot_tensorboard_logs(log_dir):
     loss_train = event_acc.Scalars('Loss/train_epoch')
     loss_val = event_acc.Scalars('Loss/validation_epoch')
     loss_test = event_acc.Scalars('Loss/test_epoch')
-    # rmse_train = event_acc.Scalars('RMSE/train_epoch')
-    # rmse_val = event_acc.Scalars('RMSE/validation_epoch')
-    # rmse_test = event_acc.Scalars('RMSE/test_epoch')
-    # mae_train = event_acc.Scalars('MAE/train_epoch')
-    # mae_val = event_acc.Scalars('MAE/validation_epoch')
-    # mae_test = event_acc.Scalars('MAE/test_epoch')
-
 
     # Append to the lists
     for i in range(len(loss_train)):
@@ -501,80 +861,30 @@ def plot_tensorboard_logs(log_dir):
         stepste.append(loss_test[i].step)
         test_loss.append(loss_test[i].value)
     
-    # for i in range(len(rmse_train)):
-    #     stepstrrmse.append(rmse_train[i].step)
-    #     train_rmse.append(rmse_train[i].value)
-    
-    # for i in range(len(rmse_val)):
-    #     stepsvrmse.append(rmse_val[i].step)
-    #     val_rmse.append(rmse_val[i].value)
-    
-    # for i in range(len(rmse_test)):
-    #     stepstermse.append(rmse_test[i].step)
-    #     test_rmse.append(rmse_test[i].value)
-    
-    # for i in range(len(mae_train)):
-    #     stepstrmae.append(mae_train[i].step)
-    #     train_mae.append(mae_train[i].value)
-    
-    # for i in range(len(mae_val)):
-    #     stepsvmae.append(mae_val[i].step)
-    #     val_mae.append(mae_val[i].value)
-    
-    # for i in range(len(mae_test)):
-    #     stepstemae.append(mae_test[i].step)
-    #     test_mae.append(mae_test[i].value)
-
+   
     # Plot the training and test losses
     fig, ax1 = plt.subplots()
     ax1.plot(stepstr, train_loss, label='Train Loss', color='blue')
     ax1.plot(stepsva, val_loss, label='Validation Loss', color='green')
-    ax1.set_xlabel('Steps')
-    ax1.set_ylabel('Training/Validation Loss')
-    ax1.legend(loc='upper left')
-    ax2 = ax1.twinx()
-    ax2.scatter(stepste, test_loss, label='Test Loss', color='orange')
-    ax2.set_ylabel('Test Loss')
-    plt.title('Training and Test Loss')
-    ax2.legend(loc='upper right')
+    ax1.set_xlabel('epoch')
+    ax1.set_ylabel('Loss (rmse)')
+    ax1.legend(loc='upper right')
+    ax1.scatter(stepste, test_loss, label='Test Loss', color='orange')
+    plt.title('Training, validation and test Loss')
     plt.tight_layout()
-    plt.savefig(r'..\training\logs\%s_%s_%s\training_loss.png' %(def_epochs, lr_rate, batchSize))
-
-    # # Plot the training and test RMSE
-    # fig, ax1 = plt.subplots()
-    # ax1.plot(stepstrrmse, train_rmse, label='Train RMSE', color='blue')
-    # ax1.plot(stepsvrmse, val_rmse, label='Validation RMSE', color='green')
-    # ax1.set_xlabel('Steps')
-    # ax1.set_ylabel('Training RMSE')
-    # ax1.legend(loc='upper left')
-    # ax2 = ax1.twinx()
-    # ax2.scatter(stepstermse, test_rmse, label='Test RMSE', color='orange')
-    # ax2.set_ylabel('Test RMSE')
-    # plt.title('Training and Test RMSE')
-    # ax2.legend(loc='upper right')   
-    # plt.tight_layout()
-    # plt.savefig(r'..\training\logs\%s\training_rmse.png' %(def_epochs))
-
-    # # Plot the training and test MAE
-    # fig, ax1 = plt.subplots()
-    # ax1.plot(stepstrmae, train_mae, label='Train MAE', color='blue')
-    # ax1.plot(stepsvmae, val_mae, label='Validation MAE', color='green') 
-    # ax1.set_xlabel('Steps') 
-    # ax1.set_ylabel('Training MAE')
-    # ax1.legend(loc='upper left')
-    # ax2 = ax1.twinx()
-    # ax2.scatter(stepstemae, test_mae, label='Test MAE', color='orange')
-    # ax2.set_ylabel('Test MAE')
-    # plt.title('Training and Test MAE')
-    # ax2.legend(loc='upper right')
-    # plt.tight_layout()
-    # plt.savefig(r'..\training\logs\%s\training_mae.png' %(def_epochs))
+    plt.savefig(r'%s\training_loss.png' %(log_dir))
 
 plot_tensorboard_logs(log_directory)
 
 '''running the model on original data'''
-model_reload = UNet(input_channels=21, output_channels=1)
-model_reload.load_state_dict(torch.load(os.path.join(log_directory, 'best_model.pth')))
+# input_channels = 21  # Number of input variables (channels)
+# output_channels = 1  # Single output channel (groundwater head)
+# hidden_dim = 484  # Number of LSTM units
+# lstm_layers = 1  # Number of LSTM layers
+
+# model_reload = UNetLSTM_Option1(input_channels, output_channels, hidden_dim, lstm_layers)
+# model_reload = UNetLSTM_Option2(input_channels, output_channels, hidden_dim, lstm_layers)
+# model_reload.load_state_dict(torch.load(os.path.join(log_directory, 'best_model.pth')))
 #run pretrained model from above on the original data
 def run_model_on_full_data(model, data_loader):
     model.eval()
@@ -582,110 +892,110 @@ def run_model_on_full_data(model, data_loader):
     with torch.no_grad():
         for inp, tar, mask in data_loader:
             inp = inp.float()
-            tar = tar.float()  
+            # tar = tar.float()  
             outputs = model(inp)
-            all_outputs.append(outputs.cpu().numpy())
+            all_outputs.append(outputs[:, -1].cpu().numpy())
     all_outputs = np.concatenate(all_outputs, axis=0)
     return all_outputs
 
-# Running the model on the entire dataset
-y_pred_full = run_model_on_full_data(model_reload, test_loader) #this is now the delta wtd
 
+# X_test = np.load(r'%s/X_train.npy'%log_directory)
+# mask_test = np.load(r'%s/mask_test.npy' %log_directory)
+# y_test =  np.load(r'%s/y_test.npy' %log_directory)
+
+# class CustomDataset(Dataset):
+#     def __init__(self, data, labels, masks, transform=None):
+#         """
+#         Args:
+#             data (torch.Tensor or numpy array): Input data (e.g., images).
+#             labels (torch.Tensor or numpy array): Corresponding labels for the input data.
+#             masks (torch.Tensor or numpy array): Masks corresponding to each input data.
+#             transform (callable, optional): Optional transform to be applied
+#                 on a sample (e.g., for data augmentation).
+#         """
+#         self.data = data
+#         self.labels = labels
+#         self.masks = masks
+#         self.transform = transform
+
+#     def __len__(self):
+#         return len(self.data)
+
+#     def __getitem__(self, idx):
+#         # Get the input data, label, and mask for the given index
+#         input_data = self.data[idx]
+#         label = self.labels[idx]
+#         mask = self.masks[idx]
+
+#         # Apply any transformations if specified
+#         if self.transform:
+#             input_data = self.transform(input_data)
+
+#         return input_data, label, mask
+
+# test_loader = DataLoader(CustomDataset(X_test, y_test, mask_test), batch_size=batchSize, shuffle=False)
+
+# Running the model on the entire dataset
+# y_pred_full = run_model_on_full_data(model_reload, test_loader) #this is now the delta wtd
+y_pred_full = run_model_on_full_data(model, test_loader) #this is now the delta wtd
 # Denormalize the wtd data
-y_target = y[train_size+val_size:] #delta wtd
+# y= np.load(r'%s/y.npy' %log_directory)
+y_short = y[:data_short]
+target_test = y_short[-int(len(y_short)*testSize):] #delta wtd
+# out_var_mean = np.load(r'%s\out_var_mean.npy' %log_directory)
+# out_var_std = np.load(r'%s\out_var_std.npy'%log_directory)
 y_pred_denorm = y_pred_full*out_var_std[0] + out_var_mean[0] #denormalise the predicted delta wtd
 
-wtd_prior = wtd[:, :, :] #wtd for the month before the delta wtd
-mask_na = np.where(mask==0, np.nan, 1) 
-# mask_na = np.flip(mask_na, axis=1)
-mask_na = mask_na[:1,:,:]
-mask_na_wtd = mask_na[0, :, :]
-map_tile_plot = map_tile['Band1'].isel(time=1)
+mask_test_na = np.where(mask_test==0, np.nan, 1)
+mask_test_na = mask_test_na[0,0,: ,:,:]
 
-for i in range(y_pred_denorm.shape[0])[:5]:
-    print(i)
-    pred_wtd = wtd_prior[i] + y_pred_denorm[i] 
+for i in range(y_pred_denorm.shape[0])[:]:
+    print(i, range(y_pred_denorm.shape[0]))
 
-    vmax = max([pred_wtd.max(),wtd_prior[i:, :, :].max()])
-    vmin = min([pred_wtd.min(),wtd_prior[i:, :, :].min()])
+    # vmax = max([y_pred_denorm[i, 0, :, :].max(),target_test[i, 0, :, :].max()])
+    # vmin = min([y_pred_denorm[i, 0, :, :].min(),target_test[i, 0, :, :].min()])
+    # lim = np.max([np.abs(vmax), np.abs(vmin)])
+    vminR = np.percentile(y_pred_denorm[i, 0, :, :], 5)
+    vmaxR = np.percentile(y_pred_denorm[i, 0, :, :], 95)
+    vminT = np.percentile(target_test[i, 0, :, :], 5)
+    vmaxT = np.percentile(target_test[i, 0, :, :], 95)
+    vmax = np.max([vmaxR, vmaxT])
+    vmin = np.min([vminR, vminT])
+
     lim = np.max([np.abs(vmax), np.abs(vmin)])
-    
+
+    target_map = target_test[i, 0, :, :]*mask_test_na
     plt.figure(figsize=(20, 8))
-    plt.subplot(2, 4, 1)
-    plt.title('Actual WTD (OG) month %s' %(i+2))
-    plt.imshow(wtd_prior[i+1, :, :]*mask_na_wtd, cmap='viridis', vmin=vmin, vmax=vmax) #plot the actual wtd that to compare wtd+delta wtd
+    plt.subplot(1, 4, 1)
+    plt.imshow(target_map[0,:,:], cmap='RdBu', vmin=-lim, vmax=lim)
     plt.colorbar(shrink=0.8)
+    plt.title('Actual delta (colorbar 5-95 percentile)')
     plt.tight_layout()
 
-    pred_wtd_na = pred_wtd*mask_na
-    plt.subplot(2, 4, 2)
-    plt.title('Predicted WTD')
-    plt.imshow(pred_wtd_na[0], cmap='viridis', vmin=vmin,vmax=vmax)#,vmin=vmin,vmax=vmax)
+    pred_map = y_pred_denorm[i, 0, :, :]*mask_test_na
+    plt.subplot(1, 4, 2)
+    plt.imshow(pred_map[0,:,:], cmap='RdBu',vmin=-lim, vmax=lim)
     plt.colorbar(shrink=0.8)
-    plt.tight_layout()
+    plt.title('Predicted delta (colorbar 5-95 percentile)')
 
-    wtd_scatter = wtd_prior[i+1, :, :]*mask_na_wtd
-    pred_wtd_scatter = pred_wtd*mask_na
-    vmin = min([np.nanmin(wtd_scatter),np.nanmin(pred_wtd_scatter)])
-    vmax = max([np.nanmax(wtd_scatter),np.nanmax(pred_wtd_scatter)])
-    plt.subplot(2, 4, 3)
-    plt.scatter(wtd_scatter.flatten(), pred_wtd_scatter.flatten(),alpha=0.5, facecolors='none', edgecolors='r')
+    vmin = min([np.nanmin(target_test[i, 0, :, :]*mask_test_na),np.nanmin(y_pred_denorm[i, 0, :, :]*mask_test_na)])
+    vmax = max([np.nanmax(target_test[i, 0, :, :]*mask_test_na),np.nanmax(y_pred_denorm[i, 0, :, :]*mask_test_na)])
+    plt.subplot(1, 4, 3)
+    plt.scatter((target_test[i,0, :, :]*mask_test_na).flatten(), (y_pred_denorm[i, 0, :, :]*mask_test_na).flatten(),alpha=0.5, facecolors='none', edgecolors='r')
     plt.plot([vmin, vmax], [vmin, vmax], 'k--', lw=2)
-    plt.xlabel('OG WTD')
     plt.xlim(vmin,vmax)
     plt.ylim(vmin,vmax)
-    plt.ylabel('Simulated WTD')
-    plt.title(f"OG vs Sim WTD")
-    plt.tight_layout()
+    plt.ylabel('Predicted delta') 
+    plt.xlabel('Actual delta')
 
-    diff = (pred_wtd*mask_na) - (wtd_prior[i+1, :, :]*mask_na_wtd)  #difference between wtd and calculated wtd
-    vmax = np.nanmax(diff)
-    vmin = np.nanmin(diff)
+    plt.subplot(1, 4, 4)
+    diff = (target_test[i, 0, :, :]*mask_test_na) - (y_pred_denorm[i, 0, :, :]*mask_test_na) #difference between wtd and calculated wtd
+    vmax = np.nanmax(np.percentile(diff,95))
+    vmin = np.nanmin(np.percentile(diff,5))
     lim = np.max([np.abs(vmax), np.abs(vmin)])
-    plt.subplot(2, 4, 4)
-    plt.title('diff sim vs actual wtd')
-    pcm = plt.imshow(diff[0], cmap='RdBu',vmin=-lim, vmax=lim)#norm=SymLogNorm(linthresh=1))#norm=colors.CenteredNorm()) #difference between wtd and calculated wtd
-    plt.colorbar(pcm, orientation='vertical',shrink=0.8)
-    plt.tight_layout()
+    plt.imshow(diff[0,:,:], cmap='RdBu', vmin=-lim, vmax=lim)
+    plt.colorbar(shrink=0.8)
+    plt.title('Difference target-predicted (colorbar 5-95 percentile)')
 
-    vmax = np.nanmax(y_target[i,:,:]*mask_na)
-    vmin = np.nanmin(y_target[i,:,:]*mask_na)
-    lim = np.max([np.abs(vmax), np.abs(vmin)])
-    y_target_map = y_target[i,:,:]*mask_na
-    plt.subplot(2, 4, 5)
-    pcm = plt.imshow(y_target_map[0], cmap='RdBu',  vmin=-lim, vmax=lim)# norm=SymLogNorm(linthresh=1)) # delta wtd that was target
-    plt.colorbar(pcm, orientation='vertical', shrink=0.8)
-    plt.title(f"OG delta WTD")
-    plt.tight_layout()
-
-    vmax = np.nanmax(y_pred_denorm[i,:,:]*mask_na)
-    vmin = np.nanmin(y_pred_denorm[i,:,:]*mask_na)
-    lim = np.max([np.abs(vmax), np.abs(vmin)])
-    y_pred_map = y_pred_denorm[i,:,:]*mask_na
-    plt.subplot(2, 4, 6)
-    pcm = plt.imshow(y_pred_map[0], cmap='RdBu', vmin=-lim, vmax=lim)#, norm=SymLogNorm(linthresh=1))#norm=colors.CenteredNorm())# norm=SymLogNorm(linthresh=1)) #delta wtd that was predicted
-    plt.colorbar(pcm, orientation='vertical', shrink=0.8)
-    plt.title(f"predicted delta WTD")    
-    plt.tight_layout()
-
-    y_target_map = y_target[i,:,:]*mask_na
-    y_pred_map = y_pred_denorm[i,:,:]*mask_na
-    vmin = min([np.nanmin(y_target_map),np.nanmin(y_pred_map)])
-    vmax = max([np.nanmax(y_target_map),np.nanmax(y_pred_map)])
-    plt.subplot(2, 4, 7)
-    plt.scatter(y_target_map, y_pred_map,alpha=0.5, facecolors='none', edgecolors='r')
-    plt.plot([vmin, vmax], [vmin, vmax], 'k--', lw=2)
-    plt.xlabel('OG delta WTD')
-    plt.xlim(vmin,vmax)
-    plt.ylim(vmin,vmax)
-    plt.ylabel('Simulated delta WTD')
-    plt.title(f"OG vs Sim delta WTD")
-    plt.tight_layout()
-
-    ax = plt.subplot(2, 4, 8)
-    map_tile_plot.plot(ax=ax)
-    ax.add_patch(plt.Rectangle((lon_bounds[0], lat_bounds[0]), lon_bounds[1] - lon_bounds[0], lat_bounds[1] - lat_bounds[0], fill=None, color='red'))
-    plt.tight_layout()
-    
     plt.savefig(r'%s\plot_timesplit_%s.png' %(log_dir_fig, i))
 

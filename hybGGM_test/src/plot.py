@@ -13,7 +13,7 @@ colors = plt.cm.viridis(np.linspace(0, 1, num_folders))
 
 '''overarching folder figure losses'''
 fig, ax = plt.subplots()
-for fol,col in zip(folders[:2], colors[:2]):
+for fol,col in zip(folders[:-1], colors[:-1]):
     # print(fol)
     # get folder name which is the hyperparameter information in last few characters
     fol_name = fol.split('\\')[-1]
@@ -69,7 +69,7 @@ plt.xlabel('epochs')
 plt.ylabel('loss (rmse)')
 
 plt.tight_layout()
-plt.savefig(r'..\results\testing\training_loss.png')
+plt.savefig(r'..\results\training_loss.png')
 
 '''spatial plots for different hyperparameter runs'''
 mask = np.load(r'..\data\testing\mask_test.npy')
@@ -103,9 +103,9 @@ def calculate_cellwise_correlation(map1, map2):
             
             return correlation_map
 
-for fol in folders[:1]:
+for fol in folders[:]:
     y_pred_denorm = np.load(r'%s\y_pred_denorm.npy' %fol)
-    for i in range(y_pred_denorm.shape[0])[:1]:
+    for i in range(y_pred_denorm.shape[0])[:5]:
         print(i, range(y_pred_denorm.shape[0]))
 
         vminR = np.percentile(y_pred_denorm[i, 0, :, :], 5)

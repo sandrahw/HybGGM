@@ -1,0 +1,12 @@
+name: CNN_preprocessing
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11 # My desired python version
+  - pip
+  - numpy
+  - pandas
+  - netCDF4
+  - xarray
+  - dask

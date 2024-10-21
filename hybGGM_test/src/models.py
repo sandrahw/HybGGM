@@ -202,53 +202,91 @@ class UNet2(nn.Module):
         output = self.final_conv(d2)        # Reduce to the number of output channels (e.g., 1 for groundwater head)
         return output
 
+class ConvExample(nn.Module):
+    def __init__(self, input_channels, output_channels):
+        super(ConvExample, self).__init__()
+        
+        # Define the convolutional layers
+        self.conv1 = nn.Conv2d(input_channels, 16, kernel_size=3, padding=1)  # First Conv Layer
+        self.conv2 = nn.Conv2d(16, 32, kernel_size=3, padding=1)  # Second Conv Layer
+        
+        # Pooling layer
+        self.pool = nn.MaxPool2d(kernel_size=2, stride=2)
+    
+        # Learnable transposed convolution for upscaling
+        self.transconv1 = nn.ConvTranspose2d(32, 16, kernel_size=4, stride=2, padding=1)  # Upscale by 2x
+        self.transconv2 = nn.ConvTranspose2d(16, output_channels, kernel_size=4, stride=2, padding=1)  # Upscale by 2x again
+
+        # Activation function
+        self.relu = nn.ReLU()
+    
+    def forward(self, x):
+        # Pass input through convolutional layers and pooling
+        x = self.pool(self.relu(self.conv1(x)))  # Conv1 + ReLU + Pool
+        # print('x1', x.shape)
+        x = self.pool(self.relu(self.conv2(x)))  # Conv2 + ReLU + Pool
+        # print('x2', x.shape)
+        
+        # Upscale using transposed convolutions
+        x = self.relu(self.transconv1(x))  # First upscaling
+        # print('x_transconv1', x.shape)
+        x = self.transconv2(x)  # Second upscaling to original size
+        # print('x_final', x.shape)
+
+        return x
+
+def hyperparam_tuning_training(X_norm, y_norm, testSize, trainSize, def_epochs, lr_rate, batchSize, mt):
+    print('Model type: %s, Epochs: %s, Learning rate: %s, Batch size: %s' %(mt, def_epochs, lr_rate, batchSize))
+    log_directory = r'..\results\testing\%s_%s_%s_%s' %(mt, def_epochs, lr_rate ,batchSize)
+    log_dir_fig = r'..\results\testing\%s_%s_%s_%s\plots' %(mt, def_epochs, lr_rate ,batchSize)
+
+    train_loader, validation_loader, test_loader = data.train_val_test_split(testSize, trainSize, X_norm, y_norm, batchSize, r'..\data\testing')
+    # print('Data preparation finished')
+    #create folder in case not there yet
+    if not os.path.exists(log_directory):
+        os.makedirs(log_directory) 
+    if not os.path.exists(log_dir_fig):
+        os.makedirs(log_dir_fig)
+    # print('starting training and saving logs')
+
+    if mt == 'UNet6':
+        writer = SummaryWriter(log_dir=log_directory)
+        # print('UNet6, model loading')
+        model = UNet6(input_channels=21, output_channels=1)
+        # print('training')
+        train.train_model(model, train_loader, validation_loader, lr_rate, def_epochs,  log_directory, writer)
+        # print('testing')
+        train.test_model(model, test_loader, writer)
+        del model
+    if mt == 'UNet4':
+        writer = SummaryWriter(log_dir=log_directory)
+        # print('UNet4, model loading')
+        model = UNet4(input_channels=21, output_channels=1)
+        # print('training')
+        train.train_model(model, train_loader, validation_loader, lr_rate, def_epochs, log_directory, writer)
+        # print('testing')
+        train.test_model(model, test_loader, writer)
+        del model
+    if mt == 'UNet2':
+        writer = SummaryWriter(log_dir=log_directory)
+        # print('UNet2, model loading')
+        model = UNet2(input_channels=21, output_channels=1)
+        # print('training')
+        train.train_model(model, train_loader, validation_loader, lr_rate, def_epochs, log_directory, writer)
+        # print('testing')
+        train.test_model(model, test_loader, writer)
+        del model
+    if mt == 'ConvExample':
+        writer = SummaryWriter(log_dir=log_directory)
+        # print('UNet2, model loading')
+        model = ConvExample(input_channels=21, output_channels=1)
+        # print('training')
+        train.train_model(model, train_loader, validation_loader, lr_rate, def_epochs, log_directory, writer)
+        # print('testing')
+        train.test_model(model, test_loader, writer)
+        del model
 
 
-def hyperparam_tuning_training(X_norm, y_norm, testSize, trainSize, epochs, learning_rate, batch_size, model_type):
-    for batchSize in batch_size:
-        for def_epochs in epochs:
-            for lr_rate in learning_rate:
-                for mt in model_type:
-                    print('Model type: %s, Epochs: %s, Learning rate: %s, Batch size: %s' %(mt, def_epochs, lr_rate, batchSize))
-                    log_directory = r'..\results\testing\%s_%s_%s_%s' %(mt, def_epochs, lr_rate ,batchSize)
-                    log_dir_fig = r'..\results\testing\%s_%s_%s_%s\plots' %(mt, def_epochs, lr_rate ,batchSize)
-                    
-                    train_loader, validation_loader, test_loader = data.train_val_test_split(testSize, trainSize, X_norm, y_norm, batchSize, r'..\data\testing')
-                    # print('Data preparation finished')
-                    #create folder in case not there yet
-                    if not os.path.exists(log_directory):
-                        os.makedirs(log_directory) 
-                    if not os.path.exists(log_dir_fig):
-                        os.makedirs(log_dir_fig)
-                    # print('starting training and saving logs')
-                    
-                    if mt == 'UNet6':
-                        writer = SummaryWriter(log_dir=log_directory)
-                        # print('UNet6, model loading')
-                        model = UNet6(input_channels=21, output_channels=1)
-                        # print('training')
-                        train.train_model(model, train_loader, validation_loader, lr_rate, def_epochs,  log_directory, writer)
-                        # print('testing')
-                        train.test_model(model, test_loader, writer)
-                        del model
-                    if mt == 'UNet4':
-                        writer = SummaryWriter(log_dir=log_directory)
-                        # print('UNet4, model loading')
-                        model = UNet4(input_channels=21, output_channels=1)
-                        # print('training')
-                        train.train_model(model, train_loader, validation_loader, lr_rate, def_epochs, log_directory, writer)
-                        # print('testing')
-                        train.test_model(model, test_loader, writer)
-                        del model
-                    if mt == 'UNet2':
-                        writer = SummaryWriter(log_dir=log_directory)
-                        # print('UNet2, model loading')
-                        model = UNet2(input_channels=21, output_channels=1)
-                        # print('training')
-                        train.train_model(model, train_loader, validation_loader, lr_rate, def_epochs, log_directory, writer)
-                        # print('testing')
-                        train.test_model(model, test_loader, writer)
-                        del model
     print('done with hyperparameter tuning training')
 
 
@@ -271,34 +309,39 @@ def hyperparam_tuning_prediction(epochs, learning_rate, batch_size, model_type):
     X_test = np.load(r'../data/testing//X_test.npy')
     mask_test = np.load(r'../data/testing//mask_test.npy')
     y_test = np.load(r'../data/testing//y_test.npy')
+    # print(epochs, learning_rate, batch_size, model_type)
+    # for batchSize in batch_size:
+    #     print('Batch size: %s' %batchSize)
+    #     for def_epochs in epochs:
+    #         for lr_rate in learning_rate:
+    #             for mt in model_type:
+    print('Model type: %s, Epochs: %s, Learning rate: %s, Batch size: %s' %(model_type, epochs, learning_rate, batch_size))
+    log_directory = r'..\results\testing\%s_%s_%s_%s' %(model_type, epochs, learning_rate ,batch_size)
 
-    for batchSize in batch_size:
-        for def_epochs in epochs:
-            for lr_rate in learning_rate:
-                for mt in model_type:
-                    print('Model type: %s, Epochs: %s, Learning rate: %s, Batch size: %s' %(mt, def_epochs, lr_rate, batchSize))
-                    log_directory = r'..\results\testing\%s_%s_%s_%s' %(mt, def_epochs, lr_rate ,batchSize)
+    test_loader = data.DataLoader(data.CustomDataset(X_test, y_test, mask_test), batch_size=batch_size, shuffle=False)
 
-                    test_loader = data.DataLoader(data.CustomDataset(X_test, y_test, mask_test), batch_size=batchSize, shuffle=False)
+    #load the model:
+    if model_type == 'UNet2':
+        model_reload = UNet2(input_channels=21, output_channels=1)
+        model_reload.load_state_dict(torch.load(os.path.join(log_directory, 'best_model.pth')))
+        y_pred_raw = run_model_on_full_data(model_reload, test_loader) #this is now the delta wtd
+    if model_type == 'UNet4':
+        model_reload = UNet4(input_channels=21, output_channels=1)
+        model_reload.load_state_dict(torch.load(os.path.join(log_directory, 'best_model.pth')))
+        y_pred_raw= run_model_on_full_data(model_reload, test_loader) #this is now the delta wtd
+    if model_type == 'UNet6':   
+        model_reload = UNet6(input_channels=21, output_channels=1)
+        model_reload.load_state_dict(torch.load(os.path.join(log_directory, 'best_model.pth')))
+        y_pred_raw = run_model_on_full_data(model_reload, test_loader) #this is now the delta wtd
+    if model_type == 'ConvExample':   
+        model_reload = ConvExample(input_channels=21, output_channels=1)
+        model_reload.load_state_dict(torch.load(os.path.join(log_directory, 'best_model.pth')))
+        y_pred_raw = run_model_on_full_data(model_reload, test_loader) #this is now the delta wtd
 
-                    #load the model:
-                    if mt == 'UNet2':
-                        model_reload = UNet2(input_channels=21, output_channels=1)
-                        model_reload.load_state_dict(torch.load(os.path.join(log_directory, 'best_model.pth')))
-                        y_pred_raw = run_model_on_full_data(model_reload, test_loader) #this is now the delta wtd
-                    if mt == 'UNet4':
-                        model_reload = UNet4(input_channels=21, output_channels=1)
-                        model_reload.load_state_dict(torch.load(os.path.join(log_directory, 'best_model.pth')))
-                        y_pred_raw= run_model_on_full_data(model_reload, test_loader) #this is now the delta wtd
-                    if mt == 'UNet6':   
-                        model_reload = UNet6(input_channels=21, output_channels=1)
-                        model_reload.load_state_dict(torch.load(os.path.join(log_directory, 'best_model.pth')))
-                        y_pred_raw = run_model_on_full_data(model_reload, test_loader) #this is now the delta wtd
+    out_var_mean = np.load(r'..\data\testing\out_var_mean.npy')
+    out_var_std = np.load(r'..\data\testing\out_var_std.npy')
+    y_pred_denorm = y_pred_raw*out_var_std[0] + out_var_mean[0] #denormalise the predicted delta wtd
 
-                    out_var_mean = np.load(r'..\data\testing\out_var_mean.npy')
-                    out_var_std = np.load(r'..\data\testing\out_var_std.npy')
-                    y_pred_denorm = y_pred_raw*out_var_std[0] + out_var_mean[0] #denormalise the predicted delta wtd
-
-                    np.save(r'%s\y_pred_denorm.npy' %log_directory, y_pred_denorm)
-                    np.save(r'%s\y_pred_raw.npy' %log_directory, y_pred_raw)
+    np.save(r'%s\y_pred_denorm.npy' %log_directory, y_pred_denorm)
+    np.save(r'%s\y_pred_raw.npy' %log_directory, y_pred_raw)
     print('Hyperparameter tuning prediction finished')	

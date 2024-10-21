@@ -32,7 +32,7 @@ def set_seed(seed):
 set_seed(10)
 
 '''define general path, data length, case area, number of epochs, learning rate and batch size'''
-general_path = r'C:\Users\hausw001\surfdrive - Hauswirth, S.M. (Sandra)@surfdrive.surf.nl'
+# general_path = r'C:\Users\hausw001\surfdrive - Hauswirth, S.M. (Sandra)@surfdrive.surf.nl'
 # define the number of months in the dataset and the number of epochs
 data_length = 72 # number of months in current dataset (needed for dataprep function to extend the static parameters)
 def_epochs = 10
@@ -444,14 +444,46 @@ class UNet(nn.Module):
         output = self.final_conv(d6)  
         return output
 
+class ConvExample(nn.Module):
+    def __init__(self, input_channels, output_channels):
+        super(ConvExample, self).__init__()
+        
+        # Define the convolutional layers
+        self.conv1 = nn.Conv2d(input_channels, 16, kernel_size=3, padding=1)  # First Conv Layer
+        self.conv2 = nn.Conv2d(16, 32, kernel_size=3, padding=1)  # Second Conv Layer
+        
+        # Pooling layer
+        self.pool = nn.MaxPool2d(kernel_size=2, stride=2)
+    
+        # Learnable transposed convolution for upscaling
+        self.transconv1 = nn.ConvTranspose2d(32, 16, kernel_size=4, stride=2, padding=1)  # Upscale by 2x
+        self.transconv2 = nn.ConvTranspose2d(16, output_channels, kernel_size=4, stride=2, padding=1)  # Upscale by 2x again
 
+        # Activation function
+        self.relu = nn.ReLU()
+    
+    def forward(self, x):
+        # Pass input through convolutional layers and pooling
+        x = self.pool(self.relu(self.conv1(x)))  # Conv1 + ReLU + Pool
+        print('x1', x.shape)
+        x = self.pool(self.relu(self.conv2(x)))  # Conv2 + ReLU + Pool
+        print('x2', x.shape)
+        
+        # Upscale using transposed convolutions
+        x = self.relu(self.transconv1(x))  # First upscaling
+        print('x_transconv1', x.shape)
+        x = self.transconv2(x)  # Second upscaling to original size
+        print('x_final', x.shape)
 
+        return x
 # Instantiate the model, define the loss function and the optimizer
 writer = SummaryWriter(log_dir=log_directory)
 #make sure model uses GPU if available
 # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 # model = UNet(input_channels=21, output_channels=1).to(device)
-model = UNet(input_channels=21, output_channels=1)
+# model = UNet(input_channels=21, output_channels=1)
+model = ConvExample(input_channels=21, output_channels=1)
+
 torch.save(model.state_dict(), os.path.join(log_directory, 'model_untrained.pth'))
 criterion = nn.MSELoss()
 optimizer = optim.Adam(model.parameters(), lr=lr_rate)
@@ -472,9 +504,13 @@ def train_model(model, train_loader, validation_loader, criterion, optimizer, nu
             targets = targets.float()#targets.to(device).float()
             masks = masks.bool()#masks.to(device).bool()
 
+            print('inputs dim', inputs.dim(), inputs.shape)
+            print('targets dim', targets.dim(), targets.shape)
+            print('masks dim', masks.dim(), masks.shape)
+
             optimizer.zero_grad()
             outputs = model(inputs)
-
+            print('outputs dim', outputs.dim(), outputs.shape)
             # loss = criterion(outputs[masks], targets[masks])
             loss = rmse(outputs, targets, masks)
             loss.backward()
@@ -498,7 +534,7 @@ def train_model(model, train_loader, validation_loader, criterion, optimizer, nu
                 masks = masks.bool()#masks.to(device).bool()
 
                 outputs = model(inputs)
-                # loss = criterion(outputs[masks], targets[masks])
+    
                 loss = rmse(outputs, targets, masks)
                 running_val_loss += loss.item()
          
@@ -531,6 +567,7 @@ def test_model(model, test_loader, criterion, writer=None):
 
             # Compute the loss
             # loss = criterion(outputs[masks], targets[masks])
+           
             loss = rmse(outputs, targets, masks)
             running_test_loss += loss.item()
 
@@ -642,7 +679,7 @@ y_pred_denorm = y_pred_full*out_var_std[0] + out_var_mean[0] #denormalise the pr
 
 mask_test_na = np.where(mask_test==0, np.nan, 1)
 
-for i in range(y_pred_denorm.shape[0])[:10]:
+for i in range(y_pred_denorm.shape[0])[:1]:
     print(i, range(y_pred_denorm.shape[0]))
 
     # vmax = max([y_pred_denorm[i, 0, :, :].max(),target_test[i, 0, :, :].max()])
