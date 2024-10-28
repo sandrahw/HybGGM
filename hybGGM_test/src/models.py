@@ -235,12 +235,17 @@ class ConvExample(nn.Module):
 
         return x
 
-def hyperparam_tuning_training(X_norm, y_norm, testSize, trainSize, def_epochs, lr_rate, batchSize, mt):
-    print('Model type: %s, Epochs: %s, Learning rate: %s, Batch size: %s' %(mt, def_epochs, lr_rate, batchSize))
-    log_directory = r'..\results\testing\%s_%s_%s_%s' %(mt, def_epochs, lr_rate ,batchSize)
-    log_dir_fig = r'..\results\testing\%s_%s_%s_%s\plots' %(mt, def_epochs, lr_rate ,batchSize)
+def hyperparam_tuning_training(X_norm, y_norm, testSize, trainSize, def_epochs, lr_rate, batchSize, mt, save_path):
+    log_directory = 'results/testing/%s_%s_%s_%s' %(mt, def_epochs, lr_rate ,batchSize)
+    log_dir_fig = 'results/testing/%s_%s_%s_%s/plots' %(mt, def_epochs, lr_rate ,batchSize)
 
-    train_loader, validation_loader, test_loader = data.train_val_test_split(testSize, trainSize, X_norm, y_norm, batchSize, r'..\data\testing')
+    'check if testing prediction files are already there and if so stop the process'
+    if os.path.exists(log_directory + '/y_pred_denorm.npy'):
+        print('Hyperparameter tuning already done and prediction files are there')
+        exit()
+        return
+
+    train_loader, validation_loader, test_loader = data.train_val_test_split(testSize, trainSize, X_norm, y_norm, batchSize, save_path)
     # print('Data preparation finished')
     #create folder in case not there yet
     if not os.path.exists(log_directory):
@@ -286,7 +291,6 @@ def hyperparam_tuning_training(X_norm, y_norm, testSize, trainSize, def_epochs, 
         train.test_model(model, test_loader, writer)
         del model
 
-
     print('done with hyperparameter tuning training')
 
 
@@ -305,10 +309,10 @@ def run_model_on_full_data(model, data_loader):
     return all_outputs
 
 
-def hyperparam_tuning_prediction(epochs, learning_rate, batch_size, model_type):
-    X_test = np.load(r'../data/testing//X_test.npy')
-    mask_test = np.load(r'../data/testing//mask_test.npy')
-    y_test = np.load(r'../data/testing//y_test.npy')
+def hyperparam_tuning_prediction(epochs, learning_rate, batch_size, model_type, save_path):
+    X_test = np.load('%s/X_test.npy' %save_path)
+    mask_test = np.load('%s/mask_test.npy'%save_path)
+    y_test = np.load('%s/y_test.npy'%save_path)
     # print(epochs, learning_rate, batch_size, model_type)
     # for batchSize in batch_size:
     #     print('Batch size: %s' %batchSize)
@@ -316,7 +320,7 @@ def hyperparam_tuning_prediction(epochs, learning_rate, batch_size, model_type):
     #         for lr_rate in learning_rate:
     #             for mt in model_type:
     print('Model type: %s, Epochs: %s, Learning rate: %s, Batch size: %s' %(model_type, epochs, learning_rate, batch_size))
-    log_directory = r'..\results\testing\%s_%s_%s_%s' %(model_type, epochs, learning_rate ,batch_size)
+    log_directory = 'results/testing/%s_%s_%s_%s' %(model_type, epochs, learning_rate ,batch_size)
 
     test_loader = data.DataLoader(data.CustomDataset(X_test, y_test, mask_test), batch_size=batch_size, shuffle=False)
 
@@ -338,10 +342,10 @@ def hyperparam_tuning_prediction(epochs, learning_rate, batch_size, model_type):
         model_reload.load_state_dict(torch.load(os.path.join(log_directory, 'best_model.pth')))
         y_pred_raw = run_model_on_full_data(model_reload, test_loader) #this is now the delta wtd
 
-    out_var_mean = np.load(r'..\data\testing\out_var_mean.npy')
-    out_var_std = np.load(r'..\data\testing\out_var_std.npy')
+    out_var_mean = np.load('%s/out_var_mean.npy'%save_path)
+    out_var_std = np.load('%s/out_var_std.npy'%save_path)
     y_pred_denorm = y_pred_raw*out_var_std[0] + out_var_mean[0] #denormalise the predicted delta wtd
 
-    np.save(r'%s\y_pred_denorm.npy' %log_directory, y_pred_denorm)
-    np.save(r'%s\y_pred_raw.npy' %log_directory, y_pred_raw)
+    np.save('%s/y_pred_denorm.npy' %log_directory, y_pred_denorm)
+    np.save('%s/y_pred_raw.npy' %log_directory, y_pred_raw)
     print('Hyperparameter tuning prediction finished')	

@@ -17,6 +17,7 @@ from matplotlib.colors import SymLogNorm
 import matplotlib.colors as colors
 from torch.utils.tensorboard import SummaryWriter
 from tensorboard.backend.event_processing.event_accumulator import EventAccumulator
+from scipy.stats import gaussian_kde
 
 ''' Set random seed for reproducibility also for different torch applications'''
 def set_seed(seed):
@@ -33,9 +34,9 @@ set_seed(10)
 
 '''define sample path, case area, number of epochs, learning rate and batch size'''
 cnn_sample_path =r'C:\Users\hausw001\surfdrive - Hauswirth, S.M. (Sandra)@surfdrive.surf.nl\Data\GLOBGM\input\tiles_input\tile_048-163\transient\cnn_samples'
-def_epochs = 11
-lr_rate = 0.01
-batchSize = 1
+def_epochs = 10
+lr_rate = 0.0001
+batchSize = 10
 kernel = 3
 
 '''create log directory for tensorboard logs'''
@@ -68,21 +69,25 @@ def cnn_sample_prep(sample, ccn_samples, log_dir, params_mf):
     print(f'sample: {sample}')
     sample_arrays = []
     for param in params_mf[:]:
-        print(f'param: {param}')
+        # print(f'param: {param}')
         samples_load = np.load(r'%s\%s_array_%s.npy' % (ccn_samples, sample, param))
         # print(samples_load.shape)
         #check if sample has nan or inf values and replace them with 0
         if param == 'globgm-wtd':
-            print('create delta wtd')
+            # print('create delta wtd')
             t_0 = samples_load[:,:1,0, :, :]
             t_min1 = samples_load[:,1:,0,:, :]
             target = t_0 - t_min1 #this is the delta wtd
             #include only the previous timestep for wtd info in input data
-            samples_load_sel = samples_load[:, 1:, 0,:, :]
+            samples_load_sel = target
             # print(param, samples_load_sel.shape) 
-            print('create mask')
-            mask = np.where(samples_load==np.nan, 0, 1)
+            # print('create mask')
+            # print(target)
+            mask = np.nan_to_num(target, copy=False, nan=0)
+            mask = np.where(mask==0, 0, 1)
+            # print(mask)
             mask_bool = mask.astype(bool)
+            # print(mask_bool)
         else:
             #include only the previous timestep
             samples_load_sel = samples_load[:,1:,:]
@@ -91,17 +96,18 @@ def cnn_sample_prep(sample, ccn_samples, log_dir, params_mf):
         if np.isnan(samples_load_sel).any() or np.isinf(samples_load_sel).any():
             print(f'nan or inf values in {sample} {param}')
             samples_load_sel = np.nan_to_num(samples_load_sel, copy=False, nan=0)
+            samples_load_sel = np.where(samples_load_sel==np.nan, 0, samples_load_sel)
             samples_load_sel = np.where(samples_load_sel==np.inf, 0, samples_load_sel)
             if np.isnan(samples_load_sel).any() or np.isinf(samples_load_sel).any():
-                print(f'nan or inf values still in {sample} {param}')
+                print(f'nan or inf values STILL in {sample} {param}')
 
         sample_arrays.append(samples_load_sel)
     # stack the arrays together
     sample_arrays = np.stack(sample_arrays, axis=1)
 
-    np.save(r'%s\input_%s.npy' %(log_dir, sample), input_train)
-    np.save(r'%s\target_%s.npy' %(log_dir, sample), target_train)
-    np.save(r'%s\mask_%s.npy' %(log_dir, sample), mask_train)
+    np.save(r'%s\input_%s.npy' %(log_dir, sample), sample_arrays)
+    np.save(r'%s\target_%s.npy' %(log_dir, sample), target)
+    np.save(r'%s\mask_%s.npy' %(log_dir, sample), mask_bool)
     return sample_arrays, target, mask_bool
 
 input_train, target_train, mask_train = cnn_sample_prep('training', cnn_sample_path, log_directory, params_modflow)
@@ -115,25 +121,37 @@ plt.title('WTD for one month')
 plt.imshow(target_train[0, 0,:, :], cmap='viridis') #the array version of the input data is flipped
 plt.colorbar()
 
-
 '''normalising the data for every array and save mean and std for denormalisation'''
-
-def normalize_samples(data, sample, log_dir):
+#TODO normalisation is not necessarily over all the tile data!
+def normalize_samples_X(data, sample, log_dir):
     inp_var_mean = [] # list to store normalisation information for denormalisation later
     inp_var_std = []
     X_norm = []
     X = data
+    # print('X nan', np.isnan(X).any())
+    # print('X inf', np.isinf(X).any())
+    # print('X', X)
     for i in range(X.shape[1])[:]:
         # gather the same layer from train, val and test set and combine to one array
         temp = np.concatenate((input_train[:, i, :, :, :], input_val[:, i,:, :, :], input_test[:, i, :, :, :]), axis=0)
         mean = temp.mean()
         std = temp.std()
+        # print('mean', mean, 'std', std)
+        # print('X max', temp.max())
+        # print('X min', temp.min())
         # check if every value in array is 0, if so, skip normalisation
         if X[:, i, :, :, :].max() == 0 and X[:, i, :, :, :].min() == 0:
             print('skipped normalisation for array %s' %i)
             X_temp = X[:, i,:, :, :]
         else:
             X_temp = (X[:, i, :, :, :] - mean) / std
+        if np.isnan(X_temp).any():
+            print('nan in array %s' %i)
+            print(i, mean, std)
+            print('replace nan values with 0')
+            X_temp = np.nan_to_num(X_temp, copy=False, nan=0)
+
+      
         # print(mean, std, X_temp)
         X_norm.append(X_temp)
         inp_var_mean.append(mean)
@@ -143,45 +161,88 @@ def normalize_samples(data, sample, log_dir):
     X_norm_arr = np.array(X_norm)
     X_norm_arr = X_norm_arr.transpose(1, 0, 2, 3, 4)
     np.save(r'%s\inp_%s_norm_arr.npy'%(log_dir, sample), X_norm_arr)
-    np.save(r'%s\inp_var_mean.npy'%log_dir, inp_var_mean)
-    np.save(r'%s\inp_var_std.npy'%log_dir, inp_var_std)
+    np.save(r'%s\inp_%s_var_mean.npy'%(log_dir, sample), inp_var_mean)
+    np.save(r'%s\inp_%s_var_std.npy'%(log_dir, sample), inp_var_std)
 
     return X_norm_arr, inp_var_mean, inp_var_std
 
-input_train_norm, inp_var_mean, inp_var_std = normalize_samples(input_train, 'training', log_directory)
-input_val_norm, inp_var_mean, inp_var_std = normalize_samples(input_val, 'validation', log_directory)
-input_test_norm, inp_var_mean, inp_var_std = normalize_samples(input_test, 'testing', log_directory)
+input_train_norm, inp_var_train_mean, inp_var_train_std = normalize_samples_X(input_train, 'training', log_directory)
+input_val_norm, inp_var_val_mean, inp_var_val_std = normalize_samples_X(input_val, 'validation', log_directory)
+input_test_norm, inp_var_test_mean, inp_var_test_std = normalize_samples_X(input_test, 'testing', log_directory)
 
-def normalize_samples(data, sample, log_dir):
+def normalize_samples_y(data, sample, log_dir):
     out_var_mean = []
     out_var_std = []
     y_norm = []
     y = data
+    # print('X nan', np.isnan(y).any())
+    # print('X inf', np.isinf(y).any())
     for i in range(y.shape[1]):
         # gather the same layer from train, val and test set and combine to one array
         temp = np.concatenate((target_train[:, i, :, :], target_val[:, i, :, :], target_test[:, i,  :, :]), axis=0)
         mean = temp.mean()
         std = temp.std()
+        # print('mean', mean, 'std', std)
+        # print('X max', temp.max())
+        # print('X min', temp.min())
         # check if every value in array is 0, if so, skip normalisation
         if y[:, i, :, :].max() == 0 and y[:, i, :, :].min() == 0:
             print('skipped normalisation for array %s' %i)
             y_temp = y[:, i, :, :, :]
         else:
             y_temp = (y[:, i, :, :] - mean) / std
-        y_temp = (y[:, i, :, :] - mean) / std
+
+        if np.isnan(y_temp).any():
+            print('nan in array %s' %i)
+            print(i, mean, std)
+            print('replace nan values with 0')
+            X_temp = np.nan_to_num(y_temp, copy=False, nan=0)
+
+
         y_norm.append(y_temp)
         out_var_mean.append(mean)
         out_var_std.append(std)
     y_norm_arr = np.array(y_norm)
     y_norm_arr = y_norm_arr.transpose(1, 0, 2, 3)
     np.save(r'%s\tar_%s_norm_arr.npy'%(log_dir, sample), y_norm_arr)
-    np.save(r'%s\out_var_mean.npy'%log_directory, out_var_mean)
-    np.save(r'%s\out_var_std.npy'%log_directory, out_var_std)
+    np.save(r'%s\out_%s_var_mean.npy'%(log_dir, sample), out_var_mean)
+    np.save(r'%s\out_%s_var_std.npy'%(log_dir, sample), out_var_std)
     return y_norm_arr, out_var_mean, out_var_std
 
-target_train_norm, out_var_mean, out_var_std = normalize_samples(target_train, 'training', log_directory)
-target_val_norm, out_var_mean, out_var_std = normalize_samples(target_val, 'validation', log_directory)
-target_test_norm, out_var_mean, out_var_std = normalize_samples(target_test, 'testing', log_directory)
+target_train_norm, out_var_train_mean, out_var_train_std = normalize_samples_y(target_train, 'training', log_directory)
+target_val_norm, out_var_val_mean, out_var_val_std = normalize_samples_y(target_val, 'validation', log_directory)
+target_test_norm, out_var_test_mean, out_var_test_std = normalize_samples_y(target_test, 'testing', log_directory)
+
+# np.isnan(target_train_norm).any()
+# np.isnan(target_val_norm).any()
+# np.isnan(target_test_norm).any()
+
+# np.isinf(target_train_norm).any()
+# np.isinf(target_val_norm).any()
+# np.isinf(target_test_norm).any()
+
+# np.isnan(input_train_norm).any()
+# np.isnan(input_val_norm).any()
+# np.isnan(input_test_norm).any()
+
+# np.isinf(input_train_norm).any()    
+# np.isinf(input_val_norm).any()
+# np.isinf(input_test_norm).any()
+input_train_norm = input_train_norm[:,:,0,:,:]
+input_val_norm = input_val_norm[:,:,0,:,:]
+input_test_norm = input_test_norm[:,:,0,:,:]
+
+#downsize example by only taking 10% of the data
+def downsize_data(data, target, mask, perc):
+    data_down = data[:int(data.shape[0]*perc)]
+    target_down = target[:int(target.shape[0]*perc)]
+    mask_down = mask[:int(mask.shape[0]*perc)]
+    return data_down, target_down, mask_down
+
+input_train_norm_down, target_train_norm_down, mask_train_down = downsize_data(input_train_norm, target_train_norm, mask_train, 0.5)
+input_val_norm_down, target_val_norm_down, mask_val_down = downsize_data(input_val_norm, target_val_norm, mask_val, 0.5)
+input_test_norm_down, target_test_norm_down, mask_test_down = downsize_data(input_test_norm, target_test_norm, mask_test, 0.5)
+
 
 '''transform the data into tensors'''
 def transformArrayToTensor(array):
@@ -215,9 +276,9 @@ class CustomDataset(Dataset):
             input_data = self.transform(input_data)
 
         return input_data, label, mask
-train_loader = DataLoader(CustomDataset(input_train, target_train, mask_train), batch_size=batchSize, shuffle=False)
-validation_loader = DataLoader(CustomDataset(input_val, target_val, mask_val), batch_size=batchSize, shuffle=False)
-test_loader = DataLoader(CustomDataset(input_test, target_test, mask_test), batch_size=batchSize, shuffle=False)
+train_loader = DataLoader(CustomDataset(input_train_norm_down, target_train_norm_down, mask_train_down), batch_size=batchSize, shuffle=False)
+validation_loader = DataLoader(CustomDataset(input_val_norm_down, target_val_norm_down, mask_val_down), batch_size=batchSize, shuffle=False)
+test_loader = DataLoader(CustomDataset(input_test_norm_down, target_test_norm_down, mask_test_down), batch_size=batchSize, shuffle=False)
 
 class ConvBlock(nn.Module):
     """
@@ -287,21 +348,11 @@ class UNet(nn.Module):
         self.encoder2 = EncoderBlock(64, 128)
         self.encoder3 = EncoderBlock(128, 256)
         self.encoder4 = EncoderBlock(256, 512)
-        # self.encoder5 = EncoderBlock(512, 1024)#new layer
-        # self.encoder6 = EncoderBlock(1024, 2048)#new layer
 
         # Bottleneck layer (middle part of the U-Net)
         self.bottleneck = ConvBlock(512, 1024)
-        # self.bottleneck = ConvBlock(2048, 4096)
-
+      
         # Decoder: Upsampling path
-        # self.decoder1 = DecoderBlock(4096, 2048)
-        # self.decoder2 = DecoderBlock(2048, 1024)
-        # self.decoder3 = DecoderBlock(1024, 512)
-        # self.decoder4 = DecoderBlock(512, 256)
-        # self.decoder5 = DecoderBlock(256, 128)
-        # self.decoder6 = DecoderBlock(128, 64)
-
         self.decoder1 = DecoderBlock(1024, 512)
         self.decoder2 = DecoderBlock(512, 256)
         self.decoder3 = DecoderBlock(256, 128)
@@ -311,25 +362,22 @@ class UNet(nn.Module):
         self.final_conv = nn.Conv2d(64, output_channels, kernel_size=1)
 
     def forward(self, x):
+        # batch_size, seq_len, channels, height, width = x.size()
+        # print('batch_size, seq_len, channels, height, width', batch_size, seq_len, channels, height, width)
+
+        # Flatten input for CNN part
+        # x = x.view(batch_size , seq_len* channels, height, width)
+        # print('xshape', x.shape)
         # Encoder
         x1, p1 = self.encoder1(x)  # First block
         x2, p2 = self.encoder2(p1) # Second block
         x3, p3 = self.encoder3(p2) # Third block
         x4, p4 = self.encoder4(p3) # Fourth block
-        # x5, p5 = self.encoder5(p4) # Fifth block
-        # x6, p6 = self.encoder6(p5) # Sixth block
 
         # Bottleneck (middle)
         bottleneck = self.bottleneck(p4)
-        # bottleneck = self.bottleneck(p6)
 
         # Decoder
-        # d1 = self.decoder1(bottleneck, x6)  # Upsample from bottleneck and add skip connection from encoder4
-        # d2 = self.decoder2(d1, x5)          # Continue with decoder and corresponding skip connection from encoder3
-        # d3 = self.decoder3(d2, x4)          # Continue with decoder and corresponding skip connection from encoder2 
-        # d4 = self.decoder4(d3, x3)          # Continue with decoder and corresponding skip connection from encoder1
-        # d5 = self.decoder5(d4, x2)          # Continue with decoder and corresponding skip connection from encoder1
-        # d6 = self.decoder6(d5, x1)          # Continue with decoder and corresponding skip connection from encoder1
         d1 = self.decoder1(bottleneck, x4)  # Upsample from bottleneck and add skip connection from encoder4
         d2 = self.decoder2(d1, x3)          # Continue with decoder and corresponding skip connection from encoder3
         d3 = self.decoder3(d2, x2)          # Continue with decoder and corresponding skip connection from encoder2
@@ -339,52 +387,10 @@ class UNet(nn.Module):
         output = self.final_conv(d4)        # Reduce to the number of output channels (e.g., 1 for groundwater head)
         # output = self.final_conv(d6)  
         return output
-
-class ConvExample(nn.Module):
-    def __init__(self, input_channels, output_channels):
-        super(ConvExample, self).__init__()
-        
-        # Define the convolutional layers
-        self.conv1 = nn.Conv2d(input_channels, 16, kernel_size=3, padding=1)  # First Conv Layer
-        self.conv2 = nn.Conv2d(16, 32, kernel_size=3, padding=1)  # Second Conv Layer
-        
-        # Pooling layer
-        self.pool = nn.MaxPool2d(kernel_size=2, stride=2)
-    
-        # Learnable transposed convolution for upscaling
-        self.transconv1 = nn.ConvTranspose2d(32, 16, kernel_size=4, stride=2, padding=1)  # Upscale by 2x
-        self.transconv2 = nn.ConvTranspose2d(16, output_channels, kernel_size=4, stride=2, padding=1)  # Upscale by 2x again
-
-        # Activation function
-        self.relu = nn.ReLU()
-    
-    def forward(self, x):
-        batch_size, seq_len, channels, height, width = x.size()
-        # print('batch_size, seq_len, channels, height, width', batch_size, seq_len, channels, height, width)
-
-        # Flatten input for CNN part
-        x = x.view(batch_size * seq_len* channels, height, width)
-        # print('xshape', x.shape)
-        # Pass input through convolutional layers and pooling
-        x = self.pool(self.relu(self.conv1(x)))  # Conv1 + ReLU + Pool
-        # print('x1', x.shape)
-        x = self.pool(self.relu(self.conv2(x)))  # Conv2 + ReLU + Pool
-        # print('x2', x.shape)
-        
-        # Upscale using transposed convolutions
-        x = self.relu(self.transconv1(x))  # First upscaling
-        # print('x_transconv1', x.shape)
-        x = self.transconv2(x)  # Second upscaling to original size
-        # print('x_final', x.shape)
-
-        return x
 # Instantiate the model, define the loss function and the optimizer
 writer = SummaryWriter(log_dir=log_directory)
 #make sure model uses GPU if available
-# device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-# model = UNet(input_channels=21, output_channels=1).to(device)
-# model = UNet(input_channels=21, output_channels=1)
-model = ConvExample(input_channels=21, output_channels=1)
+model = UNet(input_channels=21, output_channels=1)
 
 # torch.save(model.state_dict(), os.path.join(log_directory, 'model_untrained.pth'))
 criterion = nn.MSELoss()
@@ -393,6 +399,7 @@ optimizer = optim.Adam(model.parameters(), lr=lr_rate)
 def rmse(outputs, targets, mas):
     return torch.sqrt(F.mse_loss(outputs[mas], targets[mas]))
 
+#TODO: check training currently loss nan
 # Training function
 def train_model(model, train_loader, validation_loader, criterion, optimizer, num_epochs, writer=None):
     best_val_loss = float('inf')
@@ -466,6 +473,8 @@ def train_model(model, train_loader, validation_loader, criterion, optimizer, nu
 
     return
 
+train_model(model, train_loader, validation_loader, criterion, optimizer, num_epochs=def_epochs, writer=writer)
+
 def test_model(model, test_loader, criterion, writer=None):
     model.eval()
     running_test_loss = 0.0
@@ -503,69 +512,65 @@ def test_model(model, test_loader, criterion, writer=None):
         print(f"Test Loss: {test_loss:.4f}")
 
     return all_outputs
-# Train the model
-
-train_model(model, train_loader, validation_loader, criterion, optimizer, num_epochs=def_epochs, writer=writer)
 
 test_outputs = test_model(model, test_loader, criterion, writer=writer)
 
-def plot_tensorboard_logs(log_dir):
-    # List all event files in the log directory
-    event_files = [os.path.join(log_dir, f) for f in os.listdir(log_dir) if 'events.out.tfevents' in f]
-    # print(event_files)
-    # Initialize lists to store the data
-    train_loss = []
-    val_loss = []
-    test_loss = []
+# def plot_tensorboard_logs(log_dir):
+#     # List all event files in the log directory
+#     event_files = [os.path.join(log_dir, f) for f in os.listdir(log_dir) if 'events.out.tfevents' in f]
+#     # print(event_files)
+#     # Initialize lists to store the data
+#     train_loss = []
+#     val_loss = []
+#     test_loss = []
 
-    stepstr = []
-    stepsva = []
-    stepste = []
+#     stepstr = []
+#     stepsva = []
+#     stepste = []
 
-    # Iterate through all event files and extract data
-    event_acc = EventAccumulator(event_files[0])
-    event_acc.Reload()
+#     # Iterate through all event files and extract data
+#     event_acc = EventAccumulator(event_files[0])
+#     event_acc.Reload()
 
-    # Extract scalars
-    loss_train = event_acc.Scalars('Loss/train_epoch')
-    loss_val = event_acc.Scalars('Loss/validation_epoch')
-    print(loss_val)
-    loss_test = event_acc.Scalars('Loss/test_epoch')
+#     # Extract scalars
+#     loss_train = event_acc.Scalars('Loss/train_epoch')
+#     loss_val = event_acc.Scalars('Loss/validation_epoch')
+#     print(loss_val)
+#     loss_test = event_acc.Scalars('Loss/test_epoch')
 
-    # Append to the lists
-    for i in range(len(loss_train)):
-        stepstr.append(loss_train[i].step)
-        train_loss.append(loss_train[i].value)
+#     # Append to the lists
+#     for i in range(len(loss_train)):
+#         stepstr.append(loss_train[i].step)
+#         train_loss.append(loss_train[i].value)
     
-    for i in range(len(loss_val)):
-        stepsva.append(loss_val[i].step)
-        val_loss.append(loss_val[i].value)
+#     for i in range(len(loss_val)):
+#         stepsva.append(loss_val[i].step)
+#         val_loss.append(loss_val[i].value)
             
-    for i in range(len(loss_test)):
-        stepste.append(loss_test[i].step)
-        test_loss.append(loss_test[i].value)
+#     for i in range(len(loss_test)):
+#         stepste.append(loss_test[i].step)
+#         test_loss.append(loss_test[i].value)
 
-    # Plot the training and test losses
-    fig, ax1 = plt.subplots()
-    ax1.plot(stepstr, train_loss, label='Train Loss', color='blue')
-    ax1.plot(stepsva, val_loss, label='Validation Loss', color='green')
-    ax1.set_xlabel('Steps')
-    ax1.set_ylabel('Training/Validation Loss')
-    # ax1.legend(loc='upper left')
-    # ax2 = ax1.twinx()
-    ax1.scatter(stepste, test_loss, label='Test Loss', color='orange')
-    # ax2.set_ylabel('Test Loss')
-    plt.title('Training and Test Loss')
-    ax1.legend(loc='upper right')
-    plt.tight_layout()
-    plt.savefig(r'%s\training_loss.png' %(log_directory))
+#     # Plot the training and test losses
+#     fig, ax1 = plt.subplots()
+#     ax1.plot(stepstr, train_loss, label='Train Loss', color='blue')
+#     ax1.plot(stepsva, val_loss, label='Validation Loss', color='green')
+#     ax1.set_xlabel('Steps')
+#     ax1.set_ylabel('Training/Validation Loss')
+#     # ax1.legend(loc='upper left')
+#     # ax2 = ax1.twinx()
+#     ax1.scatter(stepste, test_loss, label='Test Loss', color='orange')
+#     # ax2.set_ylabel('Test Loss')
+#     plt.title('Training and Test Loss')
+#     ax1.legend(loc='upper right')
+#     plt.tight_layout()
+#     plt.savefig(r'%s\training_loss.png' %(log_directory))
 
-plot_tensorboard_logs(log_directory)
+# plot_tensorboard_logs(log_directory)
 
-#TODO still need to check this part
 '''running the model on original data'''
-model_reload = UNet(input_channels=21, output_channels=1)
-model_reload.load_state_dict(torch.load(os.path.join(log_directory, 'best_model.pth')))
+# model_reload = UNet(input_channels=21, output_channels=1)
+# model_reload.load_state_dict(torch.load(os.path.join(log_directory, 'best_model.pth')))
 
 # test_loader /= np.load(r'%s/test_loader.npy' %log_directory)
 #run pretrained model from above on the original data
@@ -582,59 +587,76 @@ def run_model_on_full_data(model, data_loader):
     return all_outputs
 
 # Running the model on the entire dataset
-y_pred_full = run_model_on_full_data(model_reload, test_loader) #this is now the delta wtd
+y_pred_full = run_model_on_full_data(model, test_loader) #this is now the delta wtd
 
 
-y = np.load(r'%s\y.npy'%log_directory)
-target_train, target_val_test = train_test_split(y, test_size=0.7, random_state=10)
-target_val, target_test = train_test_split(target_val_test, test_size=0.6, random_state=10)  # 20% test, 20% validation
+# y = np.load(r'%s\y.npy'%log_directory)
+# target_train, target_val_test = train_test_split(y, test_size=0.7, random_state=10)
+# target_val, target_test = train_test_split(target_val_test, test_size=0.6, random_state=10)  # 20% test, 20% validation
 
-out_var_mean = np.load(r'%s\out_var_mean.npy' %log_directory)
-out_var_std = np.load(r'%s\out_var_std.npy'%log_directory)
-y_pred_denorm = y_pred_full*out_var_std[0] + out_var_mean[0] #denormalise the predicted delta wtd
+# out_var_mean = np.load(r'%s\out_var_test_mean.npy' %log_directory)
+# out_var_std = np.load(r'%s\out_var_test_std.npy'%log_directory)
+y_pred_denorm = y_pred_full*out_var_test_std[0] + out_var_test_mean[0] #denormalise the predicted delta wtd
 
 mask_test_na = np.where(mask_test==0, np.nan, 1)
 
-for i in range(y_pred_denorm.shape[0])[:1]:
+for i in range(y_pred_denorm.shape[0])[:10]:
     print(i, range(y_pred_denorm.shape[0]))
 
-    # vmax = max([y_pred_denorm[i, 0, :, :].max(),target_test[i, 0, :, :].max()])
-    # vmin = min([y_pred_denorm[i, 0, :, :].min(),target_test[i, 0, :, :].min()])
-    # lim = np.max([np.abs(vmax), np.abs(vmin)])
-    vminR = np.percentile(y_pred_denorm[i, 0, :, :], 5)
-    vmaxR = np.percentile(y_pred_denorm[i, 0, :, :], 95)
-    vminT = np.percentile(target_test[i, 0, :, :], 5)
-    vmaxT = np.percentile(target_test[i, 0, :, :], 95)
+    targetplot = target_test[i, 0, :, :]*mask_test_na[i,0,:,:]
+    predplot = y_pred_denorm[i, 0, :, :]*mask_test_na[i,0,:,:]
+
+    #check if all values in targetplot at nan values
+    if np.isnan(targetplot).all():
+        print('nan values in targetplot')
+        plt.figure(figsize=(20, 8))
+        plt.plot('only nan values in targetplot - no wtd to be simulated')
+        plt.savefig(r'%s\plot_timesplit_%s.png' %(log_dir_fig, i))
+        continue
+
+    vminR = np.percentile(predplot, 5)
+    vmaxR = np.percentile(predplot, 95)
+    vminT = np.percentile(targetplot, 5)
+    vmaxT = np.percentile(targetplot, 95)
     vmax = np.max([vmaxR, vmaxT])
     vmin = np.min([vminR, vminT])
 
     lim = np.max([np.abs(vmax), np.abs(vmin)])
 
-
-    plt.figure(figsize=(20, 8))
-    plt.subplot(1, 4, 1)
-    plt.imshow(target_test[i, 0, :, :]*mask_test_na[0,0,:,:], cmap='RdBu', vmin=-lim, vmax=lim)
+    plt.figure(figsize=(40, 10))
+    plt.subplot(1, 5, 1)
+    plt.imshow(targetplot, cmap='RdBu', vmin=-lim, vmax=lim)
     plt.colorbar(shrink=0.8)
     plt.title('Actual delta (colorbar 5-95 percentile)')
     plt.tight_layout()
 
-    plt.subplot(1, 4, 2)
-    plt.imshow(y_pred_denorm[i, 0, :, :]*mask_test_na[0,0,:,:], cmap='RdBu',vmin=-lim, vmax=lim)
+    plt.subplot(1, 5, 2)
+    plt.imshow(predplot, cmap='RdBu',vmin=-lim, vmax=lim)
     plt.colorbar(shrink=0.8)
     plt.title('Predicted delta (colorbar 5-95 percentile)')
 
-    vmin = min([np.nanmin(target_test[i, 0, :, :]*mask_test_na[0,0,:,:]),np.nanmin(y_pred_denorm[i, 0, :, :]*mask_test_na[0,0,:,:])])
-    vmax = max([np.nanmax(target_test[i, 0, :, :]*mask_test_na[0,0,:,:]),np.nanmax(y_pred_denorm[i, 0, :, :]*mask_test_na[0,0,:,:])])
-    plt.subplot(1, 4, 3)
-    plt.scatter((target_test[i,0, :, :]*mask_test_na[0,0,:,:]).flatten(), (y_pred_denorm[i, 0, :, :]*mask_test_na[0,0,:,:]).flatten(),alpha=0.5, facecolors='none', edgecolors='r')
+    vmin = min([np.nanmin(targetplot),np.nanmin(predplot)])
+    vmax = max([np.nanmax(targetplot),np.nanmax(predplot)])
+    
+    # Calculate the point density
+    mask = ~np.isnan(targetplot)
+    xTarget = targetplot[mask] #mask out nan's otherwise kde does not work
+    xPred = predplot[mask]   
+    xy = np.vstack([xTarget,xPred])
+    z = gaussian_kde(xy)(xy)
+    vmin = min([np.nanmin(targetplot),np.nanmin(predplot)])
+    vmax = max([np.nanmax(targetplot),np.nanmax(predplot)])
+    plt.subplot(1, 5, 3)
+    plt.scatter(xTarget, xPred,c=z, cmap='plasma', facecolors='none', s=10)#, edgecolors='r')
     plt.plot([vmin, vmax], [vmin, vmax], 'k--', lw=2)
     plt.xlim(vmin,vmax)
     plt.ylim(vmin,vmax)
     plt.ylabel('Predicted delta') 
     plt.xlabel('Actual delta')
+    plt.colorbar(shrink=0.8)
 
-    plt.subplot(1, 4, 4)
-    diff = (target_test[i, 0, :, :]*mask_test_na[0,0,:,:]) - (y_pred_denorm[i, 0, :, :]*mask_test_na[0,0,:,:]) #difference between wtd and calculated wtd
+    plt.subplot(1, 5, 4)
+    diff = targetplot - predplot #difference between wtd and calculated wtd
     vmax = np.nanmax(np.percentile(diff,95))
     vmin = np.nanmin(np.percentile(diff,5))
     lim = np.max([np.abs(vmax), np.abs(vmin)])
@@ -642,6 +664,17 @@ for i in range(y_pred_denorm.shape[0])[:1]:
     plt.colorbar(shrink=0.8)
     plt.title('Difference target-predicted (colorbar 5-95 percentile)')
 
+    plt.subplot(1, 5, 5)
+    # Example maps
+    map1 = targetplot
+    map2 = predplot
+    relative_error = (map1 - map2) / map1
+    vmax = np.nanmax(np.percentile(relative_error,95))
+    vmin = np.nanmin(np.percentile(relative_error,5))
+    lim = np.max([np.abs(vmax), np.abs(vmin)])
+    plt.imshow(relative_error, cmap='RdBu', vmin=-lim, vmax=lim)
+    plt.title('Relative error (colorbar 5-95 percentile)')
+    plt.colorbar(shrink=0.8)
     plt.savefig(r'%s\plot_timesplit_%s.png' %(log_dir_fig, i))
 
 

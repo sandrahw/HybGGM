@@ -8,20 +8,12 @@
 
 echo "SBATCH job"
 echo "Started $(date '+%d/%m/%Y %H:%M:%S')"
+
+unset PYTHONHOME
+cd HybGGM/hybGGM_test
 echo "Working directory $(pwd)"
+conda activate env_hybGMM 
+python src/run_hyperparam_testing.py 0.4 0.3 10 0.0001 1 UNet2
 
-module load python/3.7
-cd hybGGM_test
-python src/run_hyperparam_testing.py 0.4 0.3 2 0.001 1 UNet2
-python src/run_hyperparam_testing.py 0.4 0.3 2 0.001 1 ConvExample
-python src/run_hyperparam_testing.py 0.4 0.3 4 0.001 1 UNet2
-python src/run_hyperparam_testing.py 0.4 0.3 4 0.001 1 ConvExample
-python src/run_hyperparam_testing.py 0.4 0.3 6 0.001 1 UNet2
-python src/run_hyperparam_testing.py 0.4 0.3 6 0.001 1 ConvExample
-python src/run_hyperparam_testing.py 0.4 0.3 8 0.001 1 UNet2
-python src/run_hyperparam_testing.py 0.4 0.3 8 0.001 1 ConvExample
-python src/run_hyperparam_testing.py 0.4 0.3 10 0.001 1 UNet2
-python src/run_hyperparam_testing.py 0.4 0.3 10 0.001 1 ConvExample
-cp -r $SLURM_TMPDIR/hybGGM_test $HOME/
-
+echo "SBATCH job finished"
 exit 0
