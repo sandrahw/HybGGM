@@ -44,12 +44,22 @@ kernel = 3
 lon_bounds = (7, 10) #CH bounds(5,10)
 lat_bounds = (47, 50)#CH bounds(45,50)
 
-# lon_bounds = (3,6) #NL bounds(3,6)
-# lat_bounds = (50,54)#NL bounds(50,54)
 
-# lat_bounds = (52, 53)
-# lon_bounds = (4, 5)
+# small_lon_bounds = (7, 10) #CH bounds(5,10)#360x360
+# small_lat_bounds = (47, 50)#CH bounds(45,50)#360x360
+# large_lon_bounds = (5, 11) #CH bounds(5,10)
+# large_lat_bounds = (45, 51)#CH bounds(45,50)
+# half_lon_bounds = (5, 12.5) 
+# half_lat_bounds = (45, 52.5)
 
+# map_tile = xr.open_dataset(r'..\data\temp\wtd.nc')
+# fig, axs = plt.subplots(1, 1, figsize=(10, 10))
+# map_tile.Band1[0].plot(ax=axs)
+# axs.add_patch(plt.Rectangle((small_lon_bounds[0], small_lat_bounds[0]), small_lon_bounds[1] - small_lon_bounds[0], small_lat_bounds[1] - small_lat_bounds[0], fill=None, color='red'))
+# axs.add_patch(plt.Rectangle((large_lon_bounds[0], large_lat_bounds[0]), large_lon_bounds[1] - large_lon_bounds[0], large_lat_bounds[1] - large_lat_bounds[0], fill=None, color='blue'))
+# axs.add_patch(plt.Rectangle((half_lon_bounds[0], half_lat_bounds[0]), half_lon_bounds[1] - half_lon_bounds[0], half_lat_bounds[1] - half_lat_bounds[0], fill=None, color='green'))
+# plt.tight_layout()
+    
 '''create log directory for tensorboard logs'''
 log_directory = r'..\training\logs\%s_%s_%s_%s' %(def_epochs, lr_rate ,batchSize, kernel)
 log_dir_fig = r'..\training\logs\%s_%s_%s_%s\spatial_eval_plots' %(def_epochs, lr_rate ,batchSize, kernel)
@@ -63,6 +73,7 @@ if not os.path.exists(log_dir_fig):
 '''create mask (for land/ocean)'''
 map_tile = xr.open_dataset(r'..\data\temp\wtd.nc')
 map_cut = map_tile.sel(lat=slice(*lat_bounds), lon=slice(*lon_bounds))
+plt.imshow(map_cut.Band1[0, :, :])
 mask = map_cut.to_array().values
 # mask where everything that is nan is 0 and everything else is 1
 mask = np.nan_to_num(mask, copy=False, nan=0)

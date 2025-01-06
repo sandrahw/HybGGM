@@ -33,10 +33,10 @@ def set_seed(seed):
 set_seed(10)
 
 '''define sample path, case area, number of epochs, learning rate and batch size'''
-cnn_sample_path =r'C:\Users\hausw001\surfdrive - Hauswirth, S.M. (Sandra)@surfdrive.surf.nl\Data\GLOBGM\input\tiles_input\tile_048-163\transient\cnn_samples'
+cnn_sample_path =r'C:\Users\hausw001\surfdrive - Hauswirth, S.M. (Sandra)@surfdrive.surf.nl\Data\GLOBGM\input\tiles_input\tile_048-163\transient\cnn_samples_180'
 def_epochs = 10
 lr_rate = 0.0001
-batchSize = 10
+batchSize = 64
 kernel = 3
 
 '''create log directory for tensorboard logs'''
@@ -105,9 +105,9 @@ def cnn_sample_prep(sample, ccn_samples, log_dir, params_mf):
     # stack the arrays together
     sample_arrays = np.stack(sample_arrays, axis=1)
 
-    np.save(r'%s\input_%s.npy' %(log_dir, sample), sample_arrays)
-    np.save(r'%s\target_%s.npy' %(log_dir, sample), target)
-    np.save(r'%s\mask_%s.npy' %(log_dir, sample), mask_bool)
+    # np.save(r'%s\input_%s.npy' %(log_dir, sample), sample_arrays)
+    # np.save(r'%s\target_%s.npy' %(log_dir, sample), target)
+    # np.save(r'%s\mask_%s.npy' %(log_dir, sample), mask_bool)
     return sample_arrays, target, mask_bool
 
 input_train, target_train, mask_train = cnn_sample_prep('training', cnn_sample_path, log_directory, params_modflow)
@@ -160,9 +160,9 @@ def normalize_samples_X(data, sample, log_dir):
     #from list to array
     X_norm_arr = np.array(X_norm)
     X_norm_arr = X_norm_arr.transpose(1, 0, 2, 3, 4)
-    np.save(r'%s\inp_%s_norm_arr.npy'%(log_dir, sample), X_norm_arr)
-    np.save(r'%s\inp_%s_var_mean.npy'%(log_dir, sample), inp_var_mean)
-    np.save(r'%s\inp_%s_var_std.npy'%(log_dir, sample), inp_var_std)
+    # np.save(r'%s\inp_%s_norm_arr.npy'%(log_dir, sample), X_norm_arr)
+    # np.save(r'%s\inp_%s_var_mean.npy'%(log_dir, sample), inp_var_mean)
+    # np.save(r'%s\inp_%s_var_std.npy'%(log_dir, sample), inp_var_std)
 
     return X_norm_arr, inp_var_mean, inp_var_std
 
@@ -204,9 +204,9 @@ def normalize_samples_y(data, sample, log_dir):
         out_var_std.append(std)
     y_norm_arr = np.array(y_norm)
     y_norm_arr = y_norm_arr.transpose(1, 0, 2, 3)
-    np.save(r'%s\tar_%s_norm_arr.npy'%(log_dir, sample), y_norm_arr)
-    np.save(r'%s\out_%s_var_mean.npy'%(log_dir, sample), out_var_mean)
-    np.save(r'%s\out_%s_var_std.npy'%(log_dir, sample), out_var_std)
+    # np.save(r'%s\tar_%s_norm_arr.npy'%(log_dir, sample), y_norm_arr)
+    # np.save(r'%s\out_%s_var_mean.npy'%(log_dir, sample), out_var_mean)
+    # np.save(r'%s\out_%s_var_std.npy'%(log_dir, sample), out_var_std)
     return y_norm_arr, out_var_mean, out_var_std
 
 target_train_norm, out_var_train_mean, out_var_train_std = normalize_samples_y(target_train, 'training', log_directory)
@@ -217,17 +217,7 @@ target_test_norm, out_var_test_mean, out_var_test_std = normalize_samples_y(targ
 # np.isnan(target_val_norm).any()
 # np.isnan(target_test_norm).any()
 
-# np.isinf(target_train_norm).any()
-# np.isinf(target_val_norm).any()
-# np.isinf(target_test_norm).any()
-
-# np.isnan(input_train_norm).any()
-# np.isnan(input_val_norm).any()
-# np.isnan(input_test_norm).any()
-
-# np.isinf(input_train_norm).any()    
-# np.isinf(input_val_norm).any()
-# np.isinf(input_test_norm).any()
+#
 input_train_norm = input_train_norm[:,:,0,:,:]
 input_val_norm = input_val_norm[:,:,0,:,:]
 input_test_norm = input_test_norm[:,:,0,:,:]
@@ -239,9 +229,9 @@ def downsize_data(data, target, mask, perc):
     mask_down = mask[:int(mask.shape[0]*perc)]
     return data_down, target_down, mask_down
 
-input_train_norm_down, target_train_norm_down, mask_train_down = downsize_data(input_train_norm, target_train_norm, mask_train, 0.5)
-input_val_norm_down, target_val_norm_down, mask_val_down = downsize_data(input_val_norm, target_val_norm, mask_val, 0.5)
-input_test_norm_down, target_test_norm_down, mask_test_down = downsize_data(input_test_norm, target_test_norm, mask_test, 0.5)
+input_train_norm_down, target_train_norm_down, mask_train_down = downsize_data(input_train_norm, target_train_norm, mask_train, 0.2)
+input_val_norm_down, target_val_norm_down, mask_val_down = downsize_data(input_val_norm, target_val_norm, mask_val, 0.2)
+input_test_norm_down, target_test_norm_down, mask_test_down = downsize_data(input_test_norm, target_test_norm, mask_test, 0.2)
 
 
 '''transform the data into tensors'''
@@ -391,7 +381,6 @@ class UNet(nn.Module):
 writer = SummaryWriter(log_dir=log_directory)
 #make sure model uses GPU if available
 model = UNet(input_channels=21, output_channels=1)
-
 # torch.save(model.state_dict(), os.path.join(log_directory, 'model_untrained.pth'))
 criterion = nn.MSELoss()
 optimizer = optim.Adam(model.parameters(), lr=lr_rate)
@@ -399,7 +388,7 @@ optimizer = optim.Adam(model.parameters(), lr=lr_rate)
 def rmse(outputs, targets, mas):
     return torch.sqrt(F.mse_loss(outputs[mas], targets[mas]))
 
-#TODO: check training currently loss nan
+
 # Training function
 def train_model(model, train_loader, validation_loader, criterion, optimizer, num_epochs, writer=None):
     best_val_loss = float('inf')
@@ -515,62 +504,62 @@ def test_model(model, test_loader, criterion, writer=None):
 
 test_outputs = test_model(model, test_loader, criterion, writer=writer)
 
-# def plot_tensorboard_logs(log_dir):
-#     # List all event files in the log directory
-#     event_files = [os.path.join(log_dir, f) for f in os.listdir(log_dir) if 'events.out.tfevents' in f]
-#     # print(event_files)
-#     # Initialize lists to store the data
-#     train_loss = []
-#     val_loss = []
-#     test_loss = []
+def plot_tensorboard_logs(log_dir):
+    # List all event files in the log directory
+    event_files = [os.path.join(log_dir, f) for f in os.listdir(log_dir) if 'events.out.tfevents' in f]
+    # print(event_files)
+    # Initialize lists to store the data
+    train_loss = []
+    val_loss = []
+    test_loss = []
 
-#     stepstr = []
-#     stepsva = []
-#     stepste = []
+    stepstr = []
+    stepsva = []
+    stepste = []
 
-#     # Iterate through all event files and extract data
-#     event_acc = EventAccumulator(event_files[0])
-#     event_acc.Reload()
+    # Iterate through all event files and extract data
+    event_acc = EventAccumulator(event_files[0])
+    event_acc.Reload()
 
-#     # Extract scalars
-#     loss_train = event_acc.Scalars('Loss/train_epoch')
-#     loss_val = event_acc.Scalars('Loss/validation_epoch')
-#     print(loss_val)
-#     loss_test = event_acc.Scalars('Loss/test_epoch')
+    # Extract scalars
+    loss_train = event_acc.Scalars('Loss/train_epoch')
+    loss_val = event_acc.Scalars('Loss/validation_epoch')
+    print(loss_val)
+    loss_test = event_acc.Scalars('Loss/test_epoch')
 
-#     # Append to the lists
-#     for i in range(len(loss_train)):
-#         stepstr.append(loss_train[i].step)
-#         train_loss.append(loss_train[i].value)
+    # Append to the lists
+    for i in range(len(loss_train)):
+        stepstr.append(loss_train[i].step)
+        train_loss.append(loss_train[i].value)
     
-#     for i in range(len(loss_val)):
-#         stepsva.append(loss_val[i].step)
-#         val_loss.append(loss_val[i].value)
+    for i in range(len(loss_val)):
+        stepsva.append(loss_val[i].step)
+        val_loss.append(loss_val[i].value)
             
-#     for i in range(len(loss_test)):
-#         stepste.append(loss_test[i].step)
-#         test_loss.append(loss_test[i].value)
+    for i in range(len(loss_test)):
+        stepste.append(loss_test[i].step)
+        test_loss.append(loss_test[i].value)
 
-#     # Plot the training and test losses
-#     fig, ax1 = plt.subplots()
-#     ax1.plot(stepstr, train_loss, label='Train Loss', color='blue')
-#     ax1.plot(stepsva, val_loss, label='Validation Loss', color='green')
-#     ax1.set_xlabel('Steps')
-#     ax1.set_ylabel('Training/Validation Loss')
-#     # ax1.legend(loc='upper left')
-#     # ax2 = ax1.twinx()
-#     ax1.scatter(stepste, test_loss, label='Test Loss', color='orange')
-#     # ax2.set_ylabel('Test Loss')
-#     plt.title('Training and Test Loss')
-#     ax1.legend(loc='upper right')
-#     plt.tight_layout()
-#     plt.savefig(r'%s\training_loss.png' %(log_directory))
+    # Plot the training and test losses
+    fig, ax1 = plt.subplots()
+    ax1.plot(stepstr, train_loss, label='Train Loss', color='blue')
+    ax1.plot(stepsva, val_loss, label='Validation Loss', color='green')
+    ax1.set_xlabel('Steps')
+    ax1.set_ylabel('Training/Validation Loss')
+    # ax1.legend(loc='upper left')
+    # ax2 = ax1.twinx()
+    ax1.scatter(stepste, test_loss, label='Test Loss', color='orange')
+    # ax2.set_ylabel('Test Loss')
+    plt.title('Training and Test Loss')
+    ax1.legend(loc='upper right')
+    plt.tight_layout()
+    plt.savefig(r'%s\training_loss.png' %(log_directory))
 
-# plot_tensorboard_logs(log_directory)
+plot_tensorboard_logs(log_directory)
 
 '''running the model on original data'''
-# model_reload = UNet(input_channels=21, output_channels=1)
-# model_reload.load_state_dict(torch.load(os.path.join(log_directory, 'best_model.pth')))
+model_reload = UNet(input_channels=21, output_channels=1)
+model_reload.load_state_dict(torch.load(os.path.join(log_directory, 'best_model.pth')))
 
 # test_loader /= np.load(r'%s/test_loader.npy' %log_directory)
 #run pretrained model from above on the original data
@@ -599,8 +588,9 @@ y_pred_full = run_model_on_full_data(model, test_loader) #this is now the delta 
 y_pred_denorm = y_pred_full*out_var_test_std[0] + out_var_test_mean[0] #denormalise the predicted delta wtd
 
 mask_test_na = np.where(mask_test==0, np.nan, 1)
-
-for i in range(y_pred_denorm.shape[0])[:10]:
+np.save(r'%s\y_pred_denorm.npy'%log_directory, y_pred_denorm)
+np.save(r'%s\target_test.npy'%log_directory, target_test)
+for i in range(y_pred_denorm.shape[0])[0:10]:
     print(i, range(y_pred_denorm.shape[0]))
 
     targetplot = target_test[i, 0, :, :]*mask_test_na[i,0,:,:]

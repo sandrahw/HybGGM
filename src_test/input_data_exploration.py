@@ -5,7 +5,7 @@ import xarray as xr
 import numpy as np
 import random
 import matplotlib.pyplot as plt
-import matplotlib as mpl
+
 random.seed(10)
 print(random.random())
 
@@ -29,6 +29,7 @@ mask = mask[0, :, :]
 mask = np.flip(mask, axis=1)
 mask_na = np.where(mask==0, np.nan, 1)
 
+plt.imshow(map_cut.Band1[0, :, :])
 
 
 inFiles = glob.glob(r'..\data\temp\*.nc') #load all input files in the folder
@@ -50,11 +51,14 @@ params_initial = ['bottom_lowermost_layer', 'bottom_uppermost_layer',
  'vertical_conductivity_lowermost_layer', 'vertical_conductivity_uppermost_layer']
 
 
-for file in inFiles[-3:-2]:
+for file in inFiles[-9:]:
     print(file)
     param = file.split('\\')[-1].split('.')[0]
 
     data = xr.open_dataset(file)
+    print(param)
+    print(data.lat.values)
+    print(data.lon.values)
     data_cut = data.sel(lat=slice(*lat_bounds), lon=slice(*lon_bounds))
     # data_cut = data.copy()
     data_array = data_cut.to_array().values

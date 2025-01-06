@@ -1,0 +1,1373 @@
+SBATCH job
+Started 10/11/2024 22:29:50
+Working directory /eejit/home/hausw001/HybGGM/hybGGM_test
+UNet6 with 1 50 0.0001 2 180 start at Sun Nov 10 22:29:52 CET 2024
+CUDA is available! Using GPU.
+device: cuda
+Hyperparameter tuning not done yet - start process
+data testing folder already prepared - reloading data
+Hyperparameter tuning definition and start
+training model: UNet6, learning rate: 0.0001, epochs: 50, batch size: 2
+Epoch 1/50
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+Epoch [1/50], Training Loss: 0.5435, Testing Loss: 0.3247
+Best model saved!
+Epoch 2/50
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+Epoch [2/50], Training Loss: 0.3889, Testing Loss: 0.2530
+Best model saved!
+Epoch 3/50
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+Epoch [3/50], Training Loss: 0.3366, Testing Loss: 0.2337
+Best model saved!
+Epoch 4/50
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+Epoch [4/50], Training Loss: 0.3020, Testing Loss: 0.2356
+no improvement in test loss for 1 epochs
+Epoch 5/50
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+Epoch [5/50], Training Loss: 0.2766, Testing Loss: 0.2225
+Best model saved!
+Epoch 6/50
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+Epoch [6/50], Training Loss: 0.2534, Testing Loss: 0.2307
+no improvement in test loss for 1 epochs
+Epoch 7/50
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+Epoch [7/50], Training Loss: 0.2376, Testing Loss: 0.2177
+Best model saved!
+Epoch 8/50
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+Epoch [8/50], Training Loss: 0.2325, Testing Loss: 0.2058
+Best model saved!
+Epoch 9/50
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+Epoch [9/50], Training Loss: 0.2206, Testing Loss: 0.2128
+no improvement in test loss for 1 epochs
+Epoch 10/50
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+Epoch [10/50], Training Loss: 0.2057, Testing Loss: 0.2033
+Best model saved!
+Epoch 11/50
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+Epoch [11/50], Training Loss: 0.2025, Testing Loss: 0.1932
+Best model saved!
+Epoch 12/50
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+Epoch [12/50], Training Loss: 0.2026, Testing Loss: 0.2301
+no improvement in test loss for 1 epochs
+Epoch 13/50
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+Epoch [13/50], Training Loss: 0.1976, Testing Loss: 0.2094
+no improvement in test loss for 2 epochs
+Epoch 14/50
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+Epoch [14/50], Training Loss: 0.1888, Testing Loss: 0.2140
+no improvement in test loss for 3 epochs
+Epoch 15/50
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+Epoch [15/50], Training Loss: 0.1788, Testing Loss: 0.1895
+Best model saved!
+Epoch 16/50
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+Epoch [16/50], Training Loss: 0.1746, Testing Loss: 0.1729
+Best model saved!
+Epoch 17/50
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+Epoch [17/50], Training Loss: 0.1628, Testing Loss: 0.2252
+no improvement in test loss for 1 epochs
+Epoch 18/50
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+Epoch [18/50], Training Loss: 0.1672, Testing Loss: 0.1924
+no improvement in test loss for 2 epochs
+Epoch 19/50
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+Epoch [19/50], Training Loss: 0.1641, Testing Loss: 0.2212
+no improvement in test loss for 3 epochs
+Epoch 20/50
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+Epoch [20/50], Training Loss: 0.1571, Testing Loss: 0.1911
+no improvement in test loss for 4 epochs
+Epoch 21/50
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+Epoch [21/50], Training Loss: 0.1513, Testing Loss: 0.2221
+no improvement in test loss for 5 epochs
+Epoch 22/50
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+Epoch [22/50], Training Loss: 0.1559, Testing Loss: 0.2289
+no improvement in test loss for 6 epochs
+Epoch 23/50
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+Epoch [23/50], Training Loss: 0.1510, Testing Loss: 0.2066
+no improvement in test loss for 7 epochs
+Epoch 24/50
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+Epoch [24/50], Training Loss: 0.1449, Testing Loss: 0.1855
+no improvement in test loss for 8 epochs
+Epoch 25/50
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+Epoch [25/50], Training Loss: 0.1522, Testing Loss: 0.2204
+no improvement in test loss for 9 epochs
+Epoch 26/50
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+Epoch [26/50], Training Loss: 0.1386, Testing Loss: 0.1974
+no improvement in test loss for 10 epochs
+Early stopping!
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+Val Loss: 0.1679
+done with hyperparameter tuning training
+prediction model: UNet6, learning rate: 0.0001, epochs: 50, batch size: 2
+Hyperparameter tuning prediction finished
+UNet6 with 1 50 0.0001 2 180 done at Sun Nov 10 23:15:10 CET 2024
+UNet6 with 1 50 0.0001 4 180 start at Sun Nov 10 23:15:10 CET 2024
+CUDA is available! Using GPU.
+device: cuda
+Hyperparameter tuning not done yet - start process
+data testing folder already prepared - reloading data
+Hyperparameter tuning definition and start
+training model: UNet6, learning rate: 0.0001, epochs: 50, batch size: 4
+Epoch 1/50
+Epoch [1/50], Training Loss: 0.5944, Testing Loss: 0.3600
+Best model saved!
+Epoch 2/50
+Epoch [2/50], Training Loss: 0.4050, Testing Loss: 0.2598
+Best model saved!
+Epoch 3/50
+Epoch [3/50], Training Loss: 0.3377, Testing Loss: 0.2119
+Best model saved!
+Epoch 4/50
+Epoch [4/50], Training Loss: 0.2900, Testing Loss: 0.1753
+Best model saved!
+Epoch 5/50
+Epoch [5/50], Training Loss: 0.2644, Testing Loss: 0.1792
+no improvement in test loss for 1 epochs
+Epoch 6/50
+Epoch [6/50], Training Loss: 0.2459, Testing Loss: 0.1604
+Best model saved!
+Epoch 7/50
+Epoch [7/50], Training Loss: 0.2387, Testing Loss: 0.2029
+no improvement in test loss for 1 epochs
+Epoch 8/50
+Epoch [8/50], Training Loss: 0.2302, Testing Loss: 0.1790
+no improvement in test loss for 2 epochs
+Epoch 9/50
+Epoch [9/50], Training Loss: 0.2332, Testing Loss: 0.1627
+no improvement in test loss for 3 epochs
+Epoch 10/50
+Epoch [10/50], Training Loss: 0.2132, Testing Loss: 0.1517
+Best model saved!
+Epoch 11/50
+Epoch [11/50], Training Loss: 0.1974, Testing Loss: 0.1815
+no improvement in test loss for 1 epochs
+Epoch 12/50
+Epoch [12/50], Training Loss: 0.1927, Testing Loss: 0.1429
+Best model saved!
+Epoch 13/50
+Epoch [13/50], Training Loss: 0.1972, Testing Loss: 0.1464
+no improvement in test loss for 1 epochs
+Epoch 14/50
+Epoch [14/50], Training Loss: 0.1781, Testing Loss: 0.1266
+Best model saved!
+Epoch 15/50
+Epoch [15/50], Training Loss: 0.1750, Testing Loss: 0.1240
+Best model saved!
+Epoch 16/50
+Epoch [16/50], Training Loss: 0.1713, Testing Loss: 0.1502
+no improvement in test loss for 1 epochs
+Epoch 17/50
+Epoch [17/50], Training Loss: 0.1656, Testing Loss: 0.1347
+no improvement in test loss for 2 epochs
+Epoch 18/50
+Epoch [18/50], Training Loss: 0.1672, Testing Loss: 0.1393
+no improvement in test loss for 3 epochs
+Epoch 19/50
+Epoch [19/50], Training Loss: 0.1535, Testing Loss: 0.1350
+no improvement in test loss for 4 epochs
+Epoch 20/50
+Epoch [20/50], Training Loss: 0.1502, Testing Loss: 0.1200
+Best model saved!
+Epoch 21/50
+Epoch [21/50], Training Loss: 0.1512, Testing Loss: 0.1490
+no improvement in test loss for 1 epochs
+Epoch 22/50
+Epoch [22/50], Training Loss: 0.1463, Testing Loss: 0.1181
+Best model saved!
+Epoch 23/50
+Epoch [23/50], Training Loss: 0.1492, Testing Loss: 0.1222
+no improvement in test loss for 1 epochs
+Epoch 24/50
+Epoch [24/50], Training Loss: 0.1454, Testing Loss: 0.1114
+Best model saved!
+Epoch 25/50
+Epoch [25/50], Training Loss: 0.1453, Testing Loss: 0.1107
+Best model saved!
+Epoch 26/50
+Epoch [26/50], Training Loss: 0.1360, Testing Loss: 0.1108
+no improvement in test loss for 1 epochs
+Epoch 27/50
+Epoch [27/50], Training Loss: 0.1390, Testing Loss: 0.1142
+no improvement in test loss for 2 epochs
+Epoch 28/50
+Epoch [28/50], Training Loss: 0.1521, Testing Loss: 0.1173
+no improvement in test loss for 3 epochs
+Epoch 29/50
+Epoch [29/50], Training Loss: 0.1506, Testing Loss: 0.1132
+no improvement in test loss for 4 epochs
+Epoch 30/50
+Epoch [30/50], Training Loss: 0.1280, Testing Loss: 0.1010
+Best model saved!
+Epoch 31/50
+Epoch [31/50], Training Loss: 0.1212, Testing Loss: 0.1045
+no improvement in test loss for 1 epochs
+Epoch 32/50
+Epoch [32/50], Training Loss: 0.1302, Testing Loss: 0.1070
+no improvement in test loss for 2 epochs
+Epoch 33/50
+Epoch [33/50], Training Loss: 0.1306, Testing Loss: 0.1059
+no improvement in test loss for 3 epochs
+Epoch 34/50
+Epoch [34/50], Training Loss: 0.1293, Testing Loss: 0.1043
+no improvement in test loss for 4 epochs
+Epoch 35/50
+Epoch [35/50], Training Loss: 0.1224, Testing Loss: 0.1000
+Best model saved!
+Epoch 36/50
+Epoch [36/50], Training Loss: 0.1197, Testing Loss: 0.1179
+no improvement in test loss for 1 epochs
+Epoch 37/50
+Epoch [37/50], Training Loss: 0.1175, Testing Loss: 0.1069
+no improvement in test loss for 2 epochs
+Epoch 38/50
+Epoch [38/50], Training Loss: 0.1190, Testing Loss: 0.1179
+no improvement in test loss for 3 epochs
+Epoch 39/50
+Epoch [39/50], Training Loss: 0.1105, Testing Loss: 0.1105
+no improvement in test loss for 4 epochs
+Epoch 40/50
+Epoch [40/50], Training Loss: 0.1175, Testing Loss: 0.1179
+no improvement in test loss for 5 epochs
+Epoch 41/50
+Epoch [41/50], Training Loss: 0.1051, Testing Loss: 0.1007
+no improvement in test loss for 6 epochs
+Epoch 42/50
+Epoch [42/50], Training Loss: 0.1151, Testing Loss: 0.1286
+no improvement in test loss for 7 epochs
+Epoch 43/50
+Epoch [43/50], Training Loss: 0.1268, Testing Loss: 0.1035
+no improvement in test loss for 8 epochs
+Epoch 44/50
+Epoch [44/50], Training Loss: 0.1183, Testing Loss: 0.1049
+no improvement in test loss for 9 epochs
+Epoch 45/50
+Epoch [45/50], Training Loss: 0.1123, Testing Loss: 0.1173
+no improvement in test loss for 10 epochs
+Early stopping!
+NaN in mse
+NaN encountered in loss calculation. Skipping this instance.
+Val Loss: 0.1019
+done with hyperparameter tuning training
+prediction model: UNet6, learning rate: 0.0001, epochs: 50, batch size: 4
+Hyperparameter tuning prediction finished
+UNet6 with 1 50 0.0001 4 180 done at Mon Nov 11 00:03:33 CET 2024
+UNet6 with 1 50 0.0001 8 180 start at Mon Nov 11 00:03:33 CET 2024
+CUDA is available! Using GPU.
+device: cuda
+Hyperparameter tuning not done yet - start process
+data testing folder already prepared - reloading data
+Hyperparameter tuning definition and start
+training model: UNet6, learning rate: 0.0001, epochs: 50, batch size: 8
+Epoch 1/50
+Epoch [1/50], Training Loss: 0.6453, Testing Loss: 0.4293
+Best model saved!
+Epoch 2/50
+Epoch [2/50], Training Loss: 0.4515, Testing Loss: 0.3270
+Best model saved!
+Epoch 3/50
+Epoch [3/50], Training Loss: 0.3642, Testing Loss: 0.2649
+Best model saved!
+Epoch 4/50
+Epoch [4/50], Training Loss: 0.3099, Testing Loss: 0.2231
+Best model saved!
+Epoch 5/50
+Epoch [5/50], Training Loss: 0.2771, Testing Loss: 0.2341
+no improvement in test loss for 1 epochs
+Epoch 6/50
+Epoch [6/50], Training Loss: 0.2551, Testing Loss: 0.2395
+no improvement in test loss for 2 epochs
+Epoch 7/50
+Epoch [7/50], Training Loss: 0.2473, Testing Loss: 0.1944
+Best model saved!
+Epoch 8/50
+Epoch [8/50], Training Loss: 0.2268, Testing Loss: 0.1957
+no improvement in test loss for 1 epochs
+Epoch 9/50
+Epoch [9/50], Training Loss: 0.2235, Testing Loss: 0.1825
+Best model saved!
+Epoch 10/50
+Epoch [10/50], Training Loss: 0.2216, Testing Loss: 0.1713
+Best model saved!
+Epoch 11/50
+Epoch [11/50], Training Loss: 0.2143, Testing Loss: 0.2006
+no improvement in test loss for 1 epochs
+Epoch 12/50
+Epoch [12/50], Training Loss: 0.1854, Testing Loss: 0.1684
+Best model saved!
+Epoch 13/50
+Epoch [13/50], Training Loss: 0.1895, Testing Loss: 0.1599
+Best model saved!
+Epoch 14/50
+Epoch [14/50], Training Loss: 0.1880, Testing Loss: 0.1540
+Best model saved!
+Epoch 15/50
+Epoch [15/50], Training Loss: 0.1784, Testing Loss: 0.1573
+no improvement in test loss for 1 epochs
+Epoch 16/50
+Epoch [16/50], Training Loss: 0.1797, Testing Loss: 0.1530
+Best model saved!
+Epoch 17/50
+Epoch [17/50], Training Loss: 0.1828, Testing Loss: 0.2022
+no improvement in test loss for 1 epochs
+Epoch 18/50
+Epoch [18/50], Training Loss: 0.1884, Testing Loss: 0.1358
+Best model saved!
+Epoch 19/50
+Epoch [19/50], Training Loss: 0.1690, Testing Loss: 0.1301
+Best model saved!
+Epoch 20/50
+Epoch [20/50], Training Loss: 0.1550, Testing Loss: 0.1224
+Best model saved!
+Epoch 21/50
+Epoch [21/50], Training Loss: 0.1686, Testing Loss: 0.2040
+no improvement in test loss for 1 epochs
+Epoch 22/50
+Epoch [22/50], Training Loss: 0.1507, Testing Loss: 0.1285
+no improvement in test loss for 2 epochs
+Epoch 23/50
+Epoch [23/50], Training Loss: 0.1589, Testing Loss: 0.1513
+no improvement in test loss for 3 epochs
+Epoch 24/50
+Epoch [24/50], Training Loss: 0.1517, Testing Loss: 0.1610
+no improvement in test loss for 4 epochs
+Epoch 25/50
+Epoch [25/50], Training Loss: 0.1440, Testing Loss: 0.1078
+Best model saved!
+Epoch 26/50
+Epoch [26/50], Training Loss: 0.1421, Testing Loss: 0.1199
+no improvement in test loss for 1 epochs
+Epoch 27/50
+Epoch [27/50], Training Loss: 0.1320, Testing Loss: 0.1255
+no improvement in test loss for 2 epochs
+Epoch 28/50
+Epoch [28/50], Training Loss: 0.1355, Testing Loss: 0.1311
+no improvement in test loss for 3 epochs
+Epoch 29/50
+Epoch [29/50], Training Loss: 0.1575, Testing Loss: 0.1926
+no improvement in test loss for 4 epochs
+Epoch 30/50
+Epoch [30/50], Training Loss: 0.1433, Testing Loss: 0.1770
+no improvement in test loss for 5 epochs
+Epoch 31/50
+Epoch [31/50], Training Loss: 0.1456, Testing Loss: 0.1416
+no improvement in test loss for 6 epochs
+Epoch 32/50
+Epoch [32/50], Training Loss: 0.1446, Testing Loss: 0.1173
+no improvement in test loss for 7 epochs
+Epoch 33/50
+Epoch [33/50], Training Loss: 0.1324, Testing Loss: 0.1593
+no improvement in test loss for 8 epochs
+Epoch 34/50
+Epoch [34/50], Training Loss: 0.1371, Testing Loss: 0.1094
+no improvement in test loss for 9 epochs
+Epoch 35/50
+Epoch [35/50], Training Loss: 0.1354, Testing Loss: 0.1175
+no improvement in test loss for 10 epochs
+Early stopping!
+Val Loss: 0.1033
+done with hyperparameter tuning training
+prediction model: UNet6, learning rate: 0.0001, epochs: 50, batch size: 8
+Hyperparameter tuning prediction finished
+UNet6 with 1 50 0.0001 8 180 done at Mon Nov 11 00:31:42 CET 2024
+UNet6 with 1 50 0.0001 16 180 start at Mon Nov 11 00:31:42 CET 2024
+CUDA is available! Using GPU.
+device: cuda
+Hyperparameter tuning not done yet - start process
+data testing folder already prepared - reloading data
+Hyperparameter tuning definition and start
+training model: UNet6, learning rate: 0.0001, epochs: 50, batch size: 16
+Epoch 1/50
+Epoch [1/50], Training Loss: 0.6993, Testing Loss: 0.5196
+Best model saved!
+Epoch 2/50
+Epoch [2/50], Training Loss: 0.4767, Testing Loss: 0.3758
+Best model saved!
+Epoch 3/50
+Epoch [3/50], Training Loss: 0.3812, Testing Loss: 0.3087
+Best model saved!
+Epoch 4/50
+Epoch [4/50], Training Loss: 0.3145, Testing Loss: 0.2709
+Best model saved!
+Epoch 5/50
+Epoch [5/50], Training Loss: 0.2782, Testing Loss: 0.2494
+Best model saved!
+Epoch 6/50
+Epoch [6/50], Training Loss: 0.2533, Testing Loss: 0.2344
+Best model saved!
+Epoch 7/50
+Epoch [7/50], Training Loss: 0.2416, Testing Loss: 0.2465
+no improvement in test loss for 1 epochs
+Epoch 8/50
+Epoch [8/50], Training Loss: 0.2372, Testing Loss: 0.2514
+no improvement in test loss for 2 epochs
+Epoch 9/50
+Epoch [9/50], Training Loss: 0.2443, Testing Loss: 0.1865
+Best model saved!
+Epoch 10/50
+Epoch [10/50], Training Loss: 0.2176, Testing Loss: 0.1705
+Best model saved!
+Epoch 11/50
+Epoch [11/50], Training Loss: 0.2057, Testing Loss: 0.1686
+Best model saved!
+Epoch 12/50
+Epoch [12/50], Training Loss: 0.1944, Testing Loss: 0.1591
+Best model saved!
+Epoch 13/50
+Epoch [13/50], Training Loss: 0.1865, Testing Loss: 0.1516
+Best model saved!
+Epoch 14/50
+Epoch [14/50], Training Loss: 0.1822, Testing Loss: 0.1577
+no improvement in test loss for 1 epochs
+Epoch 15/50
+Epoch [15/50], Training Loss: 0.1811, Testing Loss: 0.2156
+no improvement in test loss for 2 epochs
+Epoch 16/50
+Epoch [16/50], Training Loss: 0.1871, Testing Loss: 0.2552
+no improvement in test loss for 3 epochs
+Epoch 17/50
+Epoch [17/50], Training Loss: 0.1856, Testing Loss: 0.1660
+no improvement in test loss for 4 epochs
+Epoch 18/50
+Epoch [18/50], Training Loss: 0.1734, Testing Loss: 0.1363
+Best model saved!
+Epoch 19/50
+Epoch [19/50], Training Loss: 0.1596, Testing Loss: 0.1412
+no improvement in test loss for 1 epochs
+Epoch 20/50
+Epoch [20/50], Training Loss: 0.1720, Testing Loss: 0.1353
+Best model saved!
+Epoch 21/50
+Epoch [21/50], Training Loss: 0.1501, Testing Loss: 0.1308
+Best model saved!
+Epoch 22/50
+Epoch [22/50], Training Loss: 0.1511, Testing Loss: 0.1265
+Best model saved!
+Epoch 23/50
+Epoch [23/50], Training Loss: 0.1414, Testing Loss: 0.1237
+Best model saved!
+Epoch 24/50
+Epoch [24/50], Training Loss: 0.1453, Testing Loss: 0.1825
+no improvement in test loss for 1 epochs
+Epoch 25/50
+Epoch [25/50], Training Loss: 0.1663, Testing Loss: 0.1780
+no improvement in test loss for 2 epochs
+Epoch 26/50
+Epoch [26/50], Training Loss: 0.1621, Testing Loss: 0.1234
+Best model saved!
+Epoch 27/50
+Epoch [27/50], Training Loss: 0.1406, Testing Loss: 0.1173
+Best model saved!
+Epoch 28/50
+Epoch [28/50], Training Loss: 0.1335, Testing Loss: 0.1357
+no improvement in test loss for 1 epochs
+Epoch 29/50
+Epoch [29/50], Training Loss: 0.1450, Testing Loss: 0.1299
+no improvement in test loss for 2 epochs
+Epoch 30/50
+Epoch [30/50], Training Loss: 0.1356, Testing Loss: 0.1197
+no improvement in test loss for 3 epochs
+Epoch 31/50
+Epoch [31/50], Training Loss: 0.1460, Testing Loss: 0.1229
+no improvement in test loss for 4 epochs
+Epoch 32/50
+Epoch [32/50], Training Loss: 0.1654, Testing Loss: 0.1731
+no improvement in test loss for 5 epochs
+Epoch 33/50
+Epoch [33/50], Training Loss: 0.1665, Testing Loss: 0.1579
+no improvement in test loss for 6 epochs
+Epoch 34/50
+Epoch [34/50], Training Loss: 0.1428, Testing Loss: 0.1483
+no improvement in test loss for 7 epochs
+Epoch 35/50
+Epoch [35/50], Training Loss: 0.1289, Testing Loss: 0.1492
+no improvement in test loss for 8 epochs
+Epoch 36/50
+Epoch [36/50], Training Loss: 0.1280, Testing Loss: 0.1469
+no improvement in test loss for 9 epochs
+Epoch 37/50
+Epoch [37/50], Training Loss: 0.1282, Testing Loss: 0.1730
+no improvement in test loss for 10 epochs
+Early stopping!
+Val Loss: 0.1477
+done with hyperparameter tuning training
+prediction model: UNet6, learning rate: 0.0001, epochs: 50, batch size: 16
+Hyperparameter tuning prediction finished
+UNet6 with 1 50 0.0001 16 180 done at Mon Nov 11 00:55:48 CET 2024
+UNet6 with 1 50 0.0001 32 180 start at Mon Nov 11 00:55:48 CET 2024
+CUDA is available! Using GPU.
+device: cuda
+Hyperparameter tuning not done yet - start process
+data testing folder already prepared - reloading data
+Hyperparameter tuning definition and start
+training model: UNet6, learning rate: 0.0001, epochs: 50, batch size: 32
+Epoch 1/50
+UNet6 with 1 50 0.0001 32 180 done at Mon Nov 11 00:56:00 CET 2024
+UNet6 with 1 50 0.0001 64 180 start at Mon Nov 11 00:56:00 CET 2024
+CUDA is available! Using GPU.
+device: cuda
+Hyperparameter tuning already done and prediction files are there
+UNet6 with 1 50 0.0001 64 180 done at Mon Nov 11 00:56:03 CET 2024
+UNet6 with 1 50 0.0001 128 180 start at Mon Nov 11 00:56:03 CET 2024
+CUDA is available! Using GPU.
+device: cuda
+Hyperparameter tuning not done yet - start process
+data testing folder already prepared - reloading data
+Hyperparameter tuning definition and start
+training model: UNet6, learning rate: 0.0001, epochs: 50, batch size: 128
+Epoch 1/50
+UNet6 with 1 50 0.0001 128 180 done at Mon Nov 11 00:56:13 CET 2024
+UNet6 with 1 50 0.0001 256 180 start at Mon Nov 11 00:56:13 CET 2024
+CUDA is available! Using GPU.
+device: cuda
+Hyperparameter tuning not done yet - start process
+data testing folder already prepared - reloading data
+Hyperparameter tuning definition and start
+training model: UNet6, learning rate: 0.0001, epochs: 50, batch size: 256
+Epoch 1/50
+UNet6 with 1 50 0.0001 256 180 done at Mon Nov 11 00:56:24 CET 2024
+SBATCH job finished

@@ -1,0 +1,9 @@
+SBATCH job
+Started 13/11/2024 11:18:57
+Working directory /eejit/home/hausw001/HybGGM/hybGGM_test
+start sample prep target til48 180x180
+subset: training
+subset: validation
+subset: testing
+finished sample prep target til48 180x180
+SBATCH job finished

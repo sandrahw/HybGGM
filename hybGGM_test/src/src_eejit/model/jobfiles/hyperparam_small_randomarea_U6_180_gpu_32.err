@@ -1,0 +1,37 @@
+
+CondaError: Run 'conda init' before 'conda activate'
+
+Traceback (most recent call last):
+  File "/eejit/home/hausw001/HybGGM/hybGGM_test/src/model/run_hyperparam_testing_random_areas.py", line 84, in <module>
+    models.RS_hyperparam_tuning_training(train_loader, test_loader, validation_loader, model_type, learning_rate, epochs, log_directory, patience, device)
+  File "/eejit/home/hausw001/HybGGM/hybGGM_test/src/model/models.py", line 390, in RS_hyperparam_tuning_training
+    train.RS_train_test_model(model, train_loader, test_loader, lr_rate, def_epochs, log_dir, patience, device, writer=writer)
+  File "/eejit/home/hausw001/HybGGM/hybGGM_test/src/model/train.py", line 154, in RS_train_test_model
+    outputs = model(inputs)
+  File "/eejit/home/hausw001/.conda/envs/env_hybGGM/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/eejit/home/hausw001/.conda/envs/env_hybGGM/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/eejit/home/hausw001/HybGGM/hybGGM_test/src/model/models.py", line 114, in forward
+    d6 = self.decoder6(d5, x1)          # Continue with decoder and corresponding skip connection from encoder
+  File "/eejit/home/hausw001/.conda/envs/env_hybGGM/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/eejit/home/hausw001/.conda/envs/env_hybGGM/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/eejit/home/hausw001/HybGGM/hybGGM_test/src/model/models.py", line 63, in forward
+    x = self.conv(x)
+  File "/eejit/home/hausw001/.conda/envs/env_hybGGM/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/eejit/home/hausw001/.conda/envs/env_hybGGM/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/eejit/home/hausw001/HybGGM/hybGGM_test/src/model/models.py", line 26, in forward
+    x = self.relu(self.bn2(self.conv2(x)))
+  File "/eejit/home/hausw001/.conda/envs/env_hybGGM/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1736, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/eejit/home/hausw001/.conda/envs/env_hybGGM/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1747, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/eejit/home/hausw001/.conda/envs/env_hybGGM/lib/python3.10/site-packages/torch/nn/modules/batchnorm.py", line 193, in forward
+    return F.batch_norm(
+  File "/eejit/home/hausw001/.conda/envs/env_hybGGM/lib/python3.10/site-packages/torch/nn/functional.py", line 2812, in batch_norm
+    return torch.batch_norm(
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 254.00 MiB. GPU 0 has a total capacity of 10.90 GiB of which 11.31 MiB is free. Including non-PyTorch memory, this process has 10.89 GiB memory in use. Of the allocated memory 10.60 GiB is allocated by PyTorch, and 141.53 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)

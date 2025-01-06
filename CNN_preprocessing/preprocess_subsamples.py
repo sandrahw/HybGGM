@@ -7,10 +7,10 @@ import xarray as xr
 # save_dir = pl.Path('./saves')
 # out_dir = pl.Path('./saves')
 tile_example_path = r'C:\Users\hausw001\surfdrive - Hauswirth, S.M. (Sandra)@surfdrive.surf.nl\Data\GLOBGM\input\tiles_input\tile_048-163\transient'
-save_dir = pl.Path('%s/cnn_samples' % tile_example_path)
-out_dir = pl.Path('%s/cnn_samples' % tile_example_path)
+save_dir = pl.Path('%s/cnn_samples_600' % tile_example_path)
+out_dir = pl.Path('%s/cnn_samples_600' % tile_example_path)
 training_fraction = 0.1
-validation_fraction = 0.05
+validation_fraction = 0.1
 testing_fraction = 0.1
 
 samples_file = save_dir / 'samples.csv'

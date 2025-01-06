@@ -1,0 +1,106 @@
+SBATCH job
+Started 06/11/2024 20:53:41
+Working directory /eejit/home/hausw001/HybGGM/hybGGM_test
+UNet6 with 0.4 0.3 50 0.0001 16 small start at Wed Nov  6 20:53:42 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+best model already there
+rerun prediction
+Model type: UNet6, Epochs: 50, Learning rate: 0.0001, Batch size: 16
+load validation data
+load model
+run prediction
+load out_var
+save results/testing/small_area_048/360/UNet6_50_0.0001_16/y_pred_denorm_new.npy
+Hyperparameter tuning prediction finished
+prediction done
+UNet6 with 0.4 0.3 50 0.0001 16 small done at Wed Nov  6 20:54:22 CET 2024
+UNet6 with 0.4 0.3 50 0.0001 20 small start at Wed Nov  6 20:54:22 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+best model already there
+rerun prediction
+Model type: UNet6, Epochs: 50, Learning rate: 0.0001, Batch size: 20
+load validation data
+load model
+run prediction
+load out_var
+save results/testing/small_area_048/360/UNet6_50_0.0001_20/y_pred_denorm_new.npy
+Hyperparameter tuning prediction finished
+prediction done
+UNet6 with 0.4 0.3 50 0.0001 20 small done at Wed Nov  6 20:55:05 CET 2024
+UNet6 with 0.4 0.3 50 0.0001 32 small start at Wed Nov  6 20:55:05 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+best model already there
+rerun prediction
+Model type: UNet6, Epochs: 50, Learning rate: 0.0001, Batch size: 32
+load validation data
+load model
+run prediction
+load out_var
+save results/testing/small_area_048/360/UNet6_50_0.0001_32/y_pred_denorm_new.npy
+Hyperparameter tuning prediction finished
+prediction done
+UNet6 with 0.4 0.3 50 0.0001 32 small done at Wed Nov  6 20:55:49 CET 2024
+UNet6 with 0.4 0.3 50 0.0001 64 small start at Wed Nov  6 20:55:49 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+best model already there
+rerun prediction
+Model type: UNet6, Epochs: 50, Learning rate: 0.0001, Batch size: 64
+load validation data
+load model
+run prediction
+load out_var
+save results/testing/small_area_048/360/UNet6_50_0.0001_64/y_pred_denorm_new.npy
+Hyperparameter tuning prediction finished
+prediction done
+UNet6 with 0.4 0.3 50 0.0001 64 small done at Wed Nov  6 20:56:23 CET 2024
+UNet6 with 0.4 0.3 50 0.0001 128 small start at Wed Nov  6 20:56:23 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+best model already there
+rerun prediction
+Model type: UNet6, Epochs: 50, Learning rate: 0.0001, Batch size: 128
+load validation data
+load model
+run prediction
+load out_var
+save results/testing/small_area_048/360/UNet6_50_0.0001_128/y_pred_denorm_new.npy
+Hyperparameter tuning prediction finished
+prediction done
+UNet6 with 0.4 0.3 50 0.0001 128 small done at Wed Nov  6 20:57:11 CET 2024
+UNet6 with 0.4 0.3 50 0.0001 256 small start at Wed Nov  6 20:57:11 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+best model already there
+rerun prediction
+Model type: UNet6, Epochs: 50, Learning rate: 0.0001, Batch size: 256
+load validation data
+load model
+run prediction
+load out_var
+save results/testing/small_area_048/360/UNet6_50_0.0001_256/y_pred_denorm_new.npy
+Hyperparameter tuning prediction finished
+prediction done
+UNet6 with 0.4 0.3 50 0.0001 256 small done at Wed Nov  6 20:57:53 CET 2024
+SBATCH job finished

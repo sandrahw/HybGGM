@@ -9,8 +9,8 @@ import xarray as xr
 # out_dir = pl.Path('./saves')
 tile_example_path = r'C:\Users\hausw001\surfdrive - Hauswirth, S.M. (Sandra)@surfdrive.surf.nl\Data\GLOBGM\input\tiles_input\tile_048-163\transient'
 target_example_path = r'C:\Users\hausw001\surfdrive - Hauswirth, S.M. (Sandra)@surfdrive.surf.nl\Data\GLOBGM\output\transient_1958-2015'
-save_dir = pl.Path('%s/cnn_samples' % tile_example_path)
-out_dir = pl.Path('%s/cnn_samples' % tile_example_path)
+save_dir = pl.Path('%s/cnn_samples_600' % tile_example_path)
+out_dir = pl.Path('%s/cnn_samples_600' % tile_example_path)
 input_dir = pl.Path('%s/netcdf_maps' % tile_example_path)
 target_dir = pl.Path('%s/netcdf' % target_example_path)
 subsets = ['training', 'validation', 'testing']
@@ -38,7 +38,7 @@ for subset in subsets[:]:
     samples_file = save_dir / f'{subset}_samples.csv'
     samples = pd.read_csv(samples_file, index_col=0, parse_dates=['date', 'prev_date'])
 
-    for param in target_monthly[:]:
+    for param in target_monthly[:1]:
             input_files = [f for f in target_dir.glob('%s*'%param) if f.is_file()]
 
             sample_arrays = []
@@ -114,7 +114,7 @@ for subset in subsets[:]:
         array_out.parent.mkdir(parents=True, exist_ok=True)
         np.save(array_out, array)
 
-    for param in params_initial[:1]:
+    for param in params_initial[:]:
         print(param)
         # input_file = [f for f in input_dir.glob('%s.nc'%param) if f.is_file()] #initial files are only one file
         da = xr.open_dataarray('%s/%s.nc'%(input_dir, param))

@@ -1,0 +1,56 @@
+SBATCH job
+Started 07/11/2024 14:03:38
+Working directory /eejit/home/hausw001/HybGGM/hybGGM_test
+UNet6 with 0.4 0.3 50 0.0001 5 large start at Thu Nov  7 14:03:40 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.1226
+Validation Score:  0.12264498472213745
+UNet6 with 0.4 0.3 50 0.0001 5 large done at Thu Nov  7 14:06:06 CET 2024
+UNet6 with 0.4 0.3 50 0.001 5 large start at Thu Nov  7 14:06:06 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Folder and files dont exist, move to next hyperparam setup results/testing/larger_area_048/600/UNet6_50_0.001_5
+UNet6 with 0.4 0.3 50 0.001 5 large done at Thu Nov  7 14:06:11 CET 2024
+UNet6 with 0.4 0.3 50 0.0001 10 large start at Thu Nov  7 14:06:11 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.0622
+Validation Score:  0.062152141332626344
+UNet6 with 0.4 0.3 50 0.0001 10 large done at Thu Nov  7 14:07:52 CET 2024
+UNet6 with 0.4 0.3 50 0.001 10 large start at Thu Nov  7 14:07:52 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Folder and files dont exist, move to next hyperparam setup results/testing/larger_area_048/600/UNet6_50_0.001_10
+UNet6 with 0.4 0.3 50 0.001 10 large done at Thu Nov  7 14:07:57 CET 2024
+UNet6 with 0.4 0.3 50 0.0001 20 large start at Thu Nov  7 14:07:57 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.0326
+Validation Score:  0.03259351849555969
+UNet6 with 0.4 0.3 50 0.0001 20 large done at Thu Nov  7 14:09:38 CET 2024
+UNet6 with 0.4 0.3 50 0.001 20 large start at Thu Nov  7 14:09:38 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.0353
+Validation Score:  0.03525307476520538
+UNet6 with 0.4 0.3 50 0.001 20 large done at Thu Nov  7 14:11:22 CET 2024
+UNet6 with 0.4 0.3 50 0.0001 50 large start at Thu Nov  7 14:11:22 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.0331
+Validation Score:  0.03305444121360779
+UNet6 with 0.4 0.3 50 0.0001 50 large done at Thu Nov  7 14:13:05 CET 2024
+UNet6 with 0.4 0.3 50 0.001 50 large start at Thu Nov  7 14:13:05 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Folder and files dont exist, move to next hyperparam setup results/testing/larger_area_048/600/UNet6_50_0.001_50
+UNet6 with 0.4 0.3 50 0.001 50 large done at Thu Nov  7 14:13:09 CET 2024
+SBATCH job finished

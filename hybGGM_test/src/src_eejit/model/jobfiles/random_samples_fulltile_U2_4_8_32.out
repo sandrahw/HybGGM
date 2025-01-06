@@ -1,0 +1,947 @@
+SBATCH job
+Started 17/11/2024 09:56:31
+Working directory /eejit/home/hausw001/HybGGM/hybGGM_test
+expandable_segments:True
+UNet2 with 1 50 0.0001 4 180 start at Sun Nov 17 09:56:35 CET 2024
+CUDA is available! Using GPU.
+device: cuda
+define sample path, tile, number of epochs, learning rate and batch size, etc
+create log directory for tensorboard logs
+check if testing prediction files are already there and if so stop the process
+Hyperparameter tuning already done and prediction files are there
+check if subsamples are already created otherwise create them
+subsamples already created
+check if input and target data subsamples are already stacked together otherwise stack them together
+subsamples already stacked together
+check if prediction submodel is already there and if so continue with full prediction
+load model
+prediction sample 0
+run full prediction
+prediction sample 0 done
+prediction sample 1
+run full prediction
+prediction sample 1 done
+prediction sample 2
+run full prediction
+prediction sample 2 done
+prediction sample 3
+run full prediction
+prediction sample 3 done
+prediction sample 4
+run full prediction
+prediction sample 4 done
+prediction sample 5
+run full prediction
+prediction sample 5 done
+prediction sample 6
+run full prediction
+prediction sample 6 done
+prediction sample 7
+run full prediction
+prediction sample 7 done
+prediction sample 8
+run full prediction
+prediction sample 8 done
+prediction sample 9
+run full prediction
+prediction sample 9 done
+prediction sample 10
+run full prediction
+prediction sample 10 done
+prediction sample 11
+run full prediction
+prediction sample 11 done
+prediction sample 12
+run full prediction
+prediction sample 12 done
+prediction sample 13
+run full prediction
+prediction sample 13 done
+prediction sample 14
+run full prediction
+prediction sample 14 done
+prediction sample 15
+run full prediction
+prediction sample 15 done
+prediction sample 16
+run full prediction
+prediction sample 16 done
+prediction sample 17
+run full prediction
+prediction sample 17 done
+prediction sample 18
+run full prediction
+prediction sample 18 done
+prediction sample 19
+run full prediction
+prediction sample 19 done
+prediction sample 20
+run full prediction
+prediction sample 20 done
+prediction sample 21
+run full prediction
+prediction sample 21 done
+prediction sample 22
+run full prediction
+prediction sample 22 done
+prediction sample 23
+run full prediction
+prediction sample 23 done
+prediction sample 24
+run full prediction
+prediction sample 24 done
+prediction sample 25
+run full prediction
+prediction sample 25 done
+prediction sample 26
+run full prediction
+prediction sample 26 done
+prediction sample 27
+run full prediction
+prediction sample 27 done
+prediction sample 28
+run full prediction
+prediction sample 28 done
+prediction sample 29
+run full prediction
+prediction sample 29 done
+prediction sample 30
+run full prediction
+prediction sample 30 done
+prediction sample 31
+run full prediction
+prediction sample 31 done
+prediction sample 32
+run full prediction
+prediction sample 32 done
+prediction sample 33
+run full prediction
+prediction sample 33 done
+prediction sample 34
+run full prediction
+prediction sample 34 done
+prediction sample 35
+run full prediction
+prediction sample 35 done
+prediction sample 36
+run full prediction
+prediction sample 36 done
+prediction sample 37
+run full prediction
+prediction sample 37 done
+prediction sample 38
+run full prediction
+prediction sample 38 done
+prediction sample 39
+run full prediction
+prediction sample 39 done
+prediction sample 40
+run full prediction
+prediction sample 40 done
+prediction sample 41
+run full prediction
+prediction sample 41 done
+prediction sample 42
+run full prediction
+prediction sample 42 done
+prediction sample 43
+run full prediction
+prediction sample 43 done
+prediction sample 44
+run full prediction
+prediction sample 44 done
+prediction sample 45
+run full prediction
+prediction sample 45 done
+prediction sample 46
+run full prediction
+prediction sample 46 done
+prediction sample 47
+run full prediction
+prediction sample 47 done
+prediction sample 48
+run full prediction
+prediction sample 48 done
+prediction sample 49
+run full prediction
+prediction sample 49 done
+prediction sample 50
+run full prediction
+prediction sample 50 done
+prediction sample 51
+run full prediction
+prediction sample 51 done
+prediction sample 52
+run full prediction
+prediction sample 52 done
+prediction sample 53
+run full prediction
+prediction sample 53 done
+prediction sample 54
+run full prediction
+prediction sample 54 done
+prediction sample 55
+run full prediction
+prediction sample 55 done
+prediction sample 56
+run full prediction
+prediction sample 56 done
+prediction sample 57
+run full prediction
+prediction sample 57 done
+prediction sample 58
+run full prediction
+prediction sample 58 done
+prediction sample 59
+run full prediction
+prediction sample 59 done
+prediction sample 60
+run full prediction
+prediction sample 60 done
+prediction sample 61
+run full prediction
+prediction sample 61 done
+prediction sample 62
+run full prediction
+prediction sample 62 done
+prediction sample 63
+run full prediction
+prediction sample 63 done
+prediction sample 64
+run full prediction
+prediction sample 64 done
+prediction sample 65
+run full prediction
+prediction sample 65 done
+prediction sample 66
+run full prediction
+prediction sample 66 done
+prediction sample 67
+run full prediction
+prediction sample 67 done
+prediction sample 68
+run full prediction
+prediction sample 68 done
+prediction sample 69
+run full prediction
+prediction sample 69 done
+prediction sample 70
+run full prediction
+prediction sample 70 done
+prediction sample 71
+run full prediction
+prediction sample 71 done
+prediction sample 72
+run full prediction
+prediction sample 72 done
+prediction sample 73
+run full prediction
+prediction sample 73 done
+prediction sample 74
+run full prediction
+prediction sample 74 done
+prediction sample 75
+run full prediction
+prediction sample 75 done
+prediction sample 76
+run full prediction
+prediction sample 76 done
+prediction sample 77
+run full prediction
+prediction sample 77 done
+prediction sample 78
+run full prediction
+prediction sample 78 done
+prediction sample 79
+run full prediction
+prediction sample 79 done
+prediction sample 80
+run full prediction
+prediction sample 80 done
+prediction sample 81
+run full prediction
+prediction sample 81 done
+prediction sample 82
+run full prediction
+prediction sample 82 done
+prediction sample 83
+run full prediction
+prediction sample 83 done
+prediction sample 84
+run full prediction
+prediction sample 84 done
+prediction sample 85
+run full prediction
+prediction sample 85 done
+prediction sample 86
+run full prediction
+prediction sample 86 done
+prediction sample 87
+run full prediction
+prediction sample 87 done
+prediction sample 88
+run full prediction
+prediction sample 88 done
+prediction sample 89
+run full prediction
+prediction sample 89 done
+prediction sample 90
+run full prediction
+prediction sample 90 done
+prediction sample 91
+run full prediction
+prediction sample 91 done
+prediction sample 92
+run full prediction
+prediction sample 92 done
+prediction sample 93
+run full prediction
+prediction sample 93 done
+prediction sample 94
+run full prediction
+prediction sample 94 done
+prediction sample 95
+run full prediction
+prediction sample 95 done
+prediction sample 96
+run full prediction
+prediction sample 96 done
+prediction sample 97
+run full prediction
+prediction sample 97 done
+prediction sample 98
+run full prediction
+prediction sample 98 done
+prediction sample 99
+run full prediction
+prediction sample 99 done
+UNet2 with 1 50 0.0001 4 180 done at Sun Nov 17 10:17:56 CET 2024
+UNet2 with 1 50 0.0001 8 180 start at Sun Nov 17 10:17:56 CET 2024
+CUDA is available! Using GPU.
+device: cuda
+define sample path, tile, number of epochs, learning rate and batch size, etc
+create log directory for tensorboard logs
+check if testing prediction files are already there and if so stop the process
+Hyperparameter tuning already done and prediction files are there
+check if subsamples are already created otherwise create them
+subsamples already created
+check if input and target data subsamples are already stacked together otherwise stack them together
+subsamples already stacked together
+check if prediction submodel is already there and if so continue with full prediction
+load model
+prediction sample 0
+run full prediction
+prediction sample 0 done
+prediction sample 1
+run full prediction
+prediction sample 1 done
+prediction sample 2
+run full prediction
+prediction sample 2 done
+prediction sample 3
+run full prediction
+prediction sample 3 done
+prediction sample 4
+run full prediction
+prediction sample 4 done
+prediction sample 5
+run full prediction
+prediction sample 5 done
+prediction sample 6
+run full prediction
+prediction sample 6 done
+prediction sample 7
+run full prediction
+prediction sample 7 done
+prediction sample 8
+run full prediction
+prediction sample 8 done
+prediction sample 9
+run full prediction
+prediction sample 9 done
+prediction sample 10
+run full prediction
+prediction sample 10 done
+prediction sample 11
+run full prediction
+prediction sample 11 done
+prediction sample 12
+run full prediction
+prediction sample 12 done
+prediction sample 13
+run full prediction
+prediction sample 13 done
+prediction sample 14
+run full prediction
+prediction sample 14 done
+prediction sample 15
+run full prediction
+prediction sample 15 done
+prediction sample 16
+run full prediction
+prediction sample 16 done
+prediction sample 17
+run full prediction
+prediction sample 17 done
+prediction sample 18
+run full prediction
+prediction sample 18 done
+prediction sample 19
+run full prediction
+prediction sample 19 done
+prediction sample 20
+run full prediction
+prediction sample 20 done
+prediction sample 21
+run full prediction
+prediction sample 21 done
+prediction sample 22
+run full prediction
+prediction sample 22 done
+prediction sample 23
+run full prediction
+prediction sample 23 done
+prediction sample 24
+run full prediction
+prediction sample 24 done
+prediction sample 25
+run full prediction
+prediction sample 25 done
+prediction sample 26
+run full prediction
+prediction sample 26 done
+prediction sample 27
+run full prediction
+prediction sample 27 done
+prediction sample 28
+run full prediction
+prediction sample 28 done
+prediction sample 29
+run full prediction
+prediction sample 29 done
+prediction sample 30
+run full prediction
+prediction sample 30 done
+prediction sample 31
+run full prediction
+prediction sample 31 done
+prediction sample 32
+run full prediction
+prediction sample 32 done
+prediction sample 33
+run full prediction
+prediction sample 33 done
+prediction sample 34
+run full prediction
+prediction sample 34 done
+prediction sample 35
+run full prediction
+prediction sample 35 done
+prediction sample 36
+run full prediction
+prediction sample 36 done
+prediction sample 37
+run full prediction
+prediction sample 37 done
+prediction sample 38
+run full prediction
+prediction sample 38 done
+prediction sample 39
+run full prediction
+prediction sample 39 done
+prediction sample 40
+run full prediction
+prediction sample 40 done
+prediction sample 41
+run full prediction
+prediction sample 41 done
+prediction sample 42
+run full prediction
+prediction sample 42 done
+prediction sample 43
+run full prediction
+prediction sample 43 done
+prediction sample 44
+run full prediction
+prediction sample 44 done
+prediction sample 45
+run full prediction
+prediction sample 45 done
+prediction sample 46
+run full prediction
+prediction sample 46 done
+prediction sample 47
+run full prediction
+prediction sample 47 done
+prediction sample 48
+run full prediction
+prediction sample 48 done
+prediction sample 49
+run full prediction
+prediction sample 49 done
+prediction sample 50
+run full prediction
+prediction sample 50 done
+prediction sample 51
+run full prediction
+prediction sample 51 done
+prediction sample 52
+run full prediction
+prediction sample 52 done
+prediction sample 53
+run full prediction
+prediction sample 53 done
+prediction sample 54
+run full prediction
+prediction sample 54 done
+prediction sample 55
+run full prediction
+prediction sample 55 done
+prediction sample 56
+run full prediction
+prediction sample 56 done
+prediction sample 57
+run full prediction
+prediction sample 57 done
+prediction sample 58
+run full prediction
+prediction sample 58 done
+prediction sample 59
+run full prediction
+prediction sample 59 done
+prediction sample 60
+run full prediction
+prediction sample 60 done
+prediction sample 61
+run full prediction
+prediction sample 61 done
+prediction sample 62
+run full prediction
+prediction sample 62 done
+prediction sample 63
+run full prediction
+prediction sample 63 done
+prediction sample 64
+run full prediction
+prediction sample 64 done
+prediction sample 65
+run full prediction
+prediction sample 65 done
+prediction sample 66
+run full prediction
+prediction sample 66 done
+prediction sample 67
+run full prediction
+prediction sample 67 done
+prediction sample 68
+run full prediction
+prediction sample 68 done
+prediction sample 69
+run full prediction
+prediction sample 69 done
+prediction sample 70
+run full prediction
+prediction sample 70 done
+prediction sample 71
+run full prediction
+prediction sample 71 done
+prediction sample 72
+run full prediction
+prediction sample 72 done
+prediction sample 73
+run full prediction
+prediction sample 73 done
+prediction sample 74
+run full prediction
+prediction sample 74 done
+prediction sample 75
+run full prediction
+prediction sample 75 done
+prediction sample 76
+run full prediction
+prediction sample 76 done
+prediction sample 77
+run full prediction
+prediction sample 77 done
+prediction sample 78
+run full prediction
+prediction sample 78 done
+prediction sample 79
+run full prediction
+prediction sample 79 done
+prediction sample 80
+run full prediction
+prediction sample 80 done
+prediction sample 81
+run full prediction
+prediction sample 81 done
+prediction sample 82
+run full prediction
+prediction sample 82 done
+prediction sample 83
+run full prediction
+prediction sample 83 done
+prediction sample 84
+run full prediction
+prediction sample 84 done
+prediction sample 85
+run full prediction
+prediction sample 85 done
+prediction sample 86
+run full prediction
+prediction sample 86 done
+prediction sample 87
+run full prediction
+prediction sample 87 done
+prediction sample 88
+run full prediction
+prediction sample 88 done
+prediction sample 89
+run full prediction
+prediction sample 89 done
+prediction sample 90
+run full prediction
+prediction sample 90 done
+prediction sample 91
+run full prediction
+prediction sample 91 done
+prediction sample 92
+run full prediction
+prediction sample 92 done
+prediction sample 93
+run full prediction
+prediction sample 93 done
+prediction sample 94
+run full prediction
+prediction sample 94 done
+prediction sample 95
+run full prediction
+prediction sample 95 done
+prediction sample 96
+run full prediction
+prediction sample 96 done
+prediction sample 97
+run full prediction
+prediction sample 97 done
+prediction sample 98
+run full prediction
+prediction sample 98 done
+prediction sample 99
+run full prediction
+prediction sample 99 done
+UNet2 with 1 50 0.0001 8 180 done at Sun Nov 17 10:26:00 CET 2024
+UNet2 with 1 50 0.0001 32 180 start at Sun Nov 17 10:26:00 CET 2024
+CUDA is available! Using GPU.
+device: cuda
+define sample path, tile, number of epochs, learning rate and batch size, etc
+create log directory for tensorboard logs
+check if testing prediction files are already there and if so stop the process
+Hyperparameter tuning already done and prediction files are there
+check if subsamples are already created otherwise create them
+subsamples already created
+check if input and target data subsamples are already stacked together otherwise stack them together
+subsamples already stacked together
+check if prediction submodel is already there and if so continue with full prediction
+load model
+prediction sample 0
+run full prediction
+prediction sample 0 done
+prediction sample 1
+run full prediction
+prediction sample 1 done
+prediction sample 2
+run full prediction
+prediction sample 2 done
+prediction sample 3
+run full prediction
+prediction sample 3 done
+prediction sample 4
+run full prediction
+prediction sample 4 done
+prediction sample 5
+run full prediction
+prediction sample 5 done
+prediction sample 6
+run full prediction
+prediction sample 6 done
+prediction sample 7
+run full prediction
+prediction sample 7 done
+prediction sample 8
+run full prediction
+prediction sample 8 done
+prediction sample 9
+run full prediction
+prediction sample 9 done
+prediction sample 10
+run full prediction
+prediction sample 10 done
+prediction sample 11
+run full prediction
+prediction sample 11 done
+prediction sample 12
+run full prediction
+prediction sample 12 done
+prediction sample 13
+run full prediction
+prediction sample 13 done
+prediction sample 14
+run full prediction
+prediction sample 14 done
+prediction sample 15
+run full prediction
+prediction sample 15 done
+prediction sample 16
+run full prediction
+prediction sample 16 done
+prediction sample 17
+run full prediction
+prediction sample 17 done
+prediction sample 18
+run full prediction
+prediction sample 18 done
+prediction sample 19
+run full prediction
+prediction sample 19 done
+prediction sample 20
+run full prediction
+prediction sample 20 done
+prediction sample 21
+run full prediction
+prediction sample 21 done
+prediction sample 22
+run full prediction
+prediction sample 22 done
+prediction sample 23
+run full prediction
+prediction sample 23 done
+prediction sample 24
+run full prediction
+prediction sample 24 done
+prediction sample 25
+run full prediction
+prediction sample 25 done
+prediction sample 26
+run full prediction
+prediction sample 26 done
+prediction sample 27
+run full prediction
+prediction sample 27 done
+prediction sample 28
+run full prediction
+prediction sample 28 done
+prediction sample 29
+run full prediction
+prediction sample 29 done
+prediction sample 30
+run full prediction
+prediction sample 30 done
+prediction sample 31
+run full prediction
+prediction sample 31 done
+prediction sample 32
+run full prediction
+prediction sample 32 done
+prediction sample 33
+run full prediction
+prediction sample 33 done
+prediction sample 34
+run full prediction
+prediction sample 34 done
+prediction sample 35
+run full prediction
+prediction sample 35 done
+prediction sample 36
+run full prediction
+prediction sample 36 done
+prediction sample 37
+run full prediction
+prediction sample 37 done
+prediction sample 38
+run full prediction
+prediction sample 38 done
+prediction sample 39
+run full prediction
+prediction sample 39 done
+prediction sample 40
+run full prediction
+prediction sample 40 done
+prediction sample 41
+run full prediction
+prediction sample 41 done
+prediction sample 42
+run full prediction
+prediction sample 42 done
+prediction sample 43
+run full prediction
+prediction sample 43 done
+prediction sample 44
+run full prediction
+prediction sample 44 done
+prediction sample 45
+run full prediction
+prediction sample 45 done
+prediction sample 46
+run full prediction
+prediction sample 46 done
+prediction sample 47
+run full prediction
+prediction sample 47 done
+prediction sample 48
+run full prediction
+prediction sample 48 done
+prediction sample 49
+run full prediction
+prediction sample 49 done
+prediction sample 50
+run full prediction
+prediction sample 50 done
+prediction sample 51
+run full prediction
+prediction sample 51 done
+prediction sample 52
+run full prediction
+prediction sample 52 done
+prediction sample 53
+run full prediction
+prediction sample 53 done
+prediction sample 54
+run full prediction
+prediction sample 54 done
+prediction sample 55
+run full prediction
+prediction sample 55 done
+prediction sample 56
+run full prediction
+prediction sample 56 done
+prediction sample 57
+run full prediction
+prediction sample 57 done
+prediction sample 58
+run full prediction
+prediction sample 58 done
+prediction sample 59
+run full prediction
+prediction sample 59 done
+prediction sample 60
+run full prediction
+prediction sample 60 done
+prediction sample 61
+run full prediction
+prediction sample 61 done
+prediction sample 62
+run full prediction
+prediction sample 62 done
+prediction sample 63
+run full prediction
+prediction sample 63 done
+prediction sample 64
+run full prediction
+prediction sample 64 done
+prediction sample 65
+run full prediction
+prediction sample 65 done
+prediction sample 66
+run full prediction
+prediction sample 66 done
+prediction sample 67
+run full prediction
+prediction sample 67 done
+prediction sample 68
+run full prediction
+prediction sample 68 done
+prediction sample 69
+run full prediction
+prediction sample 69 done
+prediction sample 70
+run full prediction
+prediction sample 70 done
+prediction sample 71
+run full prediction
+prediction sample 71 done
+prediction sample 72
+run full prediction
+prediction sample 72 done
+prediction sample 73
+run full prediction
+prediction sample 73 done
+prediction sample 74
+run full prediction
+prediction sample 74 done
+prediction sample 75
+run full prediction
+prediction sample 75 done
+prediction sample 76
+run full prediction
+prediction sample 76 done
+prediction sample 77
+run full prediction
+prediction sample 77 done
+prediction sample 78
+run full prediction
+prediction sample 78 done
+prediction sample 79
+run full prediction
+prediction sample 79 done
+prediction sample 80
+run full prediction
+prediction sample 80 done
+prediction sample 81
+run full prediction
+prediction sample 81 done
+prediction sample 82
+run full prediction
+prediction sample 82 done
+prediction sample 83
+run full prediction
+prediction sample 83 done
+prediction sample 84
+run full prediction
+prediction sample 84 done
+prediction sample 85
+run full prediction
+prediction sample 85 done
+prediction sample 86
+run full prediction
+prediction sample 86 done
+prediction sample 87
+run full prediction
+prediction sample 87 done
+prediction sample 88
+run full prediction
+prediction sample 88 done
+prediction sample 89
+run full prediction
+prediction sample 89 done
+prediction sample 90
+run full prediction
+prediction sample 90 done
+prediction sample 91
+run full prediction
+prediction sample 91 done
+prediction sample 92
+run full prediction
+prediction sample 92 done
+prediction sample 93
+run full prediction
+prediction sample 93 done
+prediction sample 94
+run full prediction
+prediction sample 94 done
+prediction sample 95
+run full prediction
+prediction sample 95 done
+prediction sample 96
+run full prediction
+prediction sample 96 done
+prediction sample 97
+run full prediction
+prediction sample 97 done
+prediction sample 98
+run full prediction
+prediction sample 98 done
+prediction sample 99
+run full prediction
+prediction sample 99 done
+UNet2 with 1 50 0.0001 32 180 done at Sun Nov 17 10:33:36 CET 2024
+SBATCH job finished

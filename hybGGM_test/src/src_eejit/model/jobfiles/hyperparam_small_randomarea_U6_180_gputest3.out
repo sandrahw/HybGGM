@@ -1,0 +1,115 @@
+SBATCH job
+Started 09/11/2024 09:19:30
+Working directory /eejit/home/hausw001/HybGGM/hybGGM_test
+UNet6 with 1 50 0.0001 2 180 start at Sat Nov  9 09:19:31 CET 2024
+CUDA is available! Using GPU.
+device: cuda
+Hyperparameter tuning not done yet - start process
+data testing folder already prepared - reloading data
+Hyperparameter tuning definition and start
+training model: UNet6, learning rate: 0.0001, epochs: 50, batch size: 2
+Epoch 1/50
+Epoch [1/50], Training Loss: nan, Testing Loss: nan
+Epoch 2/50
+Epoch [2/50], Training Loss: nan, Testing Loss: nan
+Epoch 3/50
+Epoch [3/50], Training Loss: nan, Testing Loss: nan
+Epoch 4/50
+Epoch [4/50], Training Loss: nan, Testing Loss: nan
+Epoch 5/50
+Epoch [5/50], Training Loss: nan, Testing Loss: nan
+Epoch 6/50
+Epoch [6/50], Training Loss: nan, Testing Loss: nan
+Epoch 7/50
+Epoch [7/50], Training Loss: nan, Testing Loss: nan
+Epoch 8/50
+Epoch [8/50], Training Loss: nan, Testing Loss: nan
+Epoch 9/50
+Epoch [9/50], Training Loss: nan, Testing Loss: nan
+Epoch 10/50
+Epoch [10/50], Training Loss: nan, Testing Loss: nan
+Epoch 11/50
+Epoch [11/50], Training Loss: nan, Testing Loss: nan
+Epoch 12/50
+Epoch [12/50], Training Loss: nan, Testing Loss: nan
+Epoch 13/50
+Epoch [13/50], Training Loss: nan, Testing Loss: nan
+Epoch 14/50
+Epoch [14/50], Training Loss: nan, Testing Loss: nan
+Epoch 15/50
+Epoch [15/50], Training Loss: nan, Testing Loss: nan
+Epoch 16/50
+Epoch [16/50], Training Loss: nan, Testing Loss: nan
+Epoch 17/50
+Epoch [17/50], Training Loss: nan, Testing Loss: nan
+Epoch 18/50
+Epoch [18/50], Training Loss: nan, Testing Loss: nan
+Epoch 19/50
+Epoch [19/50], Training Loss: nan, Testing Loss: nan
+Epoch 20/50
+Epoch [20/50], Training Loss: nan, Testing Loss: nan
+Epoch 21/50
+Epoch [21/50], Training Loss: nan, Testing Loss: nan
+Epoch 22/50
+Epoch [22/50], Training Loss: nan, Testing Loss: nan
+Epoch 23/50
+Epoch [23/50], Training Loss: nan, Testing Loss: nan
+Epoch 24/50
+Epoch [24/50], Training Loss: nan, Testing Loss: nan
+Epoch 25/50
+Epoch [25/50], Training Loss: nan, Testing Loss: nan
+Epoch 26/50
+Epoch [26/50], Training Loss: nan, Testing Loss: nan
+Epoch 27/50
+Epoch [27/50], Training Loss: nan, Testing Loss: nan
+Epoch 28/50
+Epoch [28/50], Training Loss: nan, Testing Loss: nan
+Epoch 29/50
+Epoch [29/50], Training Loss: nan, Testing Loss: nan
+Epoch 30/50
+Epoch [30/50], Training Loss: nan, Testing Loss: nan
+Epoch 31/50
+Epoch [31/50], Training Loss: nan, Testing Loss: nan
+Epoch 32/50
+Epoch [32/50], Training Loss: nan, Testing Loss: nan
+Epoch 33/50
+Epoch [33/50], Training Loss: nan, Testing Loss: nan
+Epoch 34/50
+Epoch [34/50], Training Loss: nan, Testing Loss: nan
+Epoch 35/50
+Epoch [35/50], Training Loss: nan, Testing Loss: nan
+Epoch 36/50
+Epoch [36/50], Training Loss: nan, Testing Loss: nan
+Epoch 37/50
+Epoch [37/50], Training Loss: nan, Testing Loss: nan
+Epoch 38/50
+Epoch [38/50], Training Loss: nan, Testing Loss: nan
+Epoch 39/50
+Epoch [39/50], Training Loss: nan, Testing Loss: nan
+Epoch 40/50
+Epoch [40/50], Training Loss: nan, Testing Loss: nan
+Epoch 41/50
+Epoch [41/50], Training Loss: nan, Testing Loss: nan
+Epoch 42/50
+Epoch [42/50], Training Loss: nan, Testing Loss: nan
+Epoch 43/50
+Epoch [43/50], Training Loss: nan, Testing Loss: nan
+Epoch 44/50
+Epoch [44/50], Training Loss: nan, Testing Loss: nan
+Epoch 45/50
+Epoch [45/50], Training Loss: nan, Testing Loss: nan
+Epoch 46/50
+Epoch [46/50], Training Loss: nan, Testing Loss: nan
+Epoch 47/50
+Epoch [47/50], Training Loss: nan, Testing Loss: nan
+Epoch 48/50
+Epoch [48/50], Training Loss: nan, Testing Loss: nan
+Epoch 49/50
+Epoch [49/50], Training Loss: nan, Testing Loss: nan
+Epoch 50/50
+Epoch [50/50], Training Loss: nan, Testing Loss: nan
+Val Loss: nan
+done with hyperparameter tuning training
+prediction model: UNet6, learning rate: 0.0001, epochs: 50, batch size: 2
+UNet6 with 1 50 0.0001 2 180 done at Sat Nov  9 10:45:40 CET 2024
+SBATCH job finished

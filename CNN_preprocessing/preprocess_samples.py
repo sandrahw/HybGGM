@@ -9,12 +9,12 @@ import xarray as xr
 
 tile_example_path = r'C:\Users\hausw001\surfdrive - Hauswirth, S.M. (Sandra)@surfdrive.surf.nl\Data\GLOBGM\input\tiles_input\tile_048-163\transient'
 input_dir = pl.Path('%s/netcdf_maps' % tile_example_path)
-out_dir = pl.Path('%s/cnn_samples' % tile_example_path)
+out_dir = pl.Path('%s/cnn_samples_600' % tile_example_path)
 if not out_dir.exists():
     out_dir.mkdir(parents=True, exist_ok=True)
 
-tile_lat_size = 180
-tile_lon_size = 180
+tile_lat_size = 600#360#180
+tile_lon_size = 600#360#180
 
 #TODO: loop over all variables
 #TODO: guess not necessary relevant as every variable of the same tile should have same dimensions

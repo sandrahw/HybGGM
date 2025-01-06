@@ -61,6 +61,13 @@ if not os.path.exists(log_dir_fig):
 
 '''create mask (for land/ocean)'''
 map_tile = xr.open_dataset(r'..\data\temp\wtd.nc')
+
+test_map = map_tile.Band1[0, :, :]
+#flip array
+test_map = np.flip(test_map, 0)
+plt.imshow(test_map, cmap='viridis')
+
+
 map_cut = map_tile.sel(lat=slice(*lat_bounds), lon=slice(*lon_bounds))
 mask = map_cut.to_array().values
 # mask where everything that is nan is 0 and everything else is 1
