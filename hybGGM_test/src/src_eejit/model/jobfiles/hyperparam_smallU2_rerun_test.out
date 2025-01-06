@@ -1,0 +1,600 @@
+SBATCH job
+Started 06/11/2024 21:21:50
+Working directory /eejit/home/hausw001/HybGGM/hybGGM_test
+UNet2 with 0.4 0.3 10 0.0001 1 small start at Wed Nov  6 21:21:52 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+best model already there
+rerun prediction
+Model type: UNet2, Epochs: 10, Learning rate: 0.0001, Batch size: 1
+load validation data
+load model
+load out_var
+save results/testing/small_area_048_initialtesting/UNet2_10_0.0001_1/y_pred_denorm_new.npy
+Hyperparameter tuning prediction finished
+prediction done
+UNet2 with 0.4 0.3 10 0.0001 1 small done at Wed Nov  6 21:22:16 CET 2024
+UNet2 with 0.4 0.3 10 0.005 1 small start at Wed Nov  6 21:22:16 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+no best model found
+results/testing/small_area_048_initialtesting/UNet2_10_0.005_1/best_model.pth
+UNet2 with 0.4 0.3 10 0.005 1 small done at Wed Nov  6 21:22:20 CET 2024
+UNet2 with 0.4 0.3 10 0.001 1 small start at Wed Nov  6 21:22:20 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+best model already there
+rerun prediction
+Model type: UNet2, Epochs: 10, Learning rate: 0.001, Batch size: 1
+load validation data
+load model
+load out_var
+save results/testing/small_area_048_initialtesting/UNet2_10_0.001_1/y_pred_denorm_new.npy
+Hyperparameter tuning prediction finished
+prediction done
+UNet2 with 0.4 0.3 10 0.001 1 small done at Wed Nov  6 21:22:37 CET 2024
+UNet2 with 0.4 0.3 10 0.005 1 small start at Wed Nov  6 21:22:37 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+no best model found
+results/testing/small_area_048_initialtesting/UNet2_10_0.005_1/best_model.pth
+UNet2 with 0.4 0.3 10 0.005 1 small done at Wed Nov  6 21:22:41 CET 2024
+UNet2 with 0.4 0.3 10 0.0001 4 small start at Wed Nov  6 21:22:41 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+best model already there
+rerun prediction
+Model type: UNet2, Epochs: 10, Learning rate: 0.0001, Batch size: 4
+load validation data
+load model
+load out_var
+save results/testing/small_area_048_initialtesting/UNet2_10_0.0001_4/y_pred_denorm_new.npy
+Hyperparameter tuning prediction finished
+prediction done
+UNet2 with 0.4 0.3 10 0.0001 4 small done at Wed Nov  6 21:22:57 CET 2024
+UNet2 with 0.4 0.3 10 0.005 4 small start at Wed Nov  6 21:22:57 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+no best model found
+results/testing/small_area_048_initialtesting/UNet2_10_0.005_4/best_model.pth
+UNet2 with 0.4 0.3 10 0.005 4 small done at Wed Nov  6 21:23:03 CET 2024
+UNet2 with 0.4 0.3 10 0.001 4 small start at Wed Nov  6 21:23:03 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+best model already there
+rerun prediction
+Model type: UNet2, Epochs: 10, Learning rate: 0.001, Batch size: 4
+load validation data
+load model
+load out_var
+save results/testing/small_area_048_initialtesting/UNet2_10_0.001_4/y_pred_denorm_new.npy
+Hyperparameter tuning prediction finished
+prediction done
+UNet2 with 0.4 0.3 10 0.001 4 small done at Wed Nov  6 21:23:18 CET 2024
+UNet2 with 0.4 0.3 10 0.005 4 small start at Wed Nov  6 21:23:18 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+no best model found
+results/testing/small_area_048_initialtesting/UNet2_10_0.005_4/best_model.pth
+UNet2 with 0.4 0.3 10 0.005 4 small done at Wed Nov  6 21:23:21 CET 2024
+UNet2 with 0.4 0.3 10 0.0001 10 small start at Wed Nov  6 21:23:21 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+no best model found
+results/testing/small_area_048_initialtesting/UNet2_10_0.0001_10/best_model.pth
+UNet2 with 0.4 0.3 10 0.0001 10 small done at Wed Nov  6 21:23:25 CET 2024
+UNet2 with 0.4 0.3 10 0.005 10 small start at Wed Nov  6 21:23:25 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+no best model found
+results/testing/small_area_048_initialtesting/UNet2_10_0.005_10/best_model.pth
+UNet2 with 0.4 0.3 10 0.005 10 small done at Wed Nov  6 21:23:29 CET 2024
+UNet2 with 0.4 0.3 10 0.001 10 small start at Wed Nov  6 21:23:29 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+no best model found
+results/testing/small_area_048_initialtesting/UNet2_10_0.001_10/best_model.pth
+UNet2 with 0.4 0.3 10 0.001 10 small done at Wed Nov  6 21:23:33 CET 2024
+UNet2 with 0.4 0.3 10 0.005 10 small start at Wed Nov  6 21:23:33 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+no best model found
+results/testing/small_area_048_initialtesting/UNet2_10_0.005_10/best_model.pth
+UNet2 with 0.4 0.3 10 0.005 10 small done at Wed Nov  6 21:23:37 CET 2024
+UNet2 with 0.4 0.3 20 0.0001 1 small start at Wed Nov  6 21:23:37 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+best model already there
+rerun prediction
+Model type: UNet2, Epochs: 20, Learning rate: 0.0001, Batch size: 1
+load validation data
+load model
+load out_var
+save results/testing/small_area_048_initialtesting/UNet2_20_0.0001_1/y_pred_denorm_new.npy
+Hyperparameter tuning prediction finished
+prediction done
+UNet2 with 0.4 0.3 20 0.0001 1 small done at Wed Nov  6 21:23:51 CET 2024
+UNet2 with 0.4 0.3 20 0.005 1 small start at Wed Nov  6 21:23:51 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+no best model found
+results/testing/small_area_048_initialtesting/UNet2_20_0.005_1/best_model.pth
+UNet2 with 0.4 0.3 20 0.005 1 small done at Wed Nov  6 21:23:55 CET 2024
+UNet2 with 0.4 0.3 20 0.001 1 small start at Wed Nov  6 21:23:55 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+best model already there
+rerun prediction
+Model type: UNet2, Epochs: 20, Learning rate: 0.001, Batch size: 1
+load validation data
+load model
+load out_var
+save results/testing/small_area_048_initialtesting/UNet2_20_0.001_1/y_pred_denorm_new.npy
+Hyperparameter tuning prediction finished
+prediction done
+UNet2 with 0.4 0.3 20 0.001 1 small done at Wed Nov  6 21:24:11 CET 2024
+UNet2 with 0.4 0.3 20 0.005 1 small start at Wed Nov  6 21:24:11 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+no best model found
+results/testing/small_area_048_initialtesting/UNet2_20_0.005_1/best_model.pth
+UNet2 with 0.4 0.3 20 0.005 1 small done at Wed Nov  6 21:24:15 CET 2024
+UNet2 with 0.4 0.3 20 0.0001 4 small start at Wed Nov  6 21:24:15 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+best model already there
+rerun prediction
+Model type: UNet2, Epochs: 20, Learning rate: 0.0001, Batch size: 4
+load validation data
+load model
+load out_var
+save results/testing/small_area_048_initialtesting/UNet2_20_0.0001_4/y_pred_denorm_new.npy
+Hyperparameter tuning prediction finished
+prediction done
+UNet2 with 0.4 0.3 20 0.0001 4 small done at Wed Nov  6 21:24:30 CET 2024
+UNet2 with 0.4 0.3 20 0.005 4 small start at Wed Nov  6 21:24:30 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+no best model found
+results/testing/small_area_048_initialtesting/UNet2_20_0.005_4/best_model.pth
+UNet2 with 0.4 0.3 20 0.005 4 small done at Wed Nov  6 21:24:33 CET 2024
+UNet2 with 0.4 0.3 20 0.001 4 small start at Wed Nov  6 21:24:33 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+best model already there
+rerun prediction
+Model type: UNet2, Epochs: 20, Learning rate: 0.001, Batch size: 4
+load validation data
+load model
+load out_var
+save results/testing/small_area_048_initialtesting/UNet2_20_0.001_4/y_pred_denorm_new.npy
+Hyperparameter tuning prediction finished
+prediction done
+UNet2 with 0.4 0.3 20 0.001 4 small done at Wed Nov  6 21:24:48 CET 2024
+UNet2 with 0.4 0.3 20 0.005 4 small start at Wed Nov  6 21:24:48 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+no best model found
+results/testing/small_area_048_initialtesting/UNet2_20_0.005_4/best_model.pth
+UNet2 with 0.4 0.3 20 0.005 4 small done at Wed Nov  6 21:24:52 CET 2024
+UNet2 with 0.4 0.3 20 0.0001 10 small start at Wed Nov  6 21:24:52 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+no best model found
+results/testing/small_area_048_initialtesting/UNet2_20_0.0001_10/best_model.pth
+UNet2 with 0.4 0.3 20 0.0001 10 small done at Wed Nov  6 21:24:56 CET 2024
+UNet2 with 0.4 0.3 20 0.005 10 small start at Wed Nov  6 21:24:56 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+no best model found
+results/testing/small_area_048_initialtesting/UNet2_20_0.005_10/best_model.pth
+UNet2 with 0.4 0.3 20 0.005 10 small done at Wed Nov  6 21:24:59 CET 2024
+UNet2 with 0.4 0.3 20 0.001 10 small start at Wed Nov  6 21:24:59 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+no best model found
+results/testing/small_area_048_initialtesting/UNet2_20_0.001_10/best_model.pth
+UNet2 with 0.4 0.3 20 0.001 10 small done at Wed Nov  6 21:25:03 CET 2024
+UNet2 with 0.4 0.3 20 0.005 10 small start at Wed Nov  6 21:25:03 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+no best model found
+results/testing/small_area_048_initialtesting/UNet2_20_0.005_10/best_model.pth
+UNet2 with 0.4 0.3 20 0.005 10 small done at Wed Nov  6 21:25:07 CET 2024
+UNet2 with 0.4 0.3 50 0.0001 1 small start at Wed Nov  6 21:25:07 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+best model already there
+rerun prediction
+Model type: UNet2, Epochs: 50, Learning rate: 0.0001, Batch size: 1
+load validation data
+load model
+load out_var
+save results/testing/small_area_048_initialtesting/UNet2_50_0.0001_1/y_pred_denorm_new.npy
+Hyperparameter tuning prediction finished
+prediction done
+UNet2 with 0.4 0.3 50 0.0001 1 small done at Wed Nov  6 21:25:26 CET 2024
+UNet2 with 0.4 0.3 50 0.005 1 small start at Wed Nov  6 21:25:26 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+best model already there
+rerun prediction
+Model type: UNet2, Epochs: 50, Learning rate: 0.005, Batch size: 1
+load validation data
+load model
+load out_var
+save results/testing/small_area_048_initialtesting/UNet2_50_0.005_1/y_pred_denorm_new.npy
+Hyperparameter tuning prediction finished
+prediction done
+UNet2 with 0.4 0.3 50 0.005 1 small done at Wed Nov  6 21:25:44 CET 2024
+UNet2 with 0.4 0.3 50 0.001 1 small start at Wed Nov  6 21:25:44 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+best model already there
+rerun prediction
+Model type: UNet2, Epochs: 50, Learning rate: 0.001, Batch size: 1
+load validation data
+load model
+load out_var
+save results/testing/small_area_048_initialtesting/UNet2_50_0.001_1/y_pred_denorm_new.npy
+Hyperparameter tuning prediction finished
+prediction done
+UNet2 with 0.4 0.3 50 0.001 1 small done at Wed Nov  6 21:26:05 CET 2024
+UNet2 with 0.4 0.3 50 0.005 1 small start at Wed Nov  6 21:26:05 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+UNet2 with 0.4 0.3 50 0.005 1 small done at Wed Nov  6 21:26:09 CET 2024
+UNet2 with 0.4 0.3 50 0.0001 4 small start at Wed Nov  6 21:26:09 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+best model already there
+rerun prediction
+Model type: UNet2, Epochs: 50, Learning rate: 0.0001, Batch size: 4
+load validation data
+load model
+load out_var
+save results/testing/small_area_048_initialtesting/UNet2_50_0.0001_4/y_pred_denorm_new.npy
+Hyperparameter tuning prediction finished
+prediction done
+UNet2 with 0.4 0.3 50 0.0001 4 small done at Wed Nov  6 21:26:24 CET 2024
+UNet2 with 0.4 0.3 50 0.005 4 small start at Wed Nov  6 21:26:24 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+best model already there
+rerun prediction
+Model type: UNet2, Epochs: 50, Learning rate: 0.005, Batch size: 4
+load validation data
+load model
+load out_var
+save results/testing/small_area_048_initialtesting/UNet2_50_0.005_4/y_pred_denorm_new.npy
+Hyperparameter tuning prediction finished
+prediction done
+UNet2 with 0.4 0.3 50 0.005 4 small done at Wed Nov  6 21:26:39 CET 2024
+UNet2 with 0.4 0.3 50 0.001 4 small start at Wed Nov  6 21:26:39 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+best model already there
+rerun prediction
+Model type: UNet2, Epochs: 50, Learning rate: 0.001, Batch size: 4
+load validation data
+load model
+load out_var
+save results/testing/small_area_048_initialtesting/UNet2_50_0.001_4/y_pred_denorm_new.npy
+Hyperparameter tuning prediction finished
+prediction done
+UNet2 with 0.4 0.3 50 0.001 4 small done at Wed Nov  6 21:26:55 CET 2024
+UNet2 with 0.4 0.3 50 0.005 4 small start at Wed Nov  6 21:26:55 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+UNet2 with 0.4 0.3 50 0.005 4 small done at Wed Nov  6 21:27:00 CET 2024
+UNet2 with 0.4 0.3 50 0.0001 10 small start at Wed Nov  6 21:27:00 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+best model already there
+rerun prediction
+Model type: UNet2, Epochs: 50, Learning rate: 0.0001, Batch size: 10
+load validation data
+load model
+load out_var
+save results/testing/small_area_048_initialtesting/UNet2_50_0.0001_10/y_pred_denorm_new.npy
+Hyperparameter tuning prediction finished
+prediction done
+UNet2 with 0.4 0.3 50 0.0001 10 small done at Wed Nov  6 21:27:14 CET 2024
+UNet2 with 0.4 0.3 50 0.005 10 small start at Wed Nov  6 21:27:14 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+best model already there
+rerun prediction
+Model type: UNet2, Epochs: 50, Learning rate: 0.005, Batch size: 10
+load validation data
+load model
+load out_var
+save results/testing/small_area_048_initialtesting/UNet2_50_0.005_10/y_pred_denorm_new.npy
+Hyperparameter tuning prediction finished
+prediction done
+UNet2 with 0.4 0.3 50 0.005 10 small done at Wed Nov  6 21:27:29 CET 2024
+UNet2 with 0.4 0.3 50 0.001 10 small start at Wed Nov  6 21:27:29 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+best model already there
+rerun prediction
+Model type: UNet2, Epochs: 50, Learning rate: 0.001, Batch size: 10
+load validation data
+load model
+load out_var
+save results/testing/small_area_048_initialtesting/UNet2_50_0.001_10/y_pred_denorm_new.npy
+Hyperparameter tuning prediction finished
+prediction done
+UNet2 with 0.4 0.3 50 0.001 10 small done at Wed Nov  6 21:27:43 CET 2024
+UNet2 with 0.4 0.3 50 0.005 10 small start at Wed Nov  6 21:27:43 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+UNet2 with 0.4 0.3 50 0.005 10 small done at Wed Nov  6 21:27:48 CET 2024
+UNet2 with 0.4 0.3 100 0.0001 1 small start at Wed Nov  6 21:27:48 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+best model already there
+rerun prediction
+Model type: UNet2, Epochs: 100, Learning rate: 0.0001, Batch size: 1
+load validation data
+load model
+load out_var
+save results/testing/small_area_048_initialtesting/UNet2_100_0.0001_1/y_pred_denorm_new.npy
+Hyperparameter tuning prediction finished
+prediction done
+UNet2 with 0.4 0.3 100 0.0001 1 small done at Wed Nov  6 21:28:06 CET 2024
+UNet2 with 0.4 0.3 100 0.005 1 small start at Wed Nov  6 21:28:06 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+best model already there
+rerun prediction
+Model type: UNet2, Epochs: 100, Learning rate: 0.005, Batch size: 1
+load validation data
+load model
+load out_var
+save results/testing/small_area_048_initialtesting/UNet2_100_0.005_1/y_pred_denorm_new.npy
+Hyperparameter tuning prediction finished
+prediction done
+UNet2 with 0.4 0.3 100 0.005 1 small done at Wed Nov  6 21:28:22 CET 2024
+UNet2 with 0.4 0.3 100 0.001 1 small start at Wed Nov  6 21:28:22 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+best model already there
+rerun prediction
+Model type: UNet2, Epochs: 100, Learning rate: 0.001, Batch size: 1
+load validation data
+load model
+load out_var
+save results/testing/small_area_048_initialtesting/UNet2_100_0.001_1/y_pred_denorm_new.npy
+Hyperparameter tuning prediction finished
+prediction done
+UNet2 with 0.4 0.3 100 0.001 1 small done at Wed Nov  6 21:28:40 CET 2024
+UNet2 with 0.4 0.3 100 0.005 1 small start at Wed Nov  6 21:28:40 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+UNet2 with 0.4 0.3 100 0.005 1 small done at Wed Nov  6 21:28:44 CET 2024
+UNet2 with 0.4 0.3 100 0.0001 4 small start at Wed Nov  6 21:28:44 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+best model already there
+rerun prediction
+Model type: UNet2, Epochs: 100, Learning rate: 0.0001, Batch size: 4
+load validation data
+load model
+load out_var
+save results/testing/small_area_048_initialtesting/UNet2_100_0.0001_4/y_pred_denorm_new.npy
+Hyperparameter tuning prediction finished
+prediction done
+UNet2 with 0.4 0.3 100 0.0001 4 small done at Wed Nov  6 21:29:00 CET 2024
+UNet2 with 0.4 0.3 100 0.005 4 small start at Wed Nov  6 21:29:00 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+best model already there
+rerun prediction
+Model type: UNet2, Epochs: 100, Learning rate: 0.005, Batch size: 4
+load validation data
+load model
+load out_var
+save results/testing/small_area_048_initialtesting/UNet2_100_0.005_4/y_pred_denorm_new.npy
+Hyperparameter tuning prediction finished
+prediction done
+UNet2 with 0.4 0.3 100 0.005 4 small done at Wed Nov  6 21:29:15 CET 2024
+UNet2 with 0.4 0.3 100 0.001 4 small start at Wed Nov  6 21:29:15 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+best model already there
+rerun prediction
+Model type: UNet2, Epochs: 100, Learning rate: 0.001, Batch size: 4
+load validation data
+load model
+load out_var
+save results/testing/small_area_048_initialtesting/UNet2_100_0.001_4/y_pred_denorm_new.npy
+Hyperparameter tuning prediction finished
+prediction done
+UNet2 with 0.4 0.3 100 0.001 4 small done at Wed Nov  6 21:29:29 CET 2024
+UNet2 with 0.4 0.3 100 0.005 4 small start at Wed Nov  6 21:29:29 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+UNet2 with 0.4 0.3 100 0.005 4 small done at Wed Nov  6 21:29:33 CET 2024
+UNet2 with 0.4 0.3 100 0.0001 10 small start at Wed Nov  6 21:29:33 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+best model already there
+rerun prediction
+Model type: UNet2, Epochs: 100, Learning rate: 0.0001, Batch size: 10
+load validation data
+load model
+load out_var
+save results/testing/small_area_048_initialtesting/UNet2_100_0.0001_10/y_pred_denorm_new.npy
+Hyperparameter tuning prediction finished
+prediction done
+UNet2 with 0.4 0.3 100 0.0001 10 small done at Wed Nov  6 21:29:47 CET 2024
+UNet2 with 0.4 0.3 100 0.005 10 small start at Wed Nov  6 21:29:47 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+best model already there
+rerun prediction
+Model type: UNet2, Epochs: 100, Learning rate: 0.005, Batch size: 10
+load validation data
+load model
+load out_var
+save results/testing/small_area_048_initialtesting/UNet2_100_0.005_10/y_pred_denorm_new.npy
+Hyperparameter tuning prediction finished
+prediction done
+UNet2 with 0.4 0.3 100 0.005 10 small done at Wed Nov  6 21:30:02 CET 2024
+UNet2 with 0.4 0.3 100 0.001 10 small start at Wed Nov  6 21:30:02 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+best model already there
+rerun prediction
+Model type: UNet2, Epochs: 100, Learning rate: 0.001, Batch size: 10
+load validation data
+load model
+load out_var
+save results/testing/small_area_048_initialtesting/UNet2_100_0.001_10/y_pred_denorm_new.npy
+Hyperparameter tuning prediction finished
+prediction done
+UNet2 with 0.4 0.3 100 0.001 10 small done at Wed Nov  6 21:30:18 CET 2024
+UNet2 with 0.4 0.3 100 0.005 10 small start at Wed Nov  6 21:30:18 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+UNet2 with 0.4 0.3 100 0.005 10 small done at Wed Nov  6 21:30:21 CET 2024
+SBATCH job finished

@@ -1,3 +1,7 @@
 
 /src_test/data
 /data/
+/training/
+.pth
+/hybGGM_test/data
+/hybGGM_test/results

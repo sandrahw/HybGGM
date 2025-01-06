@@ -1,0 +1,99 @@
+SBATCH job
+Started 07/11/2024 09:45:48
+Working directory /eejit/home/hausw001/HybGGM/hybGGM_test
+UNet6 with 0.4 0.3 50 0.0001 5 large start at Thu Nov  7 09:45:49 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+UNet6 with 0.4 0.3 50 0.0001 5 large done at Thu Nov  7 09:45:53 CET 2024
+UNet6 with 0.4 0.3 50 0.0001 10 large start at Thu Nov  7 09:45:53 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+UNet6 with 0.4 0.3 50 0.0001 10 large done at Thu Nov  7 09:45:57 CET 2024
+UNet6 with 0.4 0.3 50 0.0001 20 large start at Thu Nov  7 09:45:57 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+best model already there
+rerun prediction
+Model type: UNet6, Epochs: 50, Learning rate: 0.0001, Batch size: 20
+load validation data
+load model
+run prediction
+load out_var
+save results/testing/larger_area_048/600/UNet6_50_0.0001_20/y_pred_denorm_new.npy
+Hyperparameter tuning prediction finished
+prediction done
+UNet6 with 0.4 0.3 50 0.0001 20 large done at Thu Nov  7 09:47:53 CET 2024
+UNet6 with 0.4 0.3 50 0.0001 50 large start at Thu Nov  7 09:47:53 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+best model already there
+rerun prediction
+Model type: UNet6, Epochs: 50, Learning rate: 0.0001, Batch size: 50
+load validation data
+load model
+run prediction
+load out_var
+save results/testing/larger_area_048/600/UNet6_50_0.0001_50/y_pred_denorm_new.npy
+Hyperparameter tuning prediction finished
+prediction done
+UNet6 with 0.4 0.3 50 0.0001 50 large done at Thu Nov  7 09:49:40 CET 2024
+UNet6 with 0.4 0.3 50 0.001 20 large start at Thu Nov  7 09:49:40 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+best model already there
+rerun prediction
+Model type: UNet6, Epochs: 50, Learning rate: 0.001, Batch size: 20
+load validation data
+load model
+run prediction
+load out_var
+save results/testing/larger_area_048/600/UNet6_50_0.001_20/y_pred_denorm_new.npy
+Hyperparameter tuning prediction finished
+prediction done
+UNet6 with 0.4 0.3 50 0.001 20 large done at Thu Nov  7 09:51:25 CET 2024
+UNet2 with 0.4 0.3 50 0.0001 50 large start at Thu Nov  7 09:51:25 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+best model already there
+rerun prediction
+Model type: UNet2, Epochs: 50, Learning rate: 0.0001, Batch size: 50
+load validation data
+load model
+load out_var
+save results/testing/larger_area_048/600/UNet2_50_0.0001_50/y_pred_denorm_new.npy
+Hyperparameter tuning prediction finished
+prediction done
+UNet2 with 0.4 0.3 50 0.0001 50 large done at Thu Nov  7 09:52:07 CET 2024
+UNet2 with 0.4 0.3 50 0.001 20 large start at Thu Nov  7 09:52:07 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+corrected prediction files not there yet
+best model already there
+rerun prediction
+Model type: UNet2, Epochs: 50, Learning rate: 0.001, Batch size: 20
+load validation data
+load model
+load out_var
+save results/testing/larger_area_048/600/UNet2_50_0.001_20/y_pred_denorm_new.npy
+Hyperparameter tuning prediction finished
+prediction done
+UNet2 with 0.4 0.3 50 0.001 20 large done at Thu Nov  7 09:52:49 CET 2024
+SBATCH job finished

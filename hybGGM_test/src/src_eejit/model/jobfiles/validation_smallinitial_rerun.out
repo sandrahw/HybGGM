@@ -1,0 +1,624 @@
+SBATCH job
+Started 07/11/2024 13:59:41
+Working directory /eejit/home/hausw001/HybGGM/hybGGM_test
+UNet2 with 0.4 0.3 10 0.0001 1 small start at Thu Nov  7 13:59:42 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.6919
+Validation Score:  0.6918608278036118
+UNet2 with 0.4 0.3 10 0.0001 1 small done at Thu Nov  7 13:59:59 CET 2024
+UNet6 with 0.4 0.3 10 0.0001 1 small start at Thu Nov  7 13:59:59 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.6759
+Validation Score:  0.6758873850107193
+UNet6 with 0.4 0.3 10 0.0001 1 small done at Thu Nov  7 14:00:49 CET 2024
+UNet2 with 0.4 0.3 10 0.001 1 small start at Thu Nov  7 14:00:49 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.8044
+Validation Score:  0.8044404149055481
+UNet2 with 0.4 0.3 10 0.001 1 small done at Thu Nov  7 14:01:08 CET 2024
+UNet6 with 0.4 0.3 10 0.001 1 small start at Thu Nov  7 14:01:08 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.8234
+Validation Score:  0.823378424346447
+UNet6 with 0.4 0.3 10 0.001 1 small done at Thu Nov  7 14:01:56 CET 2024
+UNet2 with 0.4 0.3 10 0.005 1 small start at Thu Nov  7 14:01:56 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Folder and files dont exist, move to next hyperparam setup results/testing/small_area_048_initialtesting/UNet2_10_0.005_1
+UNet2 with 0.4 0.3 10 0.005 1 small done at Thu Nov  7 14:02:00 CET 2024
+UNet6 with 0.4 0.3 10 0.005 1 small start at Thu Nov  7 14:02:00 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Folder and files dont exist, move to next hyperparam setup results/testing/small_area_048_initialtesting/UNet6_10_0.005_1
+UNet6 with 0.4 0.3 10 0.005 1 small done at Thu Nov  7 14:02:05 CET 2024
+UNet2 with 0.4 0.3 10 0.0005 1 small start at Thu Nov  7 14:02:05 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Folder and files dont exist, move to next hyperparam setup results/testing/small_area_048_initialtesting/UNet2_10_0.0005_1
+UNet2 with 0.4 0.3 10 0.0005 1 small done at Thu Nov  7 14:02:09 CET 2024
+UNet6 with 0.4 0.3 10 0.0005 1 small start at Thu Nov  7 14:02:09 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Folder and files dont exist, move to next hyperparam setup results/testing/small_area_048_initialtesting/UNet6_10_0.0005_1
+UNet6 with 0.4 0.3 10 0.0005 1 small done at Thu Nov  7 14:02:14 CET 2024
+UNet2 with 0.4 0.3 10 0.0001 4 small start at Thu Nov  7 14:02:14 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.1828
+Validation Score:  0.18278487920761108
+UNet2 with 0.4 0.3 10 0.0001 4 small done at Thu Nov  7 14:02:31 CET 2024
+UNet6 with 0.4 0.3 10 0.0001 4 small start at Thu Nov  7 14:02:31 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.1733
+Validation Score:  0.17329731285572053
+UNet6 with 0.4 0.3 10 0.0001 4 small done at Thu Nov  7 14:03:22 CET 2024
+UNet2 with 0.4 0.3 10 0.001 4 small start at Thu Nov  7 14:03:22 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.2070
+Validation Score:  0.2070415884256363
+UNet2 with 0.4 0.3 10 0.001 4 small done at Thu Nov  7 14:03:39 CET 2024
+UNet6 with 0.4 0.3 10 0.001 4 small start at Thu Nov  7 14:03:39 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.1995
+Validation Score:  0.19953327775001525
+UNet6 with 0.4 0.3 10 0.001 4 small done at Thu Nov  7 14:04:54 CET 2024
+UNet2 with 0.4 0.3 10 0.005 4 small start at Thu Nov  7 14:04:54 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Folder and files dont exist, move to next hyperparam setup results/testing/small_area_048_initialtesting/UNet2_10_0.005_4
+UNet2 with 0.4 0.3 10 0.005 4 small done at Thu Nov  7 14:05:01 CET 2024
+UNet6 with 0.4 0.3 10 0.005 4 small start at Thu Nov  7 14:05:01 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Folder and files dont exist, move to next hyperparam setup results/testing/small_area_048_initialtesting/UNet6_10_0.005_4
+UNet6 with 0.4 0.3 10 0.005 4 small done at Thu Nov  7 14:05:05 CET 2024
+UNet2 with 0.4 0.3 10 0.0005 4 small start at Thu Nov  7 14:05:05 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Folder and files dont exist, move to next hyperparam setup results/testing/small_area_048_initialtesting/UNet2_10_0.0005_4
+UNet2 with 0.4 0.3 10 0.0005 4 small done at Thu Nov  7 14:05:09 CET 2024
+UNet6 with 0.4 0.3 10 0.0005 4 small start at Thu Nov  7 14:05:09 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Folder and files dont exist, move to next hyperparam setup results/testing/small_area_048_initialtesting/UNet6_10_0.0005_4
+UNet6 with 0.4 0.3 10 0.0005 4 small done at Thu Nov  7 14:05:14 CET 2024
+UNet2 with 0.4 0.3 10 0.0001 10 small start at Thu Nov  7 14:05:14 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Folder and files dont exist, move to next hyperparam setup results/testing/small_area_048_initialtesting/UNet2_10_0.0001_10
+UNet2 with 0.4 0.3 10 0.0001 10 small done at Thu Nov  7 14:05:18 CET 2024
+UNet6 with 0.4 0.3 10 0.0001 10 small start at Thu Nov  7 14:05:18 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Folder and files dont exist, move to next hyperparam setup results/testing/small_area_048_initialtesting/UNet6_10_0.0001_10
+UNet6 with 0.4 0.3 10 0.0001 10 small done at Thu Nov  7 14:05:22 CET 2024
+UNet2 with 0.4 0.3 10 0.001 10 small start at Thu Nov  7 14:05:22 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Folder and files dont exist, move to next hyperparam setup results/testing/small_area_048_initialtesting/UNet2_10_0.001_10
+UNet2 with 0.4 0.3 10 0.001 10 small done at Thu Nov  7 14:05:26 CET 2024
+UNet6 with 0.4 0.3 10 0.001 10 small start at Thu Nov  7 14:05:26 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Folder and files dont exist, move to next hyperparam setup results/testing/small_area_048_initialtesting/UNet6_10_0.001_10
+UNet6 with 0.4 0.3 10 0.001 10 small done at Thu Nov  7 14:05:30 CET 2024
+UNet2 with 0.4 0.3 10 0.005 10 small start at Thu Nov  7 14:05:30 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Folder and files dont exist, move to next hyperparam setup results/testing/small_area_048_initialtesting/UNet2_10_0.005_10
+UNet2 with 0.4 0.3 10 0.005 10 small done at Thu Nov  7 14:05:34 CET 2024
+UNet6 with 0.4 0.3 10 0.005 10 small start at Thu Nov  7 14:05:34 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Folder and files dont exist, move to next hyperparam setup results/testing/small_area_048_initialtesting/UNet6_10_0.005_10
+UNet6 with 0.4 0.3 10 0.005 10 small done at Thu Nov  7 14:05:38 CET 2024
+UNet2 with 0.4 0.3 10 0.0005 10 small start at Thu Nov  7 14:05:38 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Folder and files dont exist, move to next hyperparam setup results/testing/small_area_048_initialtesting/UNet2_10_0.0005_10
+UNet2 with 0.4 0.3 10 0.0005 10 small done at Thu Nov  7 14:05:42 CET 2024
+UNet6 with 0.4 0.3 10 0.0005 10 small start at Thu Nov  7 14:05:42 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Folder and files dont exist, move to next hyperparam setup results/testing/small_area_048_initialtesting/UNet6_10_0.0005_10
+UNet6 with 0.4 0.3 10 0.0005 10 small done at Thu Nov  7 14:05:46 CET 2024
+UNet2 with 0.4 0.3 50 0.0001 1 small start at Thu Nov  7 14:05:46 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.6190
+Validation Score:  0.6189516320824623
+UNet2 with 0.4 0.3 50 0.0001 1 small done at Thu Nov  7 14:06:01 CET 2024
+UNet6 with 0.4 0.3 50 0.0001 1 small start at Thu Nov  7 14:06:01 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.6066
+Validation Score:  0.6065764158964158
+UNet6 with 0.4 0.3 50 0.0001 1 small done at Thu Nov  7 14:06:53 CET 2024
+UNet2 with 0.4 0.3 50 0.001 1 small start at Thu Nov  7 14:06:53 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.6504
+Validation Score:  0.6504498317837715
+UNet2 with 0.4 0.3 50 0.001 1 small done at Thu Nov  7 14:07:09 CET 2024
+UNet6 with 0.4 0.3 50 0.001 1 small start at Thu Nov  7 14:07:09 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.6387
+Validation Score:  0.6387497991323471
+UNet6 with 0.4 0.3 50 0.001 1 small done at Thu Nov  7 14:08:03 CET 2024
+UNet2 with 0.4 0.3 50 0.005 1 small start at Thu Nov  7 14:08:03 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.7274
+Validation Score:  0.7273634523153305
+UNet2 with 0.4 0.3 50 0.005 1 small done at Thu Nov  7 14:08:18 CET 2024
+UNet6 with 0.4 0.3 50 0.005 1 small start at Thu Nov  7 14:08:18 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.6862
+Validation Score:  0.6861861884593964
+UNet6 with 0.4 0.3 50 0.005 1 small done at Thu Nov  7 14:09:11 CET 2024
+UNet2 with 0.4 0.3 50 0.0005 1 small start at Thu Nov  7 14:09:11 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.6719
+Validation Score:  0.6718640804290772
+UNet2 with 0.4 0.3 50 0.0005 1 small done at Thu Nov  7 14:09:27 CET 2024
+UNet6 with 0.4 0.3 50 0.0005 1 small start at Thu Nov  7 14:09:27 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.6251
+Validation Score:  0.6250950261950493
+UNet6 with 0.4 0.3 50 0.0005 1 small done at Thu Nov  7 14:10:27 CET 2024
+UNet2 with 0.4 0.3 50 0.0001 4 small start at Thu Nov  7 14:10:27 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.1512
+Validation Score:  0.1512158364057541
+UNet2 with 0.4 0.3 50 0.0001 4 small done at Thu Nov  7 14:10:48 CET 2024
+UNet6 with 0.4 0.3 50 0.0001 4 small start at Thu Nov  7 14:10:48 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.1388
+Validation Score:  0.1388038083910942
+UNet6 with 0.4 0.3 50 0.0001 4 small done at Thu Nov  7 14:11:37 CET 2024
+UNet2 with 0.4 0.3 50 0.001 4 small start at Thu Nov  7 14:11:37 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.1588
+Validation Score:  0.15875970125198363
+UNet2 with 0.4 0.3 50 0.001 4 small done at Thu Nov  7 14:11:58 CET 2024
+UNet6 with 0.4 0.3 50 0.001 4 small start at Thu Nov  7 14:11:58 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.1614
+Validation Score:  0.1614251106977463
+UNet6 with 0.4 0.3 50 0.001 4 small done at Thu Nov  7 14:12:46 CET 2024
+UNet2 with 0.4 0.3 50 0.005 4 small start at Thu Nov  7 14:12:46 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.1794
+Validation Score:  0.17937319874763488
+UNet2 with 0.4 0.3 50 0.005 4 small done at Thu Nov  7 14:13:07 CET 2024
+UNet6 with 0.4 0.3 50 0.005 4 small start at Thu Nov  7 14:13:07 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.1734
+Validation Score:  0.17341665625572206
+UNet6 with 0.4 0.3 50 0.005 4 small done at Thu Nov  7 14:13:57 CET 2024
+UNet2 with 0.4 0.3 50 0.0005 4 small start at Thu Nov  7 14:13:57 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.1555
+Validation Score:  0.15549735873937606
+UNet2 with 0.4 0.3 50 0.0005 4 small done at Thu Nov  7 14:14:16 CET 2024
+UNet6 with 0.4 0.3 50 0.0005 4 small start at Thu Nov  7 14:14:16 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.1554
+Validation Score:  0.1553776368498802
+UNet6 with 0.4 0.3 50 0.0005 4 small done at Thu Nov  7 14:15:09 CET 2024
+UNet2 with 0.4 0.3 50 0.0001 10 small start at Thu Nov  7 14:15:09 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.0656
+Validation Score:  0.0656034916639328
+UNet2 with 0.4 0.3 50 0.0001 10 small done at Thu Nov  7 14:15:30 CET 2024
+UNet6 with 0.4 0.3 50 0.0001 10 small start at Thu Nov  7 14:15:30 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.0565
+Validation Score:  0.056529849767684937
+UNet6 with 0.4 0.3 50 0.0001 10 small done at Thu Nov  7 14:16:17 CET 2024
+UNet2 with 0.4 0.3 50 0.001 10 small start at Thu Nov  7 14:16:17 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.0680
+Validation Score:  0.06800287663936615
+UNet2 with 0.4 0.3 50 0.001 10 small done at Thu Nov  7 14:16:37 CET 2024
+UNet6 with 0.4 0.3 50 0.001 10 small start at Thu Nov  7 14:16:37 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.0699
+Validation Score:  0.06988174319267274
+UNet6 with 0.4 0.3 50 0.001 10 small done at Thu Nov  7 14:17:27 CET 2024
+UNet2 with 0.4 0.3 50 0.005 10 small start at Thu Nov  7 14:17:27 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.0766
+Validation Score:  0.07655622363090515
+UNet2 with 0.4 0.3 50 0.005 10 small done at Thu Nov  7 14:17:49 CET 2024
+UNet6 with 0.4 0.3 50 0.005 10 small start at Thu Nov  7 14:17:49 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.0736
+Validation Score:  0.07360592186450958
+UNet6 with 0.4 0.3 50 0.005 10 small done at Thu Nov  7 14:18:36 CET 2024
+UNet2 with 0.4 0.3 50 0.0005 10 small start at Thu Nov  7 14:18:36 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.0673
+Validation Score:  0.06733672022819519
+UNet2 with 0.4 0.3 50 0.0005 10 small done at Thu Nov  7 14:19:00 CET 2024
+UNet6 with 0.4 0.3 50 0.0005 10 small start at Thu Nov  7 14:19:00 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.0640
+Validation Score:  0.06395226120948791
+UNet6 with 0.4 0.3 50 0.0005 10 small done at Thu Nov  7 14:19:56 CET 2024
+UNet2 with 0.4 0.3 100 0.0001 1 small start at Thu Nov  7 14:19:56 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.5905
+Validation Score:  0.5904578521847725
+UNet2 with 0.4 0.3 100 0.0001 1 small done at Thu Nov  7 14:20:14 CET 2024
+UNet6 with 0.4 0.3 100 0.0001 1 small start at Thu Nov  7 14:20:14 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.5959
+Validation Score:  0.5959448963403702
+UNet6 with 0.4 0.3 100 0.0001 1 small done at Thu Nov  7 14:21:11 CET 2024
+UNet2 with 0.4 0.3 100 0.001 1 small start at Thu Nov  7 14:21:11 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.6106
+Validation Score:  0.6105848215520382
+UNet2 with 0.4 0.3 100 0.001 1 small done at Thu Nov  7 14:21:29 CET 2024
+UNet6 with 0.4 0.3 100 0.001 1 small start at Thu Nov  7 14:21:29 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.6017
+Validation Score:  0.6016578942537307
+UNet6 with 0.4 0.3 100 0.001 1 small done at Thu Nov  7 14:22:28 CET 2024
+UNet2 with 0.4 0.3 100 0.005 1 small start at Thu Nov  7 14:22:28 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.6490
+Validation Score:  0.6490278452634811
+UNet2 with 0.4 0.3 100 0.005 1 small done at Thu Nov  7 14:22:45 CET 2024
+UNet6 with 0.4 0.3 100 0.005 1 small start at Thu Nov  7 14:22:45 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.6263
+Validation Score:  0.6263190254569053
+UNet6 with 0.4 0.3 100 0.005 1 small done at Thu Nov  7 14:23:39 CET 2024
+UNet2 with 0.4 0.3 100 0.0005 1 small start at Thu Nov  7 14:23:39 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.6006
+Validation Score:  0.6005513370037079
+UNet2 with 0.4 0.3 100 0.0005 1 small done at Thu Nov  7 14:23:59 CET 2024
+UNet6 with 0.4 0.3 100 0.0005 1 small start at Thu Nov  7 14:23:59 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.6042
+Validation Score:  0.6042373016476631
+UNet6 with 0.4 0.3 100 0.0005 1 small done at Thu Nov  7 14:24:54 CET 2024
+UNet2 with 0.4 0.3 100 0.0001 4 small start at Thu Nov  7 14:24:54 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.1417
+Validation Score:  0.1416831433773041
+UNet2 with 0.4 0.3 100 0.0001 4 small done at Thu Nov  7 14:25:15 CET 2024
+UNet6 with 0.4 0.3 100 0.0001 4 small start at Thu Nov  7 14:25:15 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.1234
+Validation Score:  0.1234019234776497
+UNet6 with 0.4 0.3 100 0.0001 4 small done at Thu Nov  7 14:26:05 CET 2024
+UNet2 with 0.4 0.3 100 0.001 4 small start at Thu Nov  7 14:26:05 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.1461
+Validation Score:  0.14608357101678848
+UNet2 with 0.4 0.3 100 0.001 4 small done at Thu Nov  7 14:26:25 CET 2024
+UNet6 with 0.4 0.3 100 0.001 4 small start at Thu Nov  7 14:26:25 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.1450
+Validation Score:  0.14501363188028335
+UNet6 with 0.4 0.3 100 0.001 4 small done at Thu Nov  7 14:27:11 CET 2024
+UNet2 with 0.4 0.3 100 0.005 4 small start at Thu Nov  7 14:27:11 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.1634
+Validation Score:  0.1634210467338562
+UNet2 with 0.4 0.3 100 0.005 4 small done at Thu Nov  7 14:27:31 CET 2024
+UNet6 with 0.4 0.3 100 0.005 4 small start at Thu Nov  7 14:27:31 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.1543
+Validation Score:  0.15433220863342284
+UNet6 with 0.4 0.3 100 0.005 4 small done at Thu Nov  7 14:28:29 CET 2024
+UNet2 with 0.4 0.3 100 0.0005 4 small start at Thu Nov  7 14:28:29 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.1444
+Validation Score:  0.14435034841299058
+UNet2 with 0.4 0.3 100 0.0005 4 small done at Thu Nov  7 14:28:51 CET 2024
+UNet6 with 0.4 0.3 100 0.0005 4 small start at Thu Nov  7 14:28:51 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.1434
+Validation Score:  0.1434296801686287
+UNet6 with 0.4 0.3 100 0.0005 4 small done at Thu Nov  7 14:29:37 CET 2024
+UNet2 with 0.4 0.3 100 0.0001 10 small start at Thu Nov  7 14:29:37 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.0598
+Validation Score:  0.0598111093044281
+UNet2 with 0.4 0.3 100 0.0001 10 small done at Thu Nov  7 14:29:57 CET 2024
+UNet6 with 0.4 0.3 100 0.0001 10 small start at Thu Nov  7 14:29:57 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.0517
+Validation Score:  0.05174662321805954
+UNet6 with 0.4 0.3 100 0.0001 10 small done at Thu Nov  7 14:30:53 CET 2024
+UNet2 with 0.4 0.3 100 0.001 10 small start at Thu Nov  7 14:30:53 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.0610
+Validation Score:  0.06103333830833435
+UNet2 with 0.4 0.3 100 0.001 10 small done at Thu Nov  7 14:31:15 CET 2024
+UNet6 with 0.4 0.3 100 0.001 10 small start at Thu Nov  7 14:31:15 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.0629
+Validation Score:  0.06289624571800231
+UNet6 with 0.4 0.3 100 0.001 10 small done at Thu Nov  7 14:32:07 CET 2024
+UNet2 with 0.4 0.3 100 0.005 10 small start at Thu Nov  7 14:32:07 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.0688
+Validation Score:  0.06884748637676238
+UNet2 with 0.4 0.3 100 0.005 10 small done at Thu Nov  7 14:32:25 CET 2024
+UNet6 with 0.4 0.3 100 0.005 10 small start at Thu Nov  7 14:32:25 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.0646
+Validation Score:  0.06457917988300324
+UNet6 with 0.4 0.3 100 0.005 10 small done at Thu Nov  7 14:33:15 CET 2024
+UNet2 with 0.4 0.3 100 0.0005 10 small start at Thu Nov  7 14:33:15 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.0589
+Validation Score:  0.05890372693538666
+UNet2 with 0.4 0.3 100 0.0005 10 small done at Thu Nov  7 14:33:36 CET 2024
+UNet6 with 0.4 0.3 100 0.0005 10 small start at Thu Nov  7 14:33:36 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.0571
+Validation Score:  0.057130268216133116
+UNet6 with 0.4 0.3 100 0.0005 10 small done at Thu Nov  7 14:34:30 CET 2024
+UNet2 with 0.4 0.3 200 0.0001 1 small start at Thu Nov  7 14:34:30 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.5845
+Validation Score:  0.5844722166657448
+UNet2 with 0.4 0.3 200 0.0001 1 small done at Thu Nov  7 14:34:59 CET 2024
+UNet6 with 0.4 0.3 200 0.0001 1 small start at Thu Nov  7 14:34:59 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.5654
+Validation Score:  0.5654154226183892
+UNet6 with 0.4 0.3 200 0.0001 1 small done at Thu Nov  7 14:36:31 CET 2024
+UNet2 with 0.4 0.3 200 0.001 1 small start at Thu Nov  7 14:36:31 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Folder and files dont exist, move to next hyperparam setup results/testing/small_area_048_initialtesting/UNet2_200_0.001_1
+UNet2 with 0.4 0.3 200 0.001 1 small done at Thu Nov  7 14:36:47 CET 2024
+UNet6 with 0.4 0.3 200 0.001 1 small start at Thu Nov  7 14:36:47 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Folder and files dont exist, move to next hyperparam setup results/testing/small_area_048_initialtesting/UNet6_200_0.001_1
+UNet6 with 0.4 0.3 200 0.001 1 small done at Thu Nov  7 14:36:51 CET 2024
+UNet2 with 0.4 0.3 200 0.005 1 small start at Thu Nov  7 14:36:51 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Folder and files dont exist, move to next hyperparam setup results/testing/small_area_048_initialtesting/UNet2_200_0.005_1
+UNet2 with 0.4 0.3 200 0.005 1 small done at Thu Nov  7 14:36:56 CET 2024
+UNet6 with 0.4 0.3 200 0.005 1 small start at Thu Nov  7 14:36:56 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Folder and files dont exist, move to next hyperparam setup results/testing/small_area_048_initialtesting/UNet6_200_0.005_1
+UNet6 with 0.4 0.3 200 0.005 1 small done at Thu Nov  7 14:36:59 CET 2024
+UNet2 with 0.4 0.3 200 0.0005 1 small start at Thu Nov  7 14:36:59 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Hyperparameter tuning already done and prediction files are there now running validation
+load model and data
+run validation
+Test Loss: 0.5779
+Validation Score:  0.5779052287340164
+UNet2 with 0.4 0.3 200 0.0005 1 small done at Thu Nov  7 14:37:18 CET 2024
+UNet6 with 0.4 0.3 200 0.0005 1 small start at Thu Nov  7 14:37:18 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Folder and files dont exist, move to next hyperparam setup results/testing/small_area_048_initialtesting/UNet6_200_0.0005_1
+UNet6 with 0.4 0.3 200 0.0005 1 small done at Thu Nov  7 14:37:23 CET 2024
+UNet2 with 0.4 0.3 200 0.0001 4 small start at Thu Nov  7 14:37:23 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Folder and files dont exist, move to next hyperparam setup results/testing/small_area_048_initialtesting/UNet2_200_0.0001_4
+UNet2 with 0.4 0.3 200 0.0001 4 small done at Thu Nov  7 14:37:27 CET 2024
+UNet6 with 0.4 0.3 200 0.0001 4 small start at Thu Nov  7 14:37:27 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Folder and files dont exist, move to next hyperparam setup results/testing/small_area_048_initialtesting/UNet6_200_0.0001_4
+UNet6 with 0.4 0.3 200 0.0001 4 small done at Thu Nov  7 14:37:31 CET 2024
+UNet2 with 0.4 0.3 200 0.001 4 small start at Thu Nov  7 14:37:31 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Folder and files dont exist, move to next hyperparam setup results/testing/small_area_048_initialtesting/UNet2_200_0.001_4
+UNet2 with 0.4 0.3 200 0.001 4 small done at Thu Nov  7 14:37:35 CET 2024
+UNet6 with 0.4 0.3 200 0.001 4 small start at Thu Nov  7 14:37:35 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Folder and files dont exist, move to next hyperparam setup results/testing/small_area_048_initialtesting/UNet6_200_0.001_4
+UNet6 with 0.4 0.3 200 0.001 4 small done at Thu Nov  7 14:37:40 CET 2024
+UNet2 with 0.4 0.3 200 0.005 4 small start at Thu Nov  7 14:37:40 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Folder and files dont exist, move to next hyperparam setup results/testing/small_area_048_initialtesting/UNet2_200_0.005_4
+UNet2 with 0.4 0.3 200 0.005 4 small done at Thu Nov  7 14:37:44 CET 2024
+UNet6 with 0.4 0.3 200 0.005 4 small start at Thu Nov  7 14:37:44 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Folder and files dont exist, move to next hyperparam setup results/testing/small_area_048_initialtesting/UNet6_200_0.005_4
+UNet6 with 0.4 0.3 200 0.005 4 small done at Thu Nov  7 14:37:49 CET 2024
+UNet2 with 0.4 0.3 200 0.0005 4 small start at Thu Nov  7 14:37:49 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Folder and files dont exist, move to next hyperparam setup results/testing/small_area_048_initialtesting/UNet2_200_0.0005_4
+UNet2 with 0.4 0.3 200 0.0005 4 small done at Thu Nov  7 14:37:53 CET 2024
+UNet6 with 0.4 0.3 200 0.0005 4 small start at Thu Nov  7 14:37:53 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Folder and files dont exist, move to next hyperparam setup results/testing/small_area_048_initialtesting/UNet6_200_0.0005_4
+UNet6 with 0.4 0.3 200 0.0005 4 small done at Thu Nov  7 14:37:56 CET 2024
+UNet2 with 0.4 0.3 200 0.0001 10 small start at Thu Nov  7 14:37:56 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Folder and files dont exist, move to next hyperparam setup results/testing/small_area_048_initialtesting/UNet2_200_0.0001_10
+UNet2 with 0.4 0.3 200 0.0001 10 small done at Thu Nov  7 14:38:01 CET 2024
+UNet6 with 0.4 0.3 200 0.0001 10 small start at Thu Nov  7 14:38:01 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Folder and files dont exist, move to next hyperparam setup results/testing/small_area_048_initialtesting/UNet6_200_0.0001_10
+UNet6 with 0.4 0.3 200 0.0001 10 small done at Thu Nov  7 14:38:05 CET 2024
+UNet2 with 0.4 0.3 200 0.001 10 small start at Thu Nov  7 14:38:05 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Folder and files dont exist, move to next hyperparam setup results/testing/small_area_048_initialtesting/UNet2_200_0.001_10
+UNet2 with 0.4 0.3 200 0.001 10 small done at Thu Nov  7 14:38:09 CET 2024
+UNet6 with 0.4 0.3 200 0.001 10 small start at Thu Nov  7 14:38:09 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Folder and files dont exist, move to next hyperparam setup results/testing/small_area_048_initialtesting/UNet6_200_0.001_10
+UNet6 with 0.4 0.3 200 0.001 10 small done at Thu Nov  7 14:38:12 CET 2024
+UNet2 with 0.4 0.3 200 0.005 10 small start at Thu Nov  7 14:38:12 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Folder and files dont exist, move to next hyperparam setup results/testing/small_area_048_initialtesting/UNet2_200_0.005_10
+UNet2 with 0.4 0.3 200 0.005 10 small done at Thu Nov  7 14:38:17 CET 2024
+UNet6 with 0.4 0.3 200 0.005 10 small start at Thu Nov  7 14:38:17 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Folder and files dont exist, move to next hyperparam setup results/testing/small_area_048_initialtesting/UNet6_200_0.005_10
+UNet6 with 0.4 0.3 200 0.005 10 small done at Thu Nov  7 14:38:22 CET 2024
+UNet2 with 0.4 0.3 200 0.0005 10 small start at Thu Nov  7 14:38:22 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Folder and files dont exist, move to next hyperparam setup results/testing/small_area_048_initialtesting/UNet2_200_0.0005_10
+UNet2 with 0.4 0.3 200 0.0005 10 small done at Thu Nov  7 14:38:26 CET 2024
+UNet6 with 0.4 0.3 200 0.0005 10 small start at Thu Nov  7 14:38:26 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+Folder and files dont exist, move to next hyperparam setup results/testing/small_area_048_initialtesting/UNet6_200_0.0005_10
+UNet6 with 0.4 0.3 200 0.0005 10 small done at Thu Nov  7 14:38:30 CET 2024
+SBATCH job finished

@@ -1,0 +1,161 @@
+SBATCH job
+Started 06/11/2024 08:42:19
+Working directory /eejit/home/hausw001/HybGGM/hybGGM_test
+UNet6 with 0.4 0.3 50 0.0001 64 half start at Wed Nov  6 08:42:23 CET 2024
+current path /eejit/home/hausw001/HybGGM/hybGGM_test
+data testing folder already prepared
+data testing folder already prepared
+Hyperparameter tuning definition and start
+testSize: 0.4 trainSize: 0.3 epochs: 50 learning_rate: 0.0001 batch_size: 64 model_type: UNet6
+Epoch 1/50
+Epoch [1/50], Training Loss: 0.0549, Validation Loss: 0.0460
+Best model saved!
+Epoch 2/50
+Epoch [2/50], Training Loss: 0.0515, Validation Loss: 0.0459
+Best model saved!
+Epoch 3/50
+Epoch [3/50], Training Loss: 0.0497, Validation Loss: 0.0459
+Best model saved!
+Epoch 4/50
+Epoch [4/50], Training Loss: 0.0480, Validation Loss: 0.0459
+Best model saved!
+Epoch 5/50
+Epoch [5/50], Training Loss: 0.0464, Validation Loss: 0.0458
+Best model saved!
+Epoch 6/50
+Epoch [6/50], Training Loss: 0.0451, Validation Loss: 0.0458
+Best model saved!
+Epoch 7/50
+Epoch [7/50], Training Loss: 0.0439, Validation Loss: 0.0457
+Best model saved!
+Epoch 8/50
+Epoch [8/50], Training Loss: 0.0428, Validation Loss: 0.0457
+Best model saved!
+Epoch 9/50
+Epoch [9/50], Training Loss: 0.0419, Validation Loss: 0.0456
+Best model saved!
+Epoch 10/50
+Epoch [10/50], Training Loss: 0.0413, Validation Loss: 0.0455
+Best model saved!
+Epoch 11/50
+Epoch [11/50], Training Loss: 0.0412, Validation Loss: 0.0454
+Best model saved!
+Epoch 12/50
+Epoch [12/50], Training Loss: 0.0402, Validation Loss: 0.0453
+Best model saved!
+Epoch 13/50
+Epoch [13/50], Training Loss: 0.0398, Validation Loss: 0.0452
+Best model saved!
+Epoch 14/50
+Epoch [14/50], Training Loss: 0.0391, Validation Loss: 0.0451
+Best model saved!
+Epoch 15/50
+Epoch [15/50], Training Loss: 0.0385, Validation Loss: 0.0449
+Best model saved!
+Epoch 16/50
+Epoch [16/50], Training Loss: 0.0380, Validation Loss: 0.0448
+Best model saved!
+Epoch 17/50
+Epoch [17/50], Training Loss: 0.0373, Validation Loss: 0.0446
+Best model saved!
+Epoch 18/50
+Epoch [18/50], Training Loss: 0.0367, Validation Loss: 0.0444
+Best model saved!
+Epoch 19/50
+Epoch [19/50], Training Loss: 0.0365, Validation Loss: 0.0442
+Best model saved!
+Epoch 20/50
+Epoch [20/50], Training Loss: 0.0369, Validation Loss: 0.0438
+Best model saved!
+Epoch 21/50
+Epoch [21/50], Training Loss: 0.0359, Validation Loss: 0.0434
+Best model saved!
+Epoch 22/50
+Epoch [22/50], Training Loss: 0.0359, Validation Loss: 0.0431
+Best model saved!
+Epoch 23/50
+Epoch [23/50], Training Loss: 0.0349, Validation Loss: 0.0427
+Best model saved!
+Epoch 24/50
+Epoch [24/50], Training Loss: 0.0352, Validation Loss: 0.0422
+Best model saved!
+Epoch 25/50
+Epoch [25/50], Training Loss: 0.0345, Validation Loss: 0.0416
+Best model saved!
+Epoch 26/50
+Epoch [26/50], Training Loss: 0.0341, Validation Loss: 0.0411
+Best model saved!
+Epoch 27/50
+Epoch [27/50], Training Loss: 0.0341, Validation Loss: 0.0408
+Best model saved!
+Epoch 28/50
+Epoch [28/50], Training Loss: 0.0335, Validation Loss: 0.0401
+Best model saved!
+Epoch 29/50
+Epoch [29/50], Training Loss: 0.0333, Validation Loss: 0.0395
+Best model saved!
+Epoch 30/50
+Epoch [30/50], Training Loss: 0.0330, Validation Loss: 0.0392
+Best model saved!
+Epoch 31/50
+Epoch [31/50], Training Loss: 0.0327, Validation Loss: 0.0384
+Best model saved!
+Epoch 32/50
+Epoch [32/50], Training Loss: 0.0328, Validation Loss: 0.0383
+Best model saved!
+Epoch 33/50
+Epoch [33/50], Training Loss: 0.0323, Validation Loss: 0.0377
+Best model saved!
+Epoch 34/50
+Epoch [34/50], Training Loss: 0.0319, Validation Loss: 0.0371
+Best model saved!
+Epoch 35/50
+Epoch [35/50], Training Loss: 0.0317, Validation Loss: 0.0370
+Best model saved!
+Epoch 36/50
+Epoch [36/50], Training Loss: 0.0314, Validation Loss: 0.0367
+Best model saved!
+Epoch 37/50
+Epoch [37/50], Training Loss: 0.0310, Validation Loss: 0.0360
+Best model saved!
+Epoch 38/50
+Epoch [38/50], Training Loss: 0.0308, Validation Loss: 0.0356
+Best model saved!
+Epoch 39/50
+Epoch [39/50], Training Loss: 0.0308, Validation Loss: 0.0357
+Epoch 40/50
+Epoch [40/50], Training Loss: 0.0311, Validation Loss: 0.0349
+Best model saved!
+Epoch 41/50
+Epoch [41/50], Training Loss: 0.0303, Validation Loss: 0.0357
+Epoch 42/50
+Epoch [42/50], Training Loss: 0.0305, Validation Loss: 0.0341
+Best model saved!
+Epoch 43/50
+Epoch [43/50], Training Loss: 0.0303, Validation Loss: 0.0334
+Best model saved!
+Epoch 44/50
+Epoch [44/50], Training Loss: 0.0300, Validation Loss: 0.0339
+Epoch 45/50
+Epoch [45/50], Training Loss: 0.0297, Validation Loss: 0.0339
+Epoch 46/50
+Epoch [46/50], Training Loss: 0.0294, Validation Loss: 0.0332
+Best model saved!
+Epoch 47/50
+Epoch [47/50], Training Loss: 0.0292, Validation Loss: 0.0327
+Best model saved!
+Epoch 48/50
+Epoch [48/50], Training Loss: 0.0290, Validation Loss: 0.0326
+Best model saved!
+Epoch 49/50
+Epoch [49/50], Training Loss: 0.0286, Validation Loss: 0.0322
+Best model saved!
+Epoch 50/50
+Epoch [50/50], Training Loss: 0.0284, Validation Loss: 0.0318
+Best model saved!
+Test Loss: 0.0220
+done with hyperparameter tuning training
+Model type: UNet6, Epochs: 50, Learning rate: 0.0001, Batch size: 64
+Hyperparameter tuning prediction finished
+UNet6 with 0.4 0.3 50 0.0001 64 half done at Wed Nov  6 17:36:07 CET 2024
+SBATCH job finished

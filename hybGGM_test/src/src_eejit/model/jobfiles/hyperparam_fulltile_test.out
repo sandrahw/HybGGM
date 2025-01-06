@@ -1,0 +1,6 @@
+SBATCH job
+Started 06/11/2024 15:39:06
+Working directory /eejit/home/hausw001/HybGGM/hybGGM_test
+UNet6 with 0.4 0.3 50 0.0001 64 full start at Wed Nov  6 15:39:08 CET 2024
+UNet6 with 0.4 0.3 50 0.0001 64 full done at Wed Nov  6 15:51:00 CET 2024
+SBATCH job finished
