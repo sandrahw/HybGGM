@@ -1,6 +1,0 @@
-
-CondaError: Run 'conda init' before 'conda activate'
-
-/eejit/home/hausw001/.conda/envs/env_hybGGM/lib/python3.10/site-packages/xarray/backends/plugins.py:75: RuntimeWarning: Engine 'rasterio' loading failed:
-/eejit/home/hausw001/.conda/envs/env_hybGGM/lib/python3.10/site-packages/rasterio/../../../libgdal.so.30: undefined symbol: _ZN21GfxICCBasedColorSpace15buildTransformsEP8GfxState
-  warnings.warn(f"Engine {name!r} loading failed:\n{ex}", RuntimeWarning)
