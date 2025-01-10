@@ -32,7 +32,6 @@ def set_seed(seed):
 set_seed(10)
 
 '''define general path, data length, case area, number of epochs, learning rate and batch size'''
-# general_path = r'C:\Users\hausw001\surfdrive - Hauswirth, S.M. (Sandra)@surfdrive.surf.nl'
 # define the number of months in the dataset and the number of epochs
 data_length = 72 # number of months in current dataset (needed for dataprep function to extend the static parameters)
 def_epochs = 10
@@ -45,26 +44,10 @@ patience = 5
 lon_bounds = (7, 10) #CH bounds(5,10)
 lat_bounds = (47, 50)#CH bounds(45,50)
 
-
-# small_lon_bounds = (7, 10) #CH bounds(5,10)#360x360
-# small_lat_bounds = (47, 50)#CH bounds(45,50)#360x360
-# large_lon_bounds = (5, 11) #CH bounds(5,10)
-# large_lat_bounds = (45, 51)#CH bounds(45,50)
-# half_lon_bounds = (5, 12.5) 
-# half_lat_bounds = (45, 52.5)
-
-# map_tile = xr.open_dataset(r'..\data\temp\wtd.nc')
-# fig, axs = plt.subplots(1, 1, figsize=(10, 10))
-# map_tile.Band1[0].plot(ax=axs)
-# axs.add_patch(plt.Rectangle((lon_bounds[0], lat_bounds[0]), lon_bounds[1] - lon_bounds[0], lat_bounds[1] - lat_bounds[0], fill=None, color='red'))
-# axs.add_patch(plt.Rectangle((small_lon_bounds[0], small_lat_bounds[0]), small_lon_bounds[1] - small_lon_bounds[0], small_lat_bounds[1] - small_lat_bounds[0], fill=None, color='red'))
-# axs.add_patch(plt.Rectangle((large_lon_bounds[0], large_lat_bounds[0]), large_lon_bounds[1] - large_lon_bounds[0], large_lat_bounds[1] - large_lat_bounds[0], fill=None, color='blue'))
-# axs.add_patch(plt.Rectangle((half_lon_bounds[0], half_lat_bounds[0]), half_lon_bounds[1] - half_lon_bounds[0], half_lat_bounds[1] - half_lat_bounds[0], fill=None, color='green'))
-# plt.tight_layout()
     
 '''create log directory for tensorboard logs'''
-log_directory = r'..\training\logs\%s_%s_%s_%s_%s_CNN_LSTM' %(targetvar, def_epochs, lr_rate ,batchSize, kernel)
-log_dir_fig = r'..\training\logs\%s_%s_%s_%s_%s_CNN_LSTM\spatial_eval_plots' %(targetvar, def_epochs, lr_rate ,batchSize, kernel)
+log_directory = r'..\training\logs_dev2\%s_%s_%s_%s_%s_CNN' %(targetvar, def_epochs, lr_rate ,batchSize, kernel)
+log_dir_fig = r'..\training\logs_dev2\%s_%s_%s_%s_%s_CNN\figures' %(targetvar, def_epochs, lr_rate ,batchSize, kernel)
 #create folder in case not there yet
 if not os.path.exists(log_directory):
     os.makedirs(log_directory) 
@@ -101,19 +84,20 @@ params_initial = ['bottom_lowermost_layer', 'bottom_uppermost_layer',
  'top_uppermost_layer',
  'vertical_conductivity_lowermost_layer', 'vertical_conductivity_uppermost_layer']
 
-params_sel = ['bed_conductance_used_para',
-            'initial_head_uppermost_layer_para',
-            'top_uppermost_layer',
-            'horizontal_conductivity_uppermost_layer',
-            'bottom_uppermost_layer',
-            'vertical_conductivity_uppermost_layer',
-            'drain_conductance',
-            'primary_storage_coefficient_uppermost_layer',
-            'surface_water_elevation',
-            'net_RCH',
-            'drain_elevation_uppermost_layer',
-            'abstraction_uppermost_layer',
-            'surface_water_bed_elevation_used']
+params_sel = ['abstraction_uppermost_layer',
+              'bed_conductance_used',
+              'bottom_uppermost_layer',
+              'drain_conductance',
+              'drain_elevation_uppermost_layer',
+              'horizontal_conductivity_uppermost_layer',
+              'initial_head_uppermost_layer',
+              'net_RCH', 
+              'primary_storage_coefficient_uppermost_layer',
+              'surface_water_bed_elevation_used',
+              'surface_water_elevation',
+              'top_uppermost_layer',
+              'vertical_conductivity_uppermost_layer'
+            ]   
 
 def data_prep(f, lat_bounds, lon_bounds, data_length):
     '''function to prepare the data for input by:
