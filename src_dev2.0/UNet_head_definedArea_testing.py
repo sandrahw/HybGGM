@@ -134,6 +134,7 @@ params_sel = ['abstraction_uppermost_layer',
               'wtd'
             ]   
 # select the files that are needed for the input
+params_sel = params_monthly + params_initial
 selInFiles = [f for f in inFiles if f.split('\\')[-1].split('.')[0] in params_sel] 
 '''prepare the data for input by cropping the data to the specified lat and lon bounds for test regions'''
 datacut = []
@@ -481,7 +482,7 @@ class UNet2(nn.Module):
 
 # Instantiate the model, define the loss function and the optimizer
 writer = SummaryWriter(log_dir=log_directory)
-model = UNet2(input_channels=13, output_channels=1)
+model = UNet2(input_channels=X.shape[1], output_channels=1)
 
 
 

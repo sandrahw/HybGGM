@@ -136,6 +136,7 @@ params_sel = ['abstraction_uppermost_layer',
               'wtd'
             ]   
 # select the files that are needed for the input
+params_sel = params_monthly + params_initial
 selInFiles = [f for f in inFiles if f.split('\\')[-1].split('.')[0] in params_sel] 
 '''prepare the data for input by cropping the data to the specified lat and lon bounds for test regions'''
 datacut = []
@@ -271,69 +272,70 @@ val_loader = DataLoader(val_dataset, batch_size=batchSize, shuffle=False)
 all_loader = DataLoader(all_dataset, batch_size=batchSize, shuffle=False)
 print(next(iter(train_loader))[0].shape)
 
-# # LSTM model
-# class LSTM(nn.Module):
-#     def __init__(self, input_size, hidden_size, num_layers, output_size):
-#         super(LSTM, self).__init__()
-#         self.lstm = nn.LSTM(input_size, hidden_size, num_layers, batch_first=True)
-#         self.fc = nn.Linear(hidden_size, output_size)
-
-#     def forward(self, inputs):
-#         batch_size = inputs.size(0)
-#         inputs = inputs.permute(0, 1, 2)  # [batch_size, seq_len, features]
-#         lstm_out, _ = self.lstm(inputs)
-#         out = self.fc(lstm_out)
-#         return out
-
-# writer = SummaryWriter(log_dir=log_directory)
-# model = LSTM(input_size=X.shape[1], hidden_size=hidden_size, num_layers=num_layers, output_size=1).to(device)
-
-class ImprovedFullSequenceLSTM(nn.Module):
-    def __init__(self, input_size, hidden_size, num_layers, output_size, dropout_rate=0.3):
-        super(ImprovedFullSequenceLSTM, self).__init__()
-        
-        # Encoder LSTM
-        self.encoder_lstm = nn.LSTM(input_size=input_size, 
-                                    hidden_size=hidden_size, 
-                                    num_layers=num_layers, 
-                                    batch_first=True, 
-                                    dropout=dropout_rate)
-        
-        # Batch Normalization for stabilization
-        self.batch_norm = nn.BatchNorm1d(hidden_size)
-        
-        # Decoder LSTM (optional, can use the same LSTM for simplicity)
-        self.decoder_lstm = nn.LSTM(input_size=hidden_size, 
-                                    hidden_size=hidden_size, 
-                                    num_layers=num_layers, 
-                                    batch_first=True, 
-                                    dropout=dropout_rate)
-        
-        # Fully connected layers
-        self.fc = nn.Sequential(
-            nn.Linear(hidden_size, hidden_size // 2),
-            nn.ReLU(),
-            nn.Dropout(dropout_rate),
-            nn.Linear(hidden_size // 2, output_size)
-        )
+# LSTM model
+class LSTM(nn.Module):
+    def __init__(self, input_size, hidden_size, num_layers, output_size):
+        super(LSTM, self).__init__()
+        self.lstm = nn.LSTM(input_size, hidden_size, num_layers, batch_first=True)
+        self.fc = nn.Linear(hidden_size, output_size)
 
     def forward(self, inputs):
-        # Encoder LSTM
-        encoder_out, _ = self.encoder_lstm(inputs)  # Shape: [batch_size, seq_len, hidden_size]
-        
-        # Batch normalization
-        encoder_out = self.batch_norm(encoder_out.permute(0, 2, 1)).permute(0, 2, 1)  # Normalizing across features
-        
-        # Decoder LSTM
-        decoder_out, _ = self.decoder_lstm(encoder_out)  # Shape: [batch_size, seq_len, hidden_size]
-        
-        # Fully connected layers for sequence prediction
-        output = self.fc(decoder_out)  # Shape: [batch_size, seq_len, output_size]
-        
-        return output    
+        batch_size = inputs.size(0)
+        inputs = inputs.permute(0, 1, 2)  # [batch_size, seq_len, features]
+        lstm_out, _ = self.lstm(inputs)
+        out = self.fc(lstm_out)
+        return out
 
+    
 writer = SummaryWriter(log_dir=log_directory)
-model = ImprovedFullSequenceLSTM(input_size=X.shape[1], hidden_size=hidden_size, num_layers=num_layers, output_size=1).to(device)
+model = LSTM(input_size=X.shape[1], hidden_size=hidden_size, num_layers=num_layers, output_size=1).to(device)
+
+# class ImprovedFullSequenceLSTM(nn.Module):
+#     def __init__(self, input_size, hidden_size, num_layers, output_size, dropout_rate=0.3):
+#         super(ImprovedFullSequenceLSTM, self).__init__()
+        
+#         # Encoder LSTM
+#         self.encoder_lstm = nn.LSTM(input_size=input_size, 
+#                                     hidden_size=hidden_size, 
+#                                     num_layers=num_layers, 
+#                                     batch_first=True, 
+#                                     dropout=dropout_rate)
+        
+#         # Batch Normalization for stabilization
+#         self.batch_norm = nn.BatchNorm1d(hidden_size)
+        
+#         # Decoder LSTM (optional, can use the same LSTM for simplicity)
+#         self.decoder_lstm = nn.LSTM(input_size=hidden_size, 
+#                                     hidden_size=hidden_size, 
+#                                     num_layers=num_layers, 
+#                                     batch_first=True, 
+#                                     dropout=dropout_rate)
+        
+#         # Fully connected layers
+#         self.fc = nn.Sequential(
+#             nn.Linear(hidden_size, hidden_size // 2),
+#             nn.ReLU(),
+#             nn.Dropout(dropout_rate),
+#             nn.Linear(hidden_size // 2, output_size)
+#         )
+
+#     def forward(self, inputs):
+#         # Encoder LSTM
+#         encoder_out, _ = self.encoder_lstm(inputs)  # Shape: [batch_size, seq_len, hidden_size]
+        
+#         # Batch normalization
+#         encoder_out = self.batch_norm(encoder_out.permute(0, 2, 1)).permute(0, 2, 1)  # Normalizing across features
+        
+#         # Decoder LSTM
+#         decoder_out, _ = self.decoder_lstm(encoder_out)  # Shape: [batch_size, seq_len, hidden_size]
+        
+#         # Fully connected layers for sequence prediction
+#         output = self.fc(decoder_out)  # Shape: [batch_size, seq_len, output_size]
+        
+#         return output    
+
+# writer = SummaryWriter(log_dir=log_directory)
+# model = ImprovedFullSequenceLSTM(input_size=X.shape[1], hidden_size=hidden_size, num_layers=num_layers, output_size=1).to(device)
 ''' RS target wtd'''
 def rmse_lstm(outputs, targets):
     diff = (targets - outputs)

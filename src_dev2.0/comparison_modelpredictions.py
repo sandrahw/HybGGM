@@ -12,7 +12,7 @@ LSTM = xr.open_dataset(r'%s\full_pred_denorm.nc' % [f for f in folders if '_LSTM
 UNetLSTM = xr.open_dataset(r'%s\full_pred_denorm.nc' % [f for f in folders if '_CNNLSTMinp' in f][0]).to_array().values
 LSTMUNet = xr.open_dataset(r'%s\full_pred_denorm.nc' % [f for f in folders if '_LSTMCNNinp' in f][0]).to_array().values
 
-target = np.load(r'%s\y.npy' %[f for f in folders if '_LSTM_CNNinp' in f][0])
+target = np.load(r'%s\y.npy' %[f for f in folders if '_LSTMCNNinp' in f][0])
 target = target[:, 0, :, :]
 UNet = UNet[0,:, :, :]
 LSTM = LSTM[0,:, :, :]
@@ -41,7 +41,7 @@ limdiff = max(abs(min_diff), abs(max_diff))
 
 for i in np.arange(0, len(target))[-1:]:
     print(i)
-    plt.figure(figsize=(30,10))
+    plt.figure(figsize=(20,10))
     plt.subplot(1, 5, 1)
     plt.imshow(target[i,:,:], cmap='viridis',vmin=min_val, vmax=max_val)
     plt.colorbar(shrink=0.5)
@@ -65,7 +65,7 @@ for i in np.arange(0, len(target))[-1:]:
     plt.tight_layout
     plt.savefig(r'%s\comparison_models_to_target_ts_%s.png' % (training_folder, i))
 
-    plt.figure(figsize=(30,10))
+    plt.figure(figsize=(20,10))
     plt.subplot(1, 4, 1)
     plt.imshow(diff_UNet[i,:,:], cmap='RdBu',vmin=-limdiff, vmax=limdiff)
     plt.colorbar(shrink=0.5)
@@ -106,7 +106,7 @@ plt.ylim(0, max_val)
 plt.xlabel('target')
 plt.ylabel('model')
 plt.tight_layout
-plt.savefig(r'%s\comparison_models_to_target_scatter_UNet.png' % (training_folder))
+plt.savefig(r'%s\comparison_models_to_target_scatter_UNet.png' % (training_folder),bbox_inches='tight')
 
 plt.figure(figsize=(10,10))
 plt.scatter(target[:,:,:].flatten(), LSTM[:,:,:].flatten(), s=1, c='r', label='LSTM', alpha=0.5)
@@ -115,7 +115,7 @@ plt.ylim(0, max_val)
 plt.xlabel('target')
 plt.ylabel('model')
 plt.tight_layout
-plt.savefig(r'%s\comparison_models_to_target_scatter_LSTM.png' % (training_folder))
+plt.savefig(r'%s\comparison_models_to_target_scatter_LSTM.png' % (training_folder),bbox_inches='tight')
 
 plt.figure(figsize=(10,10))
 plt.scatter(target[:,:,:].flatten(), UNetLSTM[:,:,:].flatten(), s=1, c='g', label='UNetLSTM', alpha=0.5)
@@ -124,7 +124,7 @@ plt.ylim(0, max_val)
 plt.xlabel('target')
 plt.ylabel('model')
 plt.tight_layout
-plt.savefig(r'%s\comparison_models_to_target_scatter_UNetLSTM.png' % (training_folder))
+plt.savefig(r'%s\comparison_models_to_target_scatter_UNetLSTM.png' % (training_folder),bbox_inches='tight')
 
 plt.figure(figsize=(10,10))
 plt.scatter(target[:,:,:].flatten(), LSTMUNet[:,:,:].flatten(), s=1, c='y', label='LSTMUNet', alpha=0.5)
@@ -133,7 +133,7 @@ plt.ylim(0, max_val)
 plt.xlabel('target')
 plt.ylabel('model')
 plt.tight_layout    
-plt.savefig(r'%s\comparison_models_to_target_scatter_LSTMUNet.png' % (training_folder))
+plt.savefig(r'%s\comparison_models_to_target_scatter_LSTMUNet.png' % (training_folder),bbox_inches='tight')
 
 
 # plt.subplot(1, 5, 5)
@@ -143,7 +143,7 @@ plt.scatter(target[:,:,:].flatten(), LSTM[:,:,:].flatten(), s=1, c='r', label='L
 plt.scatter(target[:,:,:].flatten(), UNetLSTM[:,:,:].flatten(), s=1, c='g', label='UNetLSTM', alpha=0.5)
 plt.scatter(target[:,:,:].flatten(), LSTMUNet[:,:,:].flatten(), s=1, c='y', label='LSTMUNet', alpha=0.5)
 plt.legend()
-plt.savefig(r'%s\comparison_models_to_target_scatter.png' % (training_folder))
+plt.savefig(r'%s\comparison_models_to_target_scatter.png' % (training_folder),bbox_inches='tight')
 
 difflstms = LSTM - LSTMUNet
 
@@ -154,7 +154,7 @@ plt.figure(figsize=(10,10))
 plt.imshow(difflstms[0,:,:], cmap='RdBu',vmin=-limlstms, vmax=limlstms)
 plt.colorbar()
 plt.title('diff LSTM - LSTMUNet')
-plt.savefig(r'%s\comparison_diff_LSTM_LSTMUNet.png' % (training_folder))
+plt.savefig(r'%s\comparison_diff_LSTM_LSTMUNet.png' % (training_folder),bbox_inches='tight')
 
 minunets = UNet - UNetLSTM
 minunet = np.min(np.percentile(minunets, 1))
@@ -164,7 +164,7 @@ plt.figure(figsize=(10,10))
 plt.imshow(minunets[0,:,:], cmap='RdBu',vmin=-limunets, vmax=limunets)
 plt.colorbar()
 plt.title('diff UNet - UNetLSTM')
-plt.savefig(r'%s\comparison_diff_UNet_UNetLSTM.png' % (training_folder))
+plt.savefig(r'%s\comparison_diff_UNet_UNetLSTM.png' % (training_folder),bbox_inches='tight')
 
 
 mixedmodel = UNetLSTM - LSTMUNet
@@ -175,18 +175,18 @@ plt.figure(figsize=(10,10))
 plt.imshow(mixedmodel[0,:,:], cmap='RdBu',vmin=-limmixed, vmax=limmixed)
 plt.colorbar()
 plt.title('diff UNetLSTM - LSTMUNet')
-plt.savefig(r'%s\comparison_diff_UNetLSTM_LSTMUNet.png' % (training_folder))
+plt.savefig(r'%s\comparison_diff_UNetLSTM_LSTMUNet.png' % (training_folder),bbox_inches='tight')
 
 
 plt.figure(figsize=(10,10))
-plt.hist(UNet.flatten(), bins=100, label='UNet', histtype='step', color='r')
-plt.hist(LSTM.flatten(), bins=100, label='LSTM', histtype='step', color='blue')
-plt.hist(UNetLSTM.flatten(), bins=100, label='UNetLSTM', histtype='step', color='orange')
-plt.hist(LSTMUNet.flatten(), bins=100, label='LSTMUNet', histtype='step', color='green')
+plt.hist(UNet.flatten(), bins=100, label='UNet', histtype='step', color='blue')
+plt.hist(LSTM.flatten(), bins=100, label='LSTM', histtype='step', color='red')
+plt.hist(UNetLSTM.flatten(), bins=100, label='UNetLSTM', histtype='step', color='green')
+plt.hist(LSTMUNet.flatten(), bins=100, label='LSTMUNet', histtype='step', color='orange')
 #plot target hist empty just the outline in black
 plt.hist(target.flatten(), bins=100, label='target', histtype='step', color='k')
 plt.legend()
-plt.savefig(r'%s\comparison_models_to_target_hist.png' % (training_folder))
+plt.savefig(r'%s\comparison_models_to_target_hist.png' % (training_folder),bbox_inches='tight')
 
 
 
@@ -229,15 +229,15 @@ plt.imshow(corr_LSTMUNet, cmap='RdBu',vmin=-1, vmax=1)
 plt.colorbar(shrink=0.5)
 plt.title('corr LSTMUNet')
 plt.tight_layout
-plt.savefig(r'%s\comparison_corr_models_to_target.png' % (training_folder))
+plt.savefig(r'%s\comparison_corr_models_to_target.png' % (training_folder),bbox_inches='tight')
 
 plt.figure(figsize=(10,10))
-plt.hist(corr_UNet.flatten(), bins=100, label='UNet', histtype='step', color='r')
-plt.hist(corr_LSTM.flatten(), bins=100, label='LSTM', histtype='step', color='blue')
-plt.hist(corr_UNetLSTM.flatten(), bins=100, label='UNetLSTM', histtype='step', color='orange')
-plt.hist(corr_LSTMUNet.flatten(), bins=100, label='LSTMUNet', histtype='step', color='green')
+plt.hist(corr_UNet.flatten(), bins=100, label='UNet', histtype='step', color='blue')
+plt.hist(corr_LSTM.flatten(), bins=100, label='LSTM', histtype='step', color='red')
+plt.hist(corr_UNetLSTM.flatten(), bins=100, label='UNetLSTM', histtype='step', color='green')
+plt.hist(corr_LSTMUNet.flatten(), bins=100, label='LSTMUNet', histtype='step', color='orange')
 plt.legend()
-plt.savefig(r'%s\comparison_corr_models_to_target_hist.png' % (training_folder))
+plt.savefig(r'%s\comparison_corr_models_to_target_hist.png' % (training_folder),bbox_inches='tight')
 
 
 #pick a few random locations and plot time series from both target and models in different subplots while highlighting the location in one supblot with the map and dots for the location
@@ -245,25 +245,99 @@ import random
 import matplotlib.pyplot as plt
 import numpy as np
 
+
+plot_iter = 4
 n = 5
 n_lat = target.shape[1]
 n_lon = target.shape[2]
-rand_lat = random.sample(range(n_lat), n)
-rand_lon = random.sample(range(n_lon), n)
+for pi in range(plot_iter):  
+    rand_lat = random.sample(range(n_lat), n)
+    rand_lon = random.sample(range(n_lon), n)
 
-plt.figure(figsize=(30, 5))
-plt.subplot(1, 6, 1)
-plt.imshow(target[0, :, :], cmap='grey')
-plt.scatter(rand_lon, rand_lat, c='r', s=50)
-# plt.figure(figsize=(13, 10))
-for i in range(n):
-    plt.subplot(1, 6, 2+i)
-    plt.plot(target[:, rand_lat[i], rand_lon[i]], label='target', color='black')
-    plt.plot(UNet[:, rand_lat[i], rand_lon[i]], label='UNet', color='red')
-    plt.plot(LSTM[:, rand_lat[i], rand_lon[i]], label='LSTM', color='blue')
-    plt.plot(UNetLSTM[:, rand_lat[i], rand_lon[i]], label='UNetLSTM', color='orange')
-    plt.plot(LSTMUNet[:, rand_lat[i], rand_lon[i]], label='LSTMUNet', color='green')
+    plt.figure(figsize=(30, 5))
+    plt.subplot(1, 6, 1)
+    plt.imshow(target[0, :, :], cmap='grey')
+    for i in range(n):
+        plt.scatter(rand_lon[i], rand_lat[i], c='r', s=50)
+        plt.text(rand_lon[i], rand_lat[i], str(i), fontsize=14, c='r')
+    # plt.figure(figsize=(13, 10))
+    for i in range(n):
+        plt.subplot(1, 6, 2+i)
+        plt.plot(target[:, rand_lat[i], rand_lon[i]], label='target', color='black')
+        plt.plot(UNet[:, rand_lat[i], rand_lon[i]], label='UNet', color='blue')
+        plt.plot(LSTM[:, rand_lat[i], rand_lon[i]], label='LSTM', color='red')
+        plt.plot(UNetLSTM[:, rand_lat[i], rand_lon[i]], label='UNetLSTM', color='green')
+        plt.plot(LSTMUNet[:, rand_lat[i], rand_lon[i]], label='LSTMUNet', color='orange')
+        plt.title('Location %s' % i)
+    plt.legend()
+    plt.tight_layout
+    plt.savefig(r'%s\comparison_models_to_target_ts_random_loc_%s.png' % (training_folder, pi),bbox_inches='tight')
+
+
+
+
+
+#compare toplayer vs two layer model performance
+
+training_folder = r'C:\Users\hausw001\surfdrive - Hauswirth, S.M. (Sandra)@surfdrive.surf.nl\Scripts\HybGGM\training\logs_dev2'
+toplayer = r'..\training\logs_dev2\initial_testing_toplayer_simpleLSTM'
+twolayer = r'..\training\logs_dev2\initial_testing_twolayers'
+
+folders1 = glob.glob(r'%s\head*' % toplayer)
+folders2 = glob.glob(r'%s\head*' % twolayer)
+
+UNet1 = xr.open_dataset(r'%s\full_pred_denorm.nc' % [f for f in folders1 if '_CNN' in f][0]).to_array().values
+LSTM1 = xr.open_dataset(r'%s\full_pred_denorm.nc' % [f for f in folders1 if '_LSTM' in f][1]).to_array().values
+UNetLSTM1 = xr.open_dataset(r'%s\full_pred_denorm.nc' % [f for f in folders1 if '_CNNLSTMinp' in f][0]).to_array().values
+LSTMUNet1 = xr.open_dataset(r'%s\full_pred_denorm.nc' % [f for f in folders1 if '_LSTMCNNinp' in f][0]).to_array().values
+
+UNet2 = xr.open_dataset(r'%s\full_pred_denorm.nc' % [f for f in folders2 if '_CNN' in f][0]).to_array().values
+LSTM2 = xr.open_dataset(r'%s\full_pred_denorm.nc' % [f for f in folders2 if '_LSTM' in f][1]).to_array().values
+UNetLSTM2 = xr.open_dataset(r'%s\full_pred_denorm.nc' % [f for f in folders2 if '_CNNLSTMinp' in f][0]).to_array().values
+LSTMUNet2 = xr.open_dataset(r'%s\full_pred_denorm.nc' % [f for f in folders2 if '_LSTMCNNinp' in f][0]).to_array().values
+
+target = np.load(r'%s\y.npy' %[f for f in folders1 if '_LSTMCNNinp' in f][0])
+target = target[:, 0, :, :]
+UNet1 = UNet1[0,:, :, :]
+LSTM1 = LSTM1[0,:, :, :]
+UNetLSTM1 = UNetLSTM1[0,:, :, :]
+LSTMUNet1 = LSTMUNet1[0,:, :, :]
+
+UNet2 = UNet2[0,:, :, :]
+LSTM2 = LSTM2[0,:, :, :]
+UNetLSTM2 = UNetLSTM2[0,:, :, :]
+LSTMUNet2 = LSTMUNet2[0,:, :, :]
+
+max_val = np.max(target)
+
+plt.figure(figsize=(10,10))
+plt.scatter(target[:,:,:].flatten(), UNet1[:,:,:].flatten(), s=1, c='b', label='UNet onelayer', alpha=0.5)
+plt.scatter(target[:,:,:].flatten(), UNet2[:,:,:].flatten(), s=1, c='r', label='UNet twolayer', alpha=0.5)
+plt.xlim(0,max_val)
+plt.ylim(0,max_val)
 plt.legend()
+plt.savefig(r'%s\comparison_models_to_target_scatter_UNet_onelayer_vs_twolayer.png' % (training_folder),bbox_inches='tight')
 
+plt.figure(figsize=(10,10))
+plt.scatter(target[:,:,:].flatten(), LSTM1[:,:,:].flatten(), s=1, c='b', label='LSTM onelayer', alpha=0.5)
+plt.scatter(target[:,:,:].flatten(), LSTM2[:,:,:].flatten(), s=1, c='r', label='LSTM twolayer', alpha=0.5)
+plt.xlim(0,max_val)
+plt.ylim(0,max_val)
+plt.legend()
+plt.savefig(r'%s\comparison_models_to_target_scatter_LSTM_onelayer_vs_twolayer.png' % (training_folder),bbox_inches='tight')
 
+plt.figure(figsize=(10,10))
+plt.scatter(target[:,:,:].flatten(), UNetLSTM1[:,:,:].flatten(), s=1, c='b', label='UNetLSTM onelayer', alpha=0.5)
+plt.scatter(target[:,:,:].flatten(), UNetLSTM2[:,:,:].flatten(), s=1, c='r', label='UNetLSTM twolayer', alpha=0.5)
+plt.xlim(0,max_val)
+plt.ylim(0,max_val)
+plt.legend()
+plt.savefig(r'%s\comparison_models_to_target_scatter_UNetLSTM_onelayer_vs_twolayer.png' % (training_folder),bbox_inches='tight')
 
+plt.figure(figsize=(10,10))
+plt.scatter(target[:,:,:].flatten(), LSTMUNet1[:,:,:].flatten(), s=1, c='b', label='LSTMUNet onelayer', alpha=0.5)
+plt.scatter(target[:,:,:].flatten(), LSTMUNet2[:,:,:].flatten(), s=1, c='r', label='LSTMUNet twolayer', alpha=0.5)
+plt.xlim(0,max_val)
+plt.ylim(0,max_val)
+plt.legend()
+plt.savefig(r'%s\comparison_models_to_target_scatter_LSTMUNet_onelayer_vs_twolayer.png' % (training_folder),bbox_inches='tight')
