@@ -78,8 +78,9 @@ lat_bounds = (47, 50)#CH bounds(45,50)
 
     
 '''create log directory for tensorboard logs'''
-log_directory = r'..\training\logs_dev2\%s_%s_%s_%s_%s_CNN_LSTMinp' %(targetvar, def_epochs, lr_rate ,batchSize, kernel)
-log_dir_fig = r'..\training\logs_dev2\%s_%s_%s_%s_%s_CNN_LSTMinp\figures' %(targetvar, def_epochs, lr_rate ,batchSize, kernel)
+log_directory = r'..\training\logs_dev2\%s_%s_%s_%s_%s_CNNLSTMinp' %(targetvar, def_epochs, lr_rate ,batchSize, kernel)
+log_dir_fig = r'..\training\logs_dev2\%s_%s_%s_%s_%s_CNNLSTMinp\figures' %(targetvar, def_epochs, lr_rate ,batchSize, kernel)
+temp_model_output = r'..\data\temp_model_output'
 #create folder in case not there yet
 if not os.path.exists(log_directory):
     os.makedirs(log_directory) 
@@ -134,7 +135,7 @@ params_sel = ['abstraction_uppermost_layer',
 # select the files that are needed for the input
 selInFiles = [f for f in inFiles if f.split('\\')[-1].split('.')[0] in params_sel] 
 '''prepare the data for input by cropping the data to the specified lat and lon bounds for test regions'''
-LSTM_input = xr.open_dataset(r'C:\Users\hausw001\surfdrive - Hauswirth, S.M. (Sandra)@surfdrive.surf.nl\Scripts\HybGGM\training\logs_dev2\head_10_0.001_10_16_2_LSTM_tr0.3_newlstm\full_pred.nc')
+LSTM_input = xr.open_dataset(r'%s\full_pred_denorm_LSTM.nc'%temp_model_output)
 lstm_data = LSTM_input.to_array().values
 #reshape the data to match the CNN input
 lstm_data = lstm_data.reshape(lstm_data.shape[1], lstm_data.shape[0], lstm_data.shape[2], lstm_data.shape[3])
@@ -172,11 +173,10 @@ plt.title('target_head')
 plt.colorbar(shrink=0.5)
 
 X_all = np.stack(datacut, axis=1)
-X = X_all[:-1,:,:,:] #remove first month to match the delta wtd data
 # add the LSTM prediction as input
-X = np.concatenate((X, lstm_data), axis=1)
+X = np.concatenate((X_all, lstm_data), axis=1)
 
-y = target_head[1:, np.newaxis, :, :] 
+y = target_head[:, np.newaxis, :, :] 
 np.save(r'%s\X.npy'%log_directory, X)
 np.save(r'%s\y.npy'%log_directory, y)
 
@@ -184,7 +184,7 @@ np.save(r'%s\y.npy'%log_directory, y)
 inp_var_mean = [] # list to store normalisation information for denormalisation later
 inp_var_std = []
 X_norm = []
-for i in range(X.shape[1]):
+for i in range(X.shape[1])[:]:
     mean = X[:, i, :, :].mean()
     std = X[:, i, :, :].std()
     # check if every value in array is 0, if so, skip normalisation
@@ -193,7 +193,6 @@ for i in range(X.shape[1]):
         X_temp = X[:, i, :, :]
     else:
         X_temp = (X[:, i, :, :] - mean) / std
-    # print(mean, std, X_temp)
     X_norm.append(X_temp)
     inp_var_mean.append(mean)
     inp_var_std.append(std)
@@ -224,7 +223,6 @@ y_norm_arr = y_norm_arr.transpose(1, 0, 2, 3)
 np.save(r'%s\y_norm_arr.npy'%log_directory, y_norm_arr)
 np.save(r'%s\out_var_mean.npy'%log_directory, out_var_mean)
 np.save(r'%s\out_var_std.npy'%log_directory, out_var_std)
-
 '''split the patches into training, validation and test sets but keep the time series in order'''
 trainsize = 0.3
 testsize= 0.3
@@ -237,10 +235,10 @@ y_train = y_norm_arr[:int(y_norm_arr.shape[0]*trainsize), :, :, :]
 y_test = y_norm_arr[int(y_norm_arr.shape[0]*trainsize):int(y_norm_arr.shape[0]*(trainsize+testsize)), :, :, :]
 y_val = y_norm_arr[int(y_norm_arr.shape[0]*(trainsize+testsize)):, :, :, :]
 
-maskt = mask[1:, :, :]
-mask_train = maskt[:int(y_norm_arr.shape[0]*trainsize), np.newaxis, :, :]
-mask_test = maskt[int(y_norm_arr.shape[0]*trainsize):int(y_norm_arr.shape[0]*(trainsize+testsize)), np.newaxis,:, :]
-mask_val = maskt[int(y_norm_arr.shape[0]*(trainsize+testsize)):, np.newaxis,:, :]
+
+mask_train = mask[:int(y_norm_arr.shape[0]*trainsize), np.newaxis, :, :]
+mask_test = mask[int(y_norm_arr.shape[0]*trainsize):int(y_norm_arr.shape[0]*(trainsize+testsize)), np.newaxis,:, :]
+mask_val = mask[int(y_norm_arr.shape[0]*(trainsize+testsize)):, np.newaxis,:, :]
 
 np.save(r'%s\mask_train.npy'%log_directory, mask_train)
 np.save(r'%s\mask_val.npy'%log_directory, mask_val)
@@ -645,17 +643,19 @@ def CNN_run_model(model, data_loader):
     all_outputs = np.concatenate(all_outputs, axis=0)
     return all_outputs
 y_pred_val = CNN_run_model(model, validation_loader)
-np.save(r'%s\y_val.npy'%log_directory, y_pred_val)
+y_pred_val_denorm = y_pred_val * out_var_std[0] + out_var_mean[0]
+y_pred_val_nc = xr.DataArray(y_pred_val_denorm[:,0,:,:], dims=['time', 'lat', 'lon'], coords={'time': time[-len(y_val):], 'lat': lat, 'lon': lon})
+y_pred_val_nc.to_netcdf(r'%s\val_pred_denorm.nc'%log_directory)
 
 full_data_loader = DataLoader(CustomDataset(X_norm_arr, y_norm_arr, mask), batch_size=batchSize, shuffle=False)
 y_pred_full = CNN_run_model(model, full_data_loader)
-np.save(r'%s\y_full_pred.npy'%log_directory, y_pred_full)
+np.save(r'%s\full_pred.npy'%log_directory, y_pred_full)
 y_pred_full_denorm = y_pred_full * out_var_std[0] + out_var_mean[0]
-np.save(r'%s\y_full_pred_denorm.npy'%log_directory, y_pred_full_denorm)
 #tranform into netcdf
 y_pred_full_denorm_reshape = y_pred_full_denorm.reshape(y_pred_full_denorm.shape[0], y_pred_full_denorm.shape[2], y_pred_full_denorm.shape[3])
-y_pred_full_nc = xr.DataArray(y_pred_full_denorm_reshape, dims=['time', 'lat', 'lon'], coords={'time': time[:-1], 'lat': lat, 'lon': lon})
-y_pred_full_nc.to_netcdf(r'%s\full_pred.nc'%log_directory)
+y_pred_full_nc = xr.DataArray(y_pred_full_denorm_reshape, dims=['time', 'lat', 'lon'], coords={'time': time, 'lat': lat, 'lon': lon})
+y_pred_full_nc.to_netcdf(r'%s\full_pred_denorm.nc'%log_directory)
+y_pred_full_nc.to_netcdf(r'%s\full_pred_denorm_UNetLSTM.nc'%temp_model_output)
 
 
 min_val = np.min([np.nanmin(y), np.nanmin(y_pred_full_denorm)])

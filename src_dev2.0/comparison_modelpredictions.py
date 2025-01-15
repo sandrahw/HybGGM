@@ -2,14 +2,17 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import xarray as xr
+import glob
 
 training_folder = r'C:\Users\hausw001\surfdrive - Hauswirth, S.M. (Sandra)@surfdrive.surf.nl\Scripts\HybGGM\training\logs_dev2'
-UNet = xr.open_dataset(r'%s\head_10_0.0001_1_3_CNN\full_pred.nc' % training_folder).to_array().values
-LSTM = xr.open_dataset(r'%s\head_10_0.001_10_16_2_LSTM_tr0.3_newlstm\full_pred.nc' % training_folder).to_array().values
-UNetLSTM = xr.open_dataset(r'%s\head_10_0.0001_1_3_CNN_LSTMinp\full_pred.nc' % training_folder).to_array().values
-LSTMUNet = xr.open_dataset(r'%s\head_10_0.001_10_16_2_LSTM_tr0.3_LSTM_CNNinp\full_pred.nc' % training_folder).to_array().values
+folders = glob.glob(r'%s\head*' % training_folder)
 
-target = np.load(r'%s\head_10_0.001_10_16_2_LSTM_tr0.3_LSTM_CNNinp\y.npy' %(training_folder))
+UNet = xr.open_dataset(r'%s\full_pred_denorm.nc' % [f for f in folders if '_CNN' in f][0]).to_array().values
+LSTM = xr.open_dataset(r'%s\full_pred_denorm.nc' % [f for f in folders if '_LSTM' in f][1]).to_array().values
+UNetLSTM = xr.open_dataset(r'%s\full_pred_denorm.nc' % [f for f in folders if '_CNNLSTMinp' in f][0]).to_array().values
+LSTMUNet = xr.open_dataset(r'%s\full_pred_denorm.nc' % [f for f in folders if '_LSTMCNNinp' in f][0]).to_array().values
+
+target = np.load(r'%s\y.npy' %[f for f in folders if '_LSTM_CNNinp' in f][0])
 target = target[:, 0, :, :]
 UNet = UNet[0,:, :, :]
 LSTM = LSTM[0,:, :, :]
@@ -36,7 +39,7 @@ min_diff = np.min(diffpercthresh)
 max_diff = np.max(diffpercthresh)
 limdiff = max(abs(min_diff), abs(max_diff))
 
-for i in np.arange(0, len(target)+1)[:1]:
+for i in np.arange(0, len(target))[-1:]:
     print(i)
     plt.figure(figsize=(30,10))
     plt.subplot(1, 5, 1)

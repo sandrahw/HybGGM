@@ -82,13 +82,26 @@ lat_bounds = (47, 50)#CH bounds(45,50)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 '''create log directory for tensorboard logs'''
-log_directory = r'..\training\logs_dev2\%s_%s_%s_%s_%s_%s_LSTM_tr0.3_LSTM_CNNinp' %(targetvar, def_epochs, lr_rate ,batchSize, hidden_size, num_layers)
-log_dir_fig = r'..\training\logs_dev2\%s_%s_%s_%s_%s_%s_LSTM_tr0.3_LSTM_CNNinp\figures' %(targetvar, def_epochs, lr_rate ,batchSize, hidden_size, num_layers)
+log_directory = r'..\training\logs_dev2\%s_%s_%s_%s_%s_%s_LSTM_tr%s_LSTMCNNinp' %(targetvar, def_epochs, lr_rate ,batchSize, hidden_size, num_layers, trainsize)
+log_dir_fig = r'..\training\logs_dev2\%s_%s_%s_%s_%s_%s_LSTM_tr%s_LSTMCNNinp\figures' %(targetvar, def_epochs, lr_rate ,batchSize, hidden_size, num_layers, trainsize)
+temp_model_output = r'..\data\temp_model_output'
 #create folder in case not there yet
 if not os.path.exists(log_directory):
     os.makedirs(log_directory) 
 if not os.path.exists(log_dir_fig):
     os.makedirs(log_dir_fig)
+
+'''create mask (for land/ocean)'''
+map_tile = xr.open_dataset(r'..\data\temp\wtd.nc')
+map_cut = map_tile.sel(lat=slice(*lat_bounds), lon=slice(*lon_bounds))
+plt.imshow(map_cut.Band1[0, :, :])
+mask = map_cut.to_array().values
+# mask where everything that is nan is 0 and everything else is 1
+mask = np.nan_to_num(mask, copy=False, nan=0)
+mask = np.where(mask==0, 0, 1)
+mask = mask[0, :, :]
+# plt.imshow(mask[0, :, :])
+np.save(r'%s\mask.npy'%log_directory, mask)
 
 '''load the modflow files and prepare the data for input'''
 inFiles = glob.glob(r'..\data\temp\*.nc') #load all input files in the folder
@@ -139,7 +152,7 @@ for f in selInFiles[:]:
     else:
         datacut.append(data)
 
-CNN_input = xr.open_dataset(r'C:\Users\hausw001\surfdrive - Hauswirth, S.M. (Sandra)@surfdrive.surf.nl\Scripts\HybGGM\training\logs_dev2\head_10_0.0001_1_3_CNN\full_pred.nc')
+CNN_input = xr.open_dataset(r'%s\full_pred_denorm_UNet.nc'%temp_model_output)
 cnn_data = CNN_input.to_array().values
 #reshape the data to match the CNN input
 cnn_data = cnn_data.reshape(cnn_data.shape[1], cnn_data.shape[0], cnn_data.shape[2], cnn_data.shape[3])
@@ -148,8 +161,7 @@ cnn_data = cnn_data.reshape(cnn_data.shape[1], cnn_data.shape[0], cnn_data.shape
 ''''calculate the head for each month - define target (y) and input (X) arrays for the CNN'''
 target_head = top_upper - wtd #calculate the head for each month
 X_all = np.stack(datacut, axis=1)
-X = X_all
-X = np.concatenate((X, cnn_data), axis=1)
+X = np.concatenate((X_all, cnn_data), axis=1)
 
 y = target_head[:, np.newaxis, :, :] 
 np.save(r'%s\X.npy'%log_directory, X)
@@ -159,19 +171,15 @@ np.save(r'%s\y.npy'%log_directory, y)
 inp_var_mean = [] # list to store normalisation information for denormalisation later
 inp_var_std = []
 X_norm = []
-for i in range(X.shape[1]):
-    # mean = X[:, i, :, :].mean() # calculate mean and std for each array
-    # std = X[:, i, :, :].std() # calculate mean and std for each array
-    mean = X[:, i, :, :].mean(axis=0)  # Mean per grid cell
-    std = X[:, i, :, :].std(axis=0)  # Std per grid cell
-    std[std == 0] = 1 
+for i in range(X.shape[1])[:]:
+    mean = X[:, i, :, :].mean()
+    std = X[:, i, :, :].std()
     # check if every value in array is 0, if so, skip normalisation
     if X[:, i, :, :].max() == 0 and X[:, i, :, :].min() == 0:
         print('skipped normalisation for array %s' %i)
         X_temp = X[:, i, :, :]
     else:
         X_temp = (X[:, i, :, :] - mean) / std
-    # print(mean, std, X_temp)
     X_norm.append(X_temp)
     inp_var_mean.append(mean)
     inp_var_std.append(std)
@@ -185,11 +193,8 @@ out_var_mean = []
 out_var_std = []
 y_norm = []
 for i in range(y.shape[1]):
-    # mean = y[:, i, :, :].mean() # calculate mean and std for each array
-    # std = y[:, i, :, :].std() # calculate mean and std for each array
-    mean = y[:, i, :, :].mean(axis=0)  # Mean per grid cell
-    std = y[:, i, :, :].std(axis=0)  # Std per grid cell
-    std[std == 0] = 1 
+    mean = y[:, i, :, :].mean()
+    std = y[:, i, :, :].std()
     # check if every value in array is 0, if so, skip normalisation
     if y[:, i, :, :].max() == 0 and y[:, i, :, :].min() == 0:
         print('skipped normalisation for array %s' %i)
@@ -210,14 +215,21 @@ np.save(r'%s\out_var_std.npy'%log_directory, out_var_std)
 '''split the data into training, validation and test sets by choosing random indices'''
 num_locations = X.shape[2] * X.shape[3]
 location_indices = np.arange(num_locations)
-np.random.shuffle(location_indices)
+# np.random.shuffle(location_indices)
+#create a list of indices like num_locations for the mask, then map out which indices correspond to 0 values in the mask, so that those values can be dropped from num_indices
+num_locations_mask = mask.shape[1] * mask.shape[2]  
+num_locations_mask_indices = np.arange(num_locations_mask)
+mask_indices = np.where(mask.ravel() == 0)[0]
+location_indices_mask = np.delete(num_locations_mask_indices, mask_indices)
+
+np.random.shuffle(location_indices_mask)
 
 train_size = int(trainsize * num_locations)
 test_size = int(testsize * num_locations)
 
-train_indices = location_indices[:train_size]
-test_indices = location_indices[train_size:train_size + test_size]
-val_indices = location_indices[train_size + test_size:]
+train_indices = location_indices_mask[:train_size]
+test_indices = location_indices_mask[train_size:train_size + test_size]
+val_indices = location_indices_mask[train_size + test_size:]
 
 
 def create_masks(indices, shape):
@@ -503,28 +515,30 @@ def LSTM_run_model(model, data_loader, device):
     # Concatenate predictions from all batches
     return np.concatenate(predictions, axis=0)
 
-# y_pred_val =LSTM_run_model(model, val_loader, device)  # Use the predict function
-# grid_shape = (y_pred_val.shape[1], val_mask.shape[0], val_mask.shape[1])  # (time, lat, lon)
-# val_pred_grid = map_predictions_to_full_grid(y_pred_val, val_mask, grid_shape)
-# #denormalise the validation predictions
-# val_pred_denorm= val_pred_grid.reshape(71, val_mask.shape[0], val_mask.shape[1])*out_var_std[0] + out_var_mean[0]
+y_pred_val =LSTM_run_model(model, val_loader, device)  # Use the predict function
+grid_shape = (y_pred_val.shape[1], val_mask.shape[0], val_mask.shape[1])  # (time, lat, lon)
+val_pred_grid = map_predictions_to_full_grid(y_pred_val, val_mask, grid_shape)
+#denormalise the validation predictions
+val_pred_denorm= val_pred_grid.reshape(y_pred_val.shape[1], val_mask.shape[0], val_mask.shape[1])*out_var_std[0] + out_var_mean[0]
 
-# # transform the denormalised predictions to an xarray DataArray, with the correct dimensions and coordinates based on
-# val_pred = xr.DataArray(val_pred_denorm, dims=['time', 'lat', 'lon'], coords={'time': np.arange(1, data_length), 'lat': lat, 'lon': lon})
-# val_pred.to_netcdf(r'%s\val_pred_denorm.nc'%log_directory)
-# val_pred[0].plot()
+# transform the denormalised predictions to an xarray DataArray, with the correct dimensions and coordinates based on
+val_pred = xr.DataArray(val_pred_denorm, dims=['time', 'lat', 'lon'], coords={'time': time, 'lat': lat, 'lon': lon})
+val_pred.to_netcdf(r'%s\val_pred_denorm.nc'%log_directory)
+val_pred[0].plot()
 
 #full prediction
 y_pred_full = LSTM_run_model(model, all_loader, device)  # Use the predict function
 
 grid_shape = (y_pred_full.shape[1], full_mask.shape[0], full_mask.shape[1])  # (time, lat, lon)
 y_pred_full_grid = map_predictions_to_full_grid(y_pred_full, full_mask, grid_shape)
+np.save(r'%s\full_pred.npy'%log_directory, y_pred_full_grid)
 y_pred_full_denorm= (y_pred_full_grid * out_var_std[0]) + out_var_mean[0]
-y_pred_full_denorm = xr.DataArray(y_pred_full_denorm, dims=['time', 'lat', 'lon'], coords={'time': np.arange(1, data_length), 'lat': lat, 'lon': lon})  
-y_pred_full_denorm.to_netcdf(r'%s\full_pred.nc'%log_directory)
+y_pred_full_nc = xr.DataArray(y_pred_full_denorm, dims=['time', 'lat', 'lon'], coords={'time': time, 'lat': lat, 'lon': lon})  
+y_pred_full_nc.to_netcdf(r'%s\full_pred_denorm.nc'%log_directory)
+y_pred_full_nc.to_netcdf(r'%s\full_pred_denorm_LSTMUNet.nc'%temp_model_output)
 
 #plot the full prediction
-y_pred_full_denorm[0].plot()
+y_pred_full_nc[0].plot()
 
 min_val = np.min([np.nanmin(y), np.nanmin(y_pred_full_denorm)])
 max_val = np.max([np.nanmax(y), np.nanmax(y_pred_full_denorm)])
