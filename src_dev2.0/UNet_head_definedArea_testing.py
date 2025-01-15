@@ -167,8 +167,8 @@ plt.title('target_head')
 plt.colorbar(shrink=0.5)
 
 X_all = np.stack(datacut, axis=1)
-X = X_all[:-1,:,:,:] #remove first month to match the delta wtd data
-y = target_head[1:, np.newaxis, :, :] 
+X = X_all[:,:,:,:] 
+y = target_head[:, np.newaxis, :, :] 
 np.save(r'%s\X.npy'%log_directory, X)
 np.save(r'%s\y.npy'%log_directory, y)
 
@@ -176,9 +176,13 @@ np.save(r'%s\y.npy'%log_directory, y)
 inp_var_mean = [] # list to store normalisation information for denormalisation later
 inp_var_std = []
 X_norm = []
-for i in range(X.shape[1]):
-    mean = X[:, i, :, :].mean()
-    std = X[:, i, :, :].std()
+for i in range(X.shape[1])[:]:
+    # print(i)
+    # mean = X[:, i, :, :].mean()
+    # std = X[:, i, :, :].std()
+    mean = X[:, i, :, :].mean(axis=0)  # Mean per grid cell
+    std = X[:, i, :, :].std(axis=0)  # Std per grid cell
+    std[std == 0] = 1 
     # check if every value in array is 0, if so, skip normalisation
     if X[:, i, :, :].max() == 0 and X[:, i, :, :].min() == 0:
         print('skipped normalisation for array %s' %i)
@@ -199,14 +203,17 @@ out_var_mean = []
 out_var_std = []
 y_norm = []
 for i in range(y.shape[1]):
-    mean = y[:, i, :, :].mean()
-    std = y[:, i, :, :].std()
+    # mean = y[:, i, :, :].mean()
+    # std = y[:, i, :, :].std()
+    mean = X[:, i, :, :].mean(axis=0)  # Mean per grid cell
+    std = X[:, i, :, :].std(axis=0)  # Std per grid cell
+    std[std == 0] = 1 
     # check if every value in array is 0, if so, skip normalisation
     if y[:, i, :, :].max() == 0 and y[:, i, :, :].min() == 0:
         print('skipped normalisation for array %s' %i)
-        y_temp = X[:, i, :, :]
+        y_temp = y[:, i, :, :]
     else:
-        y_temp = (X[:, i, :, :] - mean) / std
+        y_temp = (y[:, i, :, :] - mean) / std
     y_temp = (y[:, i, :, :] - mean) / std
     y_norm.append(y_temp)
     out_var_mean.append(mean)
@@ -229,7 +236,7 @@ y_train = y_norm_arr[:int(y_norm_arr.shape[0]*trainsize), :, :, :]
 y_test = y_norm_arr[int(y_norm_arr.shape[0]*trainsize):int(y_norm_arr.shape[0]*(trainsize+testsize)), :, :, :]
 y_val = y_norm_arr[int(y_norm_arr.shape[0]*(trainsize+testsize)):, :, :, :]
 
-mask = mask[1:, :, :]
+mask = mask[:, :, :]
 mask_train = mask[:int(y_norm_arr.shape[0]*trainsize), np.newaxis, :, :]
 mask_test = mask[int(y_norm_arr.shape[0]*trainsize):int(y_norm_arr.shape[0]*(trainsize+testsize)), np.newaxis,:, :]
 mask_val = mask[int(y_norm_arr.shape[0]*(trainsize+testsize)):, np.newaxis,:, :]
@@ -640,6 +647,8 @@ def CNN_run_model(model, data_loader):
     return all_outputs
 y_pred_val = CNN_run_model(model, validation_loader)
 np.save(r'%s\y_val.npy'%log_directory, y_pred_val)
+y_pred_val_denorm = y_pred_val * out_var_std[0] + out_var_mean[0]
+y_pred_val_nc = xr.DataArray(y_pred_val_denorm, dims=['time', 'lat', 'lon'], coords={'time': time[:-1], 'lat': lat, 'lon': lon})
 
 full_data_loader = DataLoader(CustomDataset(X_norm_arr, y_norm_arr, mask), batch_size=batchSize, shuffle=False)
 y_pred_full = CNN_run_model(model, full_data_loader)

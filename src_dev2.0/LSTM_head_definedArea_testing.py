@@ -70,11 +70,11 @@ hidden_size = 16
 num_layers = 2
 batchSize = 10
 lr_rate = 0.001
-def_epochs = 10
+def_epochs = 50
 targetvar = 'head'
 patience = 5
-trainsize = 0.3
-testsize= 0.3
+trainsize = 0.1
+testsize= 0.1
 valsize = 1 - trainsize - testsize
 # define the lat and lon bounds for the test region
 lon_bounds = (7, 10) #CH bounds(5,10)
@@ -82,8 +82,8 @@ lat_bounds = (47, 50)#CH bounds(45,50)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 '''create log directory for tensorboard logs'''
-log_directory = r'..\training\logs_dev2\%s_%s_%s_%s_%s_%s_LSTM_tr0.3_newlstm' %(targetvar, def_epochs, lr_rate ,batchSize, hidden_size, num_layers)
-log_dir_fig = r'..\training\logs_dev2\%s_%s_%s_%s_%s_%s_LSTM_tr0.3_newlstm\figures' %(targetvar, def_epochs, lr_rate ,batchSize, hidden_size, num_layers)
+log_directory = r'..\training\logs_dev2\%s_%s_%s_%s_%s_%s_LSTM_tr0.1_newlstm' %(targetvar, def_epochs, lr_rate ,batchSize, hidden_size, num_layers)
+log_dir_fig = r'..\training\logs_dev2\%s_%s_%s_%s_%s_%s_LSTM_tr0.1_newlstm\figures' %(targetvar, def_epochs, lr_rate ,batchSize, hidden_size, num_layers)
 #create folder in case not there yet
 if not os.path.exists(log_directory):
     os.makedirs(log_directory) 
@@ -142,8 +142,8 @@ for f in selInFiles[:]:
 ''''calculate the head for each month - define target (y) and input (X) arrays for the CNN'''
 target_head = top_upper - wtd #calculate the head for each month
 X_all = np.stack(datacut, axis=1)
-X = X_all[:-1,:,:,:] #remove first month to match the delta wtd data
-y = target_head[1:, np.newaxis, :, :] 
+X = X_all
+y = target_head[:, np.newaxis, :, :] 
 np.save(r'%s\X.npy'%log_directory, X)
 np.save(r'%s\y.npy'%log_directory, y)
 
@@ -152,11 +152,14 @@ inp_var_mean = [] # list to store normalisation information for denormalisation 
 inp_var_std = []
 X_norm = []
 for i in range(X.shape[1]):
-    # mean = X[:, i, :, :].mean() # calculate mean and std for each array
-    # std = X[:, i, :, :].std() # calculate mean and std for each array
-    mean = X[:, i, :, :].mean(axis=0)  # Mean per grid cell
-    std = X[:, i, :, :].std(axis=0)  # Std per grid cell
-    std[std == 0] = 1 
+    mean = X[:, i, :, :].mean() # calculate mean and std for each array
+    std = X[:, i, :, :].std() # calculate mean and std for each array
+    # print('min',X[:, i, :, :].min(), 'max', X[:, i, :, :].max())
+    # print('mean', mean, 'std', std)
+
+    # mean = X[:, i, :, :].mean(axis=0)  # Mean per grid cell
+    # std = X[:, i, :, :].std(axis=0)  # Std per grid cell
+    # std[std == 0] = 1 
     # check if every value in array is 0, if so, skip normalisation
     if X[:, i, :, :].max() == 0 and X[:, i, :, :].min() == 0:
         print('skipped normalisation for array %s' %i)
@@ -164,6 +167,7 @@ for i in range(X.shape[1]):
     else:
         X_temp = (X[:, i, :, :] - mean) / std
     # print(mean, std, X_temp)
+    # print('min',X_temp.min(), 'max', X_temp.max())
     X_norm.append(X_temp)
     inp_var_mean.append(mean)
     inp_var_std.append(std)
@@ -177,18 +181,22 @@ out_var_mean = []
 out_var_std = []
 y_norm = []
 for i in range(y.shape[1]):
-    # mean = y[:, i, :, :].mean() # calculate mean and std for each array
-    # std = y[:, i, :, :].std() # calculate mean and std for each array
-    mean = y[:, i, :, :].mean(axis=0)  # Mean per grid cell
-    std = y[:, i, :, :].std(axis=0)  # Std per grid cell
-    std[std == 0] = 1 
+    y_sqrt = np.sqrt(y[:, i, :, :])
+    mean = y_sqrt.mean() # calculate mean and std for each array
+    std = y_sqrt.std() # calculate mean and std for each array
+    # mean = y[:, i, :, :].mean(axis=0)  # Mean per grid cell
+    # std = y[:, i, :, :].std(axis=0)  # Std per grid cell
+    # std[std == 0] = 1 
     # check if every value in array is 0, if so, skip normalisation
+    # print('min',y[:, i, :, :].min(), 'max', y[:, i, :, :].max())
+    # print('mean', mean, 'std', std)
     if y[:, i, :, :].max() == 0 and y[:, i, :, :].min() == 0:
         print('skipped normalisation for array %s' %i)
-        y_temp = X[:, i, :, :]
+        y_temp = y_sqrt
     else:
-        y_temp = (X[:, i, :, :] - mean) / std
-    y_temp = (y[:, i, :, :] - mean) / std
+        y_temp = (y_sqrt - mean) / std
+    y_temp = (y_sqrt - mean) / std
+    # print('min aftern',y_temp.min(), 'max aftern', y_temp.max())
     y_norm.append(y_temp)
     out_var_mean.append(mean)
     out_var_std.append(std)
@@ -511,8 +519,8 @@ y_pred_full = LSTM_run_model(model, all_loader, device)  # Use the predict funct
 
 grid_shape = (y_pred_full.shape[1], full_mask.shape[0], full_mask.shape[1])  # (time, lat, lon)
 y_pred_full_grid = map_predictions_to_full_grid(y_pred_full, full_mask, grid_shape)
-y_pred_full_denorm= (y_pred_full_grid * out_var_std[0]) + out_var_mean[0]
-y_pred_full_denorm = xr.DataArray(y_pred_full_denorm, dims=['time', 'lat', 'lon'], coords={'time': np.arange(1, data_length), 'lat': lat, 'lon': lon})  
+y_pred_full_denorm= ((y_pred_full_grid * out_var_std[0]) + out_var_mean[0])**2
+y_pred_full_denorm = xr.DataArray(y_pred_full_denorm, dims=['time', 'lat', 'lon'], coords={'time': np.arange(0, data_length), 'lat': lat, 'lon': lon})  
 y_pred_full_denorm.to_netcdf(r'%s\full_pred.nc'%log_directory)
 
 #plot the full prediction

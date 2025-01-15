@@ -175,3 +175,92 @@ plt.title('diff UNetLSTM - LSTMUNet')
 plt.savefig(r'%s\comparison_diff_UNetLSTM_LSTMUNet.png' % (training_folder))
 
 
+plt.figure(figsize=(10,10))
+plt.hist(UNet.flatten(), bins=100, label='UNet', histtype='step', color='r')
+plt.hist(LSTM.flatten(), bins=100, label='LSTM', histtype='step', color='blue')
+plt.hist(UNetLSTM.flatten(), bins=100, label='UNetLSTM', histtype='step', color='orange')
+plt.hist(LSTMUNet.flatten(), bins=100, label='LSTMUNet', histtype='step', color='green')
+#plot target hist empty just the outline in black
+plt.hist(target.flatten(), bins=100, label='target', histtype='step', color='k')
+plt.legend()
+plt.savefig(r'%s\comparison_models_to_target_hist.png' % (training_folder))
+
+
+
+def compute_temporal_correlation(target, predictions):
+    """
+    Compute temporal correlation for each spatial location.
+    """
+    time_steps, n_lat, n_lon = target.shape
+    correlation_map = np.zeros((n_lat, n_lon))
+    for i in range(n_lat):
+        for j in range(n_lon):
+            target_series = target[:, i, j]
+            predictions_series = predictions[:, i, j]
+            if np.std(target_series) > 0 and np.std(predictions_series) > 0:
+                correlation_map[i, j] = np.corrcoef(target_series, predictions_series)[0, 1]
+            else:
+                correlation_map[i, j] = np.nan  # Handle cases with no variation
+    return correlation_map
+
+corr_UNet = compute_temporal_correlation(target, UNet)
+corr_LSTM = compute_temporal_correlation(target, LSTM)
+corr_LSTMUNet = compute_temporal_correlation(target, LSTMUNet)
+corr_UNetLSTM = compute_temporal_correlation(target, UNetLSTM)  
+
+plt.figure(figsize=(20,10))
+plt.subplot(1, 4, 1)
+plt.imshow(corr_UNet, cmap='RdBu',vmin=-1, vmax=1) 
+plt.colorbar(shrink=0.5)    
+plt.title('corr UNet')
+plt.subplot(1, 4, 2)
+plt.imshow(corr_LSTM, cmap='RdBu',vmin=-1, vmax=1)
+plt.colorbar(shrink=0.5)
+plt.title('corr LSTM')
+plt.subplot(1, 4, 3)
+plt.imshow(corr_UNetLSTM, cmap='RdBu',vmin=-1, vmax=1)
+plt.colorbar(shrink=0.5)
+plt.title('corr UNetLSTM')
+plt.subplot(1, 4, 4)
+plt.imshow(corr_LSTMUNet, cmap='RdBu',vmin=-1, vmax=1)
+plt.colorbar(shrink=0.5)
+plt.title('corr LSTMUNet')
+plt.tight_layout
+plt.savefig(r'%s\comparison_corr_models_to_target.png' % (training_folder))
+
+plt.figure(figsize=(10,10))
+plt.hist(corr_UNet.flatten(), bins=100, label='UNet', histtype='step', color='r')
+plt.hist(corr_LSTM.flatten(), bins=100, label='LSTM', histtype='step', color='blue')
+plt.hist(corr_UNetLSTM.flatten(), bins=100, label='UNetLSTM', histtype='step', color='orange')
+plt.hist(corr_LSTMUNet.flatten(), bins=100, label='LSTMUNet', histtype='step', color='green')
+plt.legend()
+plt.savefig(r'%s\comparison_corr_models_to_target_hist.png' % (training_folder))
+
+
+#pick a few random locations and plot time series from both target and models in different subplots while highlighting the location in one supblot with the map and dots for the location
+import random
+import matplotlib.pyplot as plt
+import numpy as np
+
+n = 5
+n_lat = target.shape[1]
+n_lon = target.shape[2]
+rand_lat = random.sample(range(n_lat), n)
+rand_lon = random.sample(range(n_lon), n)
+
+plt.figure(figsize=(30, 5))
+plt.subplot(1, 6, 1)
+plt.imshow(target[0, :, :], cmap='grey')
+plt.scatter(rand_lon, rand_lat, c='r', s=50)
+# plt.figure(figsize=(13, 10))
+for i in range(n):
+    plt.subplot(1, 6, 2+i)
+    plt.plot(target[:, rand_lat[i], rand_lon[i]], label='target', color='black')
+    plt.plot(UNet[:, rand_lat[i], rand_lon[i]], label='UNet', color='red')
+    plt.plot(LSTM[:, rand_lat[i], rand_lon[i]], label='LSTM', color='blue')
+    plt.plot(UNetLSTM[:, rand_lat[i], rand_lon[i]], label='UNetLSTM', color='orange')
+    plt.plot(LSTMUNet[:, rand_lat[i], rand_lon[i]], label='LSTMUNet', color='green')
+plt.legend()
+
+
+

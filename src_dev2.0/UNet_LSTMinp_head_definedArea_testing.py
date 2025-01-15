@@ -212,9 +212,9 @@ for i in range(y.shape[1]):
     # check if every value in array is 0, if so, skip normalisation
     if y[:, i, :, :].max() == 0 and y[:, i, :, :].min() == 0:
         print('skipped normalisation for array %s' %i)
-        y_temp = X[:, i, :, :]
+        y_temp = y[:, i, :, :]
     else:
-        y_temp = (X[:, i, :, :] - mean) / std
+        y_temp = (y[:, i, :, :] - mean) / std
     y_temp = (y[:, i, :, :] - mean) / std
     y_norm.append(y_temp)
     out_var_mean.append(mean)
